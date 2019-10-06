@@ -1,45 +1,99 @@
 import spacy
 import stanfordnlp
 from spacy_stanfordnlp import StanfordNLPLanguage
+from spacy.tokens import DocBin
+from collections import defaultdict
 
 
-def tag_terms(text, terms):
-    """ Identifies and tags any terms present in a given input text.
+def write_spacy_docs(docs, filepath):
+    """ Writes serialized spacy docs to file.  
+    
+    Parameters
+    ----------
+    docs: list of spacy.tokens.doc.Doc
+        List of spacy Docs to write to file 
+    filepath: str
+        File path to serialized spacy docs
+    """
+    doc_bin = DocBin()
+    for doc in docs:
+        doc_bin.add(doc)
+        
+    with open(filepath, "wb") as f:
+        f.write(doc_bin.to_bytes())
+    
+def read_spacy_docs(filepath):
+    """ Reads serialized spacy docs from a file into memory.
+    
+    Parameters
+    ----------
+    filepath: str
+        File path to serialized spacy docs
+    
+    Returns
+    -------
+    list of spacy.tokens.doc.Doc
+        List of spacy Docs loaded from file
+    """
+    with open(filepath, "rb") as f:
+        data = f.read()
+        
+    doc_bin = DocBin().from_bytes(data)
+    docs = list(doc_bin.get_docs(nlp.vocab))
+    return docs
+
+def tag_text(text, terms, relations, nlp=None):
+    """ Identifies and tags any terms and pairwise relations between terms present in a given 
+    input text.
 
     Searches through the input text and finds all terms (single words and phrases) that are present
-    in the list of provided terms. Returns a list of found terms with indices as well as a BIOES tagged
-    version of the sentence denoting where the terms are in the sentences. Uses spacy functionality
-    to tokenize and lemmatize for matching text.
+    in the list of provided terms. Then searches through each pair of found terms to determine
+    if any relations between those terms exist in the provided relations structure. 
+    Returns a list of found terms & relations with indices and POS tagging as well as a 
+    BIOES tagged version of the sentence denoting where the terms are in the sentences. 
+    
+    Uses spacy functionality to tokenize and lemmatize for matching text (it is recommended to 
+    preprocess by Spacy before inputting to prevent repeated work if calling multiple times).
 
     Gives precedence to longer terms first so that terms that are part of a larger term phrase
-    are ignored (i.e. match 'cell wall', not 'cell' within the phrase cell wall)
+    are ignored (i.e. match 'cell wall', not 'cell' within the phrase cell wall). Pairs of terms
+    that do not have an existing relation between them get tagged with the special 'no-relation'
+    relation.
 
     Parameters
     ----------
     text: str | spacy.tokens.doc.Doc
-        Input text that will be preprocessed using spacy and searched for terms
+        Input text that will be/are preprocessed using spacy and searched for terms
     terms: list of str | list of spacy.tokens.doc.Doc
-        List of input terms that will be preprocessed using spacy. It is recommended that one
-        preprocess by spacy ahead of time if you will be checking the same terms across many input texts.
+        List of input terms that will be/are preprocessed using spacy. 
+    nlp: 
+        Spacy nlp pipeline object that will tokenize, POS tag, lemmatize, etc. 
 
     Returns
     -------
-    tuple
-        First element: list of found terms each with list of indices where matches were found
+    dict 
+        'found_terms': list of found terms each with list of indices where matches were found and
+        basic part of speech information
         Second element: tokenized text as list of tokens
         Third element list of BIOES tags for the tokenized text
 
     Examples
     --------
 
-    >>> tag_terms('The cell wall provides structure.', ['cell wall', 'cell'])
-    ([{'cell wall': [1]}], ['The', 'cell', 'wall', 'provides', 'structure', '.'], ['O', 'B', 'E', 'O', 'O', 'O'])
+    >>> tag_text('A biologist will tell you that a cell contains a cell wall.', 
+                 ['cell', 'cell wall', 'biologist'], [('cell', 'has-part', 'cell wall')])
+    ([{'cell wall': [1]}], 
+      ['The', 'cell', 'wall', 'provides', 'structure', '.'], 
+      ['O', 'B', 'E', 'O', 'O', 'O'])
 
     """
 
+    # default to Stanford NLP pipeline wrapped in Spacy
+    if nlp is None:
+        snlp = stanfordnlp.Pipeline(lang="en")
+        nlp = StanfordNLPLanguage(snlp)
+        
     # preprocess with spacy if needed
-    snlp = stanfordnlp.Pipeline(lang="en")
-    nlp = StanfordNLPLanguage(snlp)
     if type(terms[0]) != spacy.tokens.doc.Doc:
         terms = [nlp(term) for term in terms]
     if type(text) != spacy.tokens.doc.Doc:
@@ -50,12 +104,11 @@ def tag_terms(text, terms):
 
     # storage variables
     tagged_text = ['O'] * len(text)
-    found_terms = {}
+    found_terms = defaultdict(lambda: {"text": [], "indices": [], "tag": []})
 
     # iterate through terms from longest to shortest
     terms = sorted(terms, key=len)[::-1]
     for term in terms:
-        term_indices = []
         normalized_term = [token.lemma_ for token in term]
 
         for ix in range(len(text) - len(term)):
@@ -63,13 +116,66 @@ def tag_terms(text, terms):
             if normalized_text[ix:ix + len(term)] == normalized_term:
                 # only add term if not part of larger term
                 if tagged_text[ix:ix + len(term)] == ["O"] * len(term):
-                    term_indices.append(ix)
+                    lemma = " ".join(normalized_term)
+                    found_terms[lemma]["text"].append(" ".join([token.text for token in term]))
+                    found_terms[lemma]["indices"].append(ix)
+                    found_terms[lemma]["tag"].append(" ".join([token.tag_ for token in term]))
                     tagged_text = tag_bioes(tagged_text, ix, len(term))
+    
+    # extract relations
+    found_relations = tag_relations(sorted(list(found_terms.keys())), relations)
+    
+    output = {
+        "input_text": str(text),
+        "tokenized_text": tokenized_text,
+        "tagged_text": tagged_text,
+        "relations": found_relations,
+        "terms": dict(found_terms)
+    }
+    return output 
 
-        if len(term_indices):
-            found_terms[term.text] = term_indices
 
-    return (found_terms, tokenized_text, tagged_text)
+def tag_relations(terms, relations):
+    """ Produces all pairwise relations between a set of terms given a set of relations.
+    
+    Each term pair will either be labeled with one or more relation existing in the set of 
+    input relations or will be labeled with the 'no-relation' label.
+    
+    Parameters
+    ----------
+    terms: list of str
+        List of terms for which we want to assign pairwise relations.
+    relations: list of tuple
+        List of relation triplets consisting of (term1, relation-type, term2)
+    
+    Returns
+    -------
+    list of tuple
+        List of relation triplets present within the passed terms
+    
+    Examples
+    --------
+    
+    
+    
+    """
+    found_relations = []
+    for i in range(len(terms) - 1):
+        for j in range(i + 1, len(terms)):
+            # sort alphabetically so no-relations will have same ordering across all texts 
+            term1, term2 = sorted([terms[i], terms[j]])
+            relation_count = 0
+            for relation in relations:
+                if set([term1, term2]) == set([relation[0], relation[2]]):
+                    found_relations.append(relation)
+                    relation_count += 1
+            if relation_count == 0:
+                found_relations.append((term1, "no-relation", term2))
+    
+    return found_relations
+                    
+            
+
 
 def tag_bioes(tags, match_index, term_length):
     """ Updates tags for a text using the BIOES tagging scheme.

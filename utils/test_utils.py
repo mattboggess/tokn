@@ -1,29 +1,40 @@
 import unittest
-from utils import tag_terms
+from utils import tag_text, tag_relations
 import spacy
 
 
 class TestUtils(unittest.TestCase):
 
-    def test_tag_terms(self):
+    def test_tag_text(self):
 
-        terms = ["cell", "organism", "cell theory", "neuron"]
+        terms = ['cell', 'cell wall', 'biologist'] 
+        text = 'A biologist will tell you that a cell contains a cell wall.'
+        relations = [('cell', 'has-part', 'cell wall')]
 
-        text = ("They formulated their conclusion as the cell theory, which states that: "
-                "Cells are the basic structural and physiological units of all living organisms.")
+        found_terms = {"biologist": {"text": ["biologist"], "tag": ["NN"], "indices": [1]},
+                       "cell": {"text": ["cell"], "tag": ["NN"], "indices": [7]},
+                       "cell wall": {"text": ["cell wall"], "tag": ["NN NN"], "indices": [10]}}
+        tokenized_text = ["A", "biologist", "will", "tell", "you", "that", "a", "cell", "contains",
+                          "a", "cell", "wall", "."]
+        bioes_tags = ["O", "S", "O", "O", "O", "O", "O", "S", "O", "O", "B", "E", "O"]
+        found_relations = [("biologist", "no-relation", "cell"),
+                           ("biologist", "no-relation", "cell wall"),
+                           ("cell", "has-part", "cell wall")]
+        solution = {"input_text": text, "tokenized_text": tokenized_text, "tagged_text": bioes_tags,
+                    "relations": found_relations, "terms": found_terms}
+        output = tag_text(text, terms, relations)
 
-        found_terms_solution = [("cell theory", [6]), ("organism", [24]), ("cell", [13])]
-        tokenized_text_solution = ["They", "formulated", "their", "conclusion", "as", "the", "cell",
-                                   "theory", ",", "which", "states", "that", ":", "Cells", "are", "the",
-                                   "basic", "structural", "and", "physiological", "units", "of", "all",
-                                   "living", "organisms", "."]
-        tags_solution = ["O", "O", "O", "O", "O", "O", "B", "E", "O", "O", "O", "O", "O",
-                         "S", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "S", "O"]
-
-        found_terms, tokenized_text, tags = tag_terms(text, terms)
-        self.assertEqual(found_terms, found_terms_solution)
-        self.assertEqual(tokenized_text, tokenized_text_solution)
-        self.assertEqual(tags, tags_solution)
+        self.assertEqual(output, solution)
+    
+    def test_tag_relations(self):
+        
+        terms = ["cell", "cell wall", "virus"]
+        relations = [("cell", "has-part", "cell wall"),
+                     ("cell", "test-double", "cell wall"),
+                     ("cell", "no-relation", "virus"),
+                     ("cell wall", "no-relation", "virus")]
+        found_relations = tag_relations(terms, relations)
+        self.assertEqual(set(relations), set(found_relations))
 
 
 if __name__ == "__main__":
