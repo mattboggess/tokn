@@ -4,7 +4,6 @@ channels:
   - defaults
 dependencies:
   - _libgcc_mutex=0.1
-  - appnope=0.1.0
   - asn1crypto=0.24.0
   - attrs=19.2.0
   - backcall=0.1.0
@@ -45,7 +44,6 @@ dependencies:
   - libcxxabi=9.0.0
   - libedit=3.1.20181209
   - libffi=3.2.1
-  - libgfortran=3.0.1
   - libiconv=1.15
   - liblapack=3.8.0
   - libpng=1.6.37
