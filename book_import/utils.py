@@ -3,11 +3,12 @@ import re
 yaml_path = './yaml_files/'
 book_path = './book_files/'
 sentences_path = './sentence_files/'
+archive_url = 'https://archive.cnx.org/contents/{}'
 
 def proc_key_terms(raw_cnxml):	
 	term_regex_start = '<dt id="\\d+">'
 	term_regex_end = '<\/dt>'
-	def_regex_start = '<dd id="fs-id[m,p]*\d*">'
+	def_regex_start = '<dd id="fs-id[m,p]*\d*[a]*">'
 	def_regex_end = '<\/dd>'
 	# First let's check and make sure that we get the right number of matches for all regex
 	Ts = len(re.findall(term_regex_start, raw_cnxml))

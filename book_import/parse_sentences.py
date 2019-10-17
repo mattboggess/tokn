@@ -7,14 +7,19 @@ import os
 from ecosystem_importer import EcosystemImporter
 from nltk.tokenize import sent_tokenize
 from utils import *
+import string
+
+
+### Load up the cnx id lookup table
+df_id = pd.read_csv('./data/book_cnxid.csv')
 
 ### User params -- the yaml file from which we extract metadata
-#yaml = 'Biology_2e_8d50a0af-948b-4204-a71d-4826cba765b8_15.45.yml'
-yaml = 'College_Physics_with_Courseware_405335a3-7cff-4df2-a9ad-29062a4af261_7.53.yml'
+book_title = 'University Physics Volume 3' # This name needs to match a title in df_id
+cnx_id = df_id[df_id['title']==book_title].cnx_id.iloc[0]
 
 ### Compute some filename constants
-subject_name = yaml.split('_')[0].lower()
-yaml_file = yaml_path + yaml
+translator = str.maketrans('', '', string.punctuation)
+subject_name = book_title.translate(translator).replace(' ', '_')
 book_file = book_path + '{}_book.csv'.format(subject_name)
 final_output_file = sentences_path + 'final_{}_parsed.csv'.format(subject_name) 
 
@@ -26,7 +31,7 @@ if os.path.exists(book_file):
 else:
 	print("Can't find book . . . regenerating from yaml")
 	es = EcosystemImporter()
-	df_book = es.parse_yaml_file(yaml_file)
+	df_book = es.get_book_content(archive_url, cnx_id)
 	df_book['content_clean'] = df_book['content'].apply(lambda x: es.format_cnxml(x))
 	df_book.to_csv(book_file, index=None)
 

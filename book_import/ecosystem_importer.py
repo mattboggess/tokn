@@ -75,8 +75,14 @@ class EcosystemImporter(object):
         return clean_text.strip()
 
     def get_page_content(self, book_cnx_id, page_id, archive_url):
+        
         full_id = "{}:{}".format(book_cnx_id, page_id)
-        content = requests.get(archive_url.format(full_id)).json()["content"]
+        content = None
+        while not content:
+            try:
+                content = requests.get(archive_url.format(full_id)).json()["content"]
+            except:
+                pass
         return content
 
     def diff_book_dataframe(self, book_dataframe):
