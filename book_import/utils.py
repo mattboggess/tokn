@@ -6,7 +6,7 @@ sentences_path = './sentence_files/'
 archive_url = 'https://archive.cnx.org/contents/{}'
 
 def proc_key_terms(raw_cnxml):	
-	term_regex_start = '<dt id="\\d+">'
+	term_regex_start = '<dt id="[fs\-id]*\d+">'
 	term_regex_end = '<\/dt>'
 	def_regex_start = '<dd id="fs-id[m,p]*\d*[a]*">'
 	def_regex_end = '<\/dd>'
@@ -30,6 +30,7 @@ def proc_key_terms(raw_cnxml):
 		output_str = [t[0] + ": " + t[1] for t in zip(terms, defs)]
 		return output_str
 	else:
+		print("Something went wrong with the key term parsing . . . sorry about that.")
 		return False
 
 def clean_paren_stuff(x):
