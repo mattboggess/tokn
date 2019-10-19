@@ -14,14 +14,14 @@ import string
 df_id = pd.read_csv('./data/book_cnxid.csv')
 
 ### User params -- the yaml file from which we extract metadata
-book_title = 'University Physics Volume 3' # This name needs to match a title in df_id
+book_title = 'Biology 2e' # This name needs to match a title in df_id
 cnx_id = df_id[df_id['title']==book_title].cnx_id.iloc[0]
 
 ### Compute some filename constants
 translator = str.maketrans('', '', string.punctuation)
 subject_name = book_title.translate(translator).replace(' ', '_')
 book_file = book_path + '{}_book.csv'.format(subject_name)
-final_output_file = sentences_path + 'final_{}_parsed.csv'.format(subject_name) 
+final_output_file = sentences_path + 'sentences_{}_parsed.csv'.format(subject_name) 
 
 ### Step 1 -- read in the full book ###
 df_book = None
