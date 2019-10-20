@@ -1,26 +1,19 @@
+##########
+# Preprocesses Openstax and Life Biology textbooks using Spacy and saves to disk. 
+# Creates separate sentence and key term files for each.
+# For Life, does additional parsing to extract out the knowledge base lexicon and first 10 chapters.
+##########
 import stanfordnlp
 from spacy_stanfordnlp import StanfordNLPLanguage
 from data_processing_utils import write_spacy_docs
+from data_processing_constants import OPENSTAX_TEXTBOOKS, EXCLUDE_SECTIONS
 import warnings
+from io import StringIO
 import pandas as pd
 import re
+import json
 
-OPENSTAX_TEXTBOOKS = ["Anatomy_and_Physiology", "Astronomy", "Biology_2e", "Chemistry_2e",
-                      "Microbiology", "Psychology", "University_Physics_Volume_1",
-                      "University_Physics_Volume_2", "University_Physics_Volume_3"]
-
-EXCLUDE_SECTIONS = [
-    "Preface", "Chapter Outline", "Index", "Chapter Outline", "Summary", "Multiple Choice",
-    "Fill in the Blank", "short Answer", "Critical Thinking", "References", 
-    "Units", "Conversion Factors", "Fundamental Constants", "Astronomical Data",
-    "Mathematical Formulas", "The Greek Alphabet", "Chapter 1", "Chapter 2",
-    "Chapter 3", "Chapter 4", "Chapter 5", "Chapter 6", "Chapter 7", "Chapter 8"
-    "Chapter 9", "Chapter 10", "Chapter 11", "Chapter 12", "Chapter 13", "Chapter 14", 
-    "Chapter 15", "Chapter 16", "Chapter 17", "Critical Thinking Questions", 
-    "Visual Connection Questions", "Key Terms", "Review Questions", 
-    "The Periodic Table of Elements", "Measurements and the Metric System"]
-
-def process_term(key_term_text):
+def parse_openstax_terms(key_term_text):
     """ Parse openstax data to extract key terms (including acronyms). """
     if ":" not in key_term_text:
         return []
@@ -33,10 +26,39 @@ def process_term(key_term_text):
     
     return [term.strip()] 
 
+def process_lexicon(lexicon):
+    """ Takes in a lexicon consisting of concept text representation pairs and turns this into a 
+    list of Spacy processed terms and a lexicon csv mapping KB concepts to lists of text 
+    representations and their lemma forms.
+    """
+    # TODO: Handle verbs (filtered out currently where Concept-Word-Frame is)
+    
+    # get rid of extra column and read in as dataframe
+    lexicon = lexicon.replace(' | "n"', '').replace('"', '')
+    lexicon = pd.read_csv(StringIO(lexicon), sep="\s*\|\s*", header=None, 
+                          names=["concept", "relation", "text"])
+
+    # create mapping from kb concept to unique text representations
+    lexicon = lexicon[~lexicon.text.str.contains("Concept-Word-Frame")]
+    lexicon = lexicon.groupby("concept")["text"].apply(lambda x: list(set(x))).reset_index()
+
+    # spacy process terms to get lemmas
+    spacy_terms = []
+    lemmas = []
+    for concept in lexicon.concept:
+        terms = list(lexicon.loc[lexicon.concept == concept, "text"])[0]
+        spacy_terms_tmp = [nlp(term) for term in terms]
+        lemma_terms = list([" ".join([tok.lemma_ for tok in t]) for t in spacy_terms_tmp])
+        spacy_terms += spacy_terms_tmp
+        lemmas.append(lemma_terms)
+
+    lexicon["lemmas"] = lemmas
+    return spacy_terms, lexicon
+
 if __name__ == "__main__":
     
     raw_data_dir = "../data/raw_data"
-    spacy_data_dir = "../data/spacy_preprocessed"
+    preprocessed_data_dir = "../data/preprocessed_data"
     
     # initialize Stanford NLP Spacy pipeline
     snlp = stanfordnlp.Pipeline(lang="en")
@@ -44,42 +66,76 @@ if __name__ == "__main__":
     warnings.filterwarnings('ignore')
     
     # process openstax textbooks
-    all_terms_spacy = []
-    all_terms_text = [] 
     for textbook in OPENSTAX_TEXTBOOKS:
         print(f"Processing {textbook} textbook")
-        textbook_data = pd.read_csv(f"{raw_data_dir}/textbooks/sentences_{textbook}_parsed.csv")
+        textbook_data = pd.read_csv(f"{raw_data_dir}/openstax/sentences_{textbook}_parsed.csv")
         
         # spacy preprocess sentences
-        output_file = f"{spacy_data_dir}/{textbook}_sentences_spacy"
+        output_file = f"{preprocessed_data_dir}/{textbook}_sentences_spacy"
         sentences = textbook_data[~textbook_data.section_name.isin(EXCLUDE_SECTIONS)].sentence
         sentences_spacy = []
         for i, sent in enumerate(sentences):
             if i % 500 == 0:
                 print(f"Processing sentence {i}/{len(sentences)}")
-            if i == 1000:
-                break
+            if not len(sent):
+                continue
             sentences_spacy.append(nlp(sent))
         write_spacy_docs(sentences_spacy, output_file)
         
         # spacy preprocess terms
-        output_file = f"{spacy_data_dir}/{textbook}_key_terms_spacy"
-        key_terms = textbook_data[textbook_data.section_name == "Key Terms"].sentence
+        output_file = f"{preprocessed_data_dir}/{textbook}_key_terms_spacy"
         key_terms_spacy = []
-        for i, key_term in enumerate(key_terms):
-            if i % 500 == 0:
-                print(f"Processing Key Term {i}/{len(key_terms)}")
-            kts = process_term(key_term)
-            if len(kts):
-                key_terms_spacy += [nlp(kt) for kt in kts]
+        # use special extracted glossary for microbiology since key term format is different
+        if textbook == "Microbiology":
+            with open(f"{raw_data_dir}/openstax/microbiology_glossary.json", "r") as f:
+                key_terms = json.load(f)
+            for i, key_term in enumerate(key_terms):
+                if i % 500 == 0:
+                    print(f"Processing Key Term {i}/{len(key_terms)}")
+                key_terms_spacy.append(nlp(key_term))
+                acronym = key_terms[key_term]["acronym"]
+                if len(acronym):
+                    key_terms_spacy.append(nlp(acronym))
+        else:
+            key_terms = textbook_data[textbook_data.section_name == "Key Terms"].sentence
+            for i, key_term in enumerate(key_terms):
+                if i % 500 == 0:
+                    print(f"Processing Key Term {i}/{len(key_terms)}")
+                kts = parse_openstax_terms(key_term)
+                if len(kts):
+                    key_terms_spacy += [nlp(kt) for kt in kts]
 
         write_spacy_docs(key_terms_spacy, output_file)
         
-        # compile full list of key terms w/o duplicates
-        all_terms_spacy += [term for term in key_terms_spacy if term.text not in all_terms_text] 
-        all_terms_text += [term.text for term in key_terms_spacy]
-        
-    # TODO: Process life biology textbook
+    print("Processing Life Biology Lexicon")
+    lexicon_input_file = f"{raw_data_dir}/life_bio/kb_lexicon.txt"
+    lexicon_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_lexicon.csv"
+    terms_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_terms_spacy"
+    with open(lexicon_input_file, "r") as f:
+        lexicon = f.read()
+    terms, lexicon = process_lexicon(lexicon)
+    write_spacy_docs(terms, terms_output_file)
+    lexicon.to_csv(lexicon_output_file, index=False)
     
-    write_spacy_docs(all_terms_spacy, f"{spacy_data_dir}/all_key_terms_spacy")
+    print("Processing Life Biology Sentences")
+    #TODO: Get access to entire Life Biology textbook
+    life_input_file = f"{raw_data_dir}/life_bio/life_bio_selected_sentences.txt"
+    life_kb_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_sentences_spacy"
+    life_output_file = f"{preprocessed_data_dir}/Life_Biology_sentences_spacy"
+    with open(life_input_file, "r") as f:
+        life_bio_sentences = f.readlines()
+        
+    sentences_kb_spacy = []
+    sentences_spacy = []
+    for i, sent in enumerate(life_bio_sentences):
+        if i % 500 == 0:
+            print(f"Preprocessing life biology sentence {i}/{len(life_bio_sentences)}")
+            
+        spacy_sent = nlp(re.sub("^(\d*\.*)+\s*", "", sent))
+        if int(sent.split(".")[1]) <= 10:
+            sentences_kb_spacy.append(spacy_sent)
+        sentences_spacy.append(spacy_sent)
+        
+    write_spacy_docs(sentences_spacy, life_output_file)
+    write_spacy_docs(sentences_kb_spacy, life_kb_output_file)
     

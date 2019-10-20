@@ -85,7 +85,7 @@ def add_relation(term_pair, term_info, tokenized_text, relations_db):
     term2_text = " ".join(tokenized_text[indices[1][0]:indices[1][1]])
     
     # tag term pair in the sentence
-    tokenized_text = insert_relation_tags(tokenized_text, indices)
+    tokenized_text = " ".join(insert_relation_tags(tokenized_text, indices))
     
     for relation in relations_db:
         if term_pair_key in relations_db[relation]: 
@@ -208,6 +208,7 @@ def tag_terms(text, terms, nlp=None):
         text = nlp(text)
 
     lemmatized_text = [token.lemma_ for token in text]
+    print(lemmatized_text)
     tokenized_text = [token.text for token in text]
     tagged_text = ['O'] * len(text)
     found_terms = defaultdict(lambda: {"text": [], "indices": [], "tag": []})
@@ -219,6 +220,9 @@ def tag_terms(text, terms, nlp=None):
         lemma_term_list = [token.lemma_ for token in spacy_term]
         text_term_list = [token.text for token in spacy_term]
         term_lemma = " ".join(lemma_term_list)
+        if term_lemma == "adenine":
+            print(lemma_term_list)
+            print(term_length)
         
         # TODO: Match on text for lemmatized forms that are stop words
         if term_lemma in STOP_WORDS:
@@ -295,7 +299,6 @@ def tag_bioes(tags, match_index, term_length):
             else:
                 tags[match_index + i] = "I"
     return tags
-
 
 def get_closest_match(indices1, indices2):
     """ Computes the closest pair of indices between two sets of indices.
