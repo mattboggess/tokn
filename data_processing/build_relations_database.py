@@ -5,6 +5,7 @@ from collections import defaultdict
 import stanfordnlp
 from spacy_stanfordnlp import StanfordNLPLanguage
 import warnings
+import string
 import pandas as pd
 import re
 import os
@@ -17,53 +18,11 @@ SPATIAL_RELATIONS = ["is-at", "is-inside", "is-outside", "abuts", "between"]
 TAXONOMY_RELATIONS = ["subclass-of", "instance-of"]
 INCLUDE_RELATIONS = MERONYM_RELATIONS + SPATIAL_RELATIONS + TAXONOMY_RELATIONS 
 
-def write_spacy_docs(docs, filepath):
-    """ Writes serialized spacy docs to file.  
-    
-    Parameters
-    ----------
-    docs: list of spacy.tokens.doc.Doc
-        List of spacy Docs to write to file 
-    filepath: str
-        File path to serialized spacy docs
-    """
-    doc_bin = DocBin()
-    for doc in docs:
-        doc_bin.add(doc)
-        
-    with open(filepath, "wb") as f:
-        f.write(doc_bin.to_bytes())
-    
-def read_spacy_docs(filepath, nlp=None):
-    """ Reads serialized spacy docs from a file into memory.
-    
-    Parameters
-    ----------
-    filepath: str
-        File path to serialized spacy docs
-    
-    Returns
-    -------
-    list of spacy.tokens.doc.Doc
-        List of spacy Docs loaded from file
-    """
-    
-    if nlp is None:
-        snlp = stanfordnlp.Pipeline(lang="en")
-        nlp = StanfordNLPLanguage(snlp)
-        
-    with open(filepath, "rb") as f:
-        data = f.read()
-        
-    doc_bin = DocBin().from_bytes(data)
-    docs = list(doc_bin.get_docs(nlp.vocab))
-    return docs
 
 def process_lexicon(lexicon):
     """ Takes in a lexicon consisting of concept text representation pairs and turns this into a 
     list of Spacy processed terms and a lexicon csv mapping KB concepts to lists of text 
     representations and their lemma forms.
-    
     """
     
     # get rid of extra column and read in as dataframe
@@ -121,9 +80,9 @@ def parse_relations(relations, relation_type, lexicon, relations_db, include_rel
     the relations database.
     
     1. Parse each relation into concepts, relations, and text representation
-    2. Extract all unique lemma representations and associated text representations for each entity/event pair
+    2. Extract all unique lemma representations and associated text representations 
+       for each entity/event pair
     3. Add each unique relation pair to the relations database
-    
     """
     
     for i, r in enumerate(relations):
@@ -155,193 +114,6 @@ def parse_relations(relations, relation_type, lexicon, relations_db, include_rel
     
     return relations_db
 
-def get_closest_match(indices1, indices2):
-    """
-    Computes the closest pair of indices between two sets of indices.
-    """
-    
-    if len(indices1) == 1 and len(indices2) == 1:
-        return indices1[0], indices2[0]
-    
-    closest_match = (indices1[0], indices2[0])
-    min_dist = np.abs(closest_match[0][0] - closest_match[1][0])
-    for pair in itertools.product(indices1, indices2):
-        dist = np.abs(pair[0][0] - pair[1][0])
-        if dist < min_dist:
-            closest_match = pair
-            min_dist = dist
-    
-    return closest_match
-
-def tag_bioes(tags, match_index, term_length):
-    """ Updates tags for a text using the BIOES tagging scheme.
-
-    B = beginning of term phrase
-    I = interior of term phrase
-    O = non-term
-    E = end of term phrase
-    S = singleton term
-
-    Parameters
-    ----------
-    tags: list of str
-        List of current BIOES tags for given tokenized text that we will be updating
-    match_index: int
-        Index at which the term was matched in the text
-    term_length: int
-        Number of tokens that compose the term ('cell wall' -> 2)
-
-    Returns
-    -------
-    list of str
-        Updated list of BIOES tags for the given tokenized text
-
-    Examples
-    --------
-
-    >>> tag_bioes(['O', 'O', 'O', 'O'], 1, 2)
-    ['O', 'B', 'E', 'O']
-
-    >>> tag_bioes(['O', 'O', 'O', 'O'], 0, 1)
-    ['S', 'O', 'O', 'O']
-
-    >>> tag_bioes(['O', 'O', 'O', 'O'], 1, 3)
-    ['O', 'B', 'I', 'E']
-
-    """
-
-    if term_length == 1:
-        tags[match_index] = "S"
-    else:
-        for i in range(term_length):
-            if i == 0:
-                tags[match_index + i] = "B"
-            elif i == term_length - 1:
-                tags[match_index + i] = "E"
-            else:
-                tags[match_index + i] = "I"
-    return tags
-
-def tag_terms(text, terms, nlp=None):
-    """ Tags all terms in a given span of text.
-    """
-    
-    # default to Stanford NLP pipeline wrapped in Spacy
-    if nlp is None:
-        snlp = stanfordnlp.Pipeline(lang="en")
-        nlp = StanfordNLPLanguage(snlp)
-        
-    # preprocess with spacy if needed
-    if type(terms[0]) != spacy.tokens.doc.Doc:
-        terms = [nlp(term) for term in terms]
-    if type(text) != spacy.tokens.doc.Doc:
-        text = nlp(text)
-
-    normalized_text = [token.lemma_ for token in text]
-    tokenized_text = [token.text for token in text]
-    tagged_text = ['O'] * len(text)
-    found_terms = defaultdict(lambda: {"text": [], "indices": [], "tag": []})
-    
-    # iterate through terms from longest to shortest
-    terms = sorted(terms, key=len)[::-1]
-    for term in terms:
-        normalized_term = [token.lemma_ for token in term]
-
-        for ix in range(len(text) - len(term)):
-
-            if normalized_text[ix:ix + len(term)] == normalized_term:
-                # only add term if not part of larger term
-                if tagged_text[ix:ix + len(term)] == ["O"] * len(term):
-                    lemma = " ".join(normalized_term)
-                    found_terms[lemma]["text"].append(" ".join([token.text for token in term]))
-                    found_terms[lemma]["indices"].append((ix, ix + len(term)))
-                    found_terms[lemma]["tag"].append(" ".join([token.tag_ for token in term]))
-                    tagged_text = tag_bioes(tagged_text, ix, len(term))
-    
-    return tokenized_text, tagged_text, found_terms
-
-def insert_relation_tags(tokenized_text, indices):
-    """ Inserts entity tags in a sentence denoting members of a relation. """
-    
-    # order tags by actual index in sentence
-    indices = [i for ind in indices for i in ind]
-    tags = ["<e1>", "</e1>", "<e2>", "</e2>"]
-    order = np.argsort(indices)
-    indices = [indices[i] for i in order]
-    tags = [tags[i] for i in order]
-    
-    adjust = 0
-    for ix, tag in zip(indices, tags):
-        tokenized_text.insert(ix + adjust, tag)
-        adjust += 1
-    
-    return tokenized_text
-
-def add_relation(term_pair, term_info, tokenized_text, relations_db):
-    """ For a given term pair, found at specific indices in a text, add the sentence to the
-    relations database if it matches a relation(s) in the database, otherwise add it as a 
-    no-relation instance.
-    """
-    tokenized_text = tokenized_text.copy()
-    
-    found_relation = False
-    term_pair_key = " -> ".join(term_pair)
-    
-    # restrict to closest occurence of the two terms in the sentence
-    indices = get_closest_match(term_info[term_pair[0]]["indices"], 
-                                term_info[term_pair[1]]["indices"])
-    
-    # tag term pair in the sentence
-    tokenized_text = insert_relation_tags(tokenized_text, indices)
-    
-    for relation in relations_db:
-        if term_pair_key in relations_db[relation]: 
-            
-            # add sentence to relations database 
-            found_relation = True
-            relations_db[relation][term_pair_key]["sentences"].append(tokenized_text)
-            
-    if not found_relation:
-
-        if term_pair_key in relations_db["no-relation"]:
-            relations_db["no-relation"][term_pair_key]["sentences"].append(tokenized_text)
-        else:
-            relations_db["no-relation"][term_pair_key] = {
-                "sentences": [tokenized_text], 
-                "e1_representations": term_info[term_pair[0]]["text"],
-                "e2_representations": term_info[term_pair[1]]["text"]}
-      
-    return relations_db
-
-def tag_relations(text, terms, relations_db, nlp=None):
-    
-    # default to Stanford NLP pipeline wrapped in Spacy
-    if nlp is None:
-        snlp = stanfordnlp.Pipeline(lang="en")
-        nlp = StanfordNLPLanguage(snlp)
-        
-    # preprocess with spacy if needed
-    if type(terms[0]) != spacy.tokens.doc.Doc:
-        terms = [nlp(term) for term in terms]
-    if type(text) != spacy.tokens.doc.Doc:
-        text = nlp(text)
-
-    normalized_text = [token.lemma_ for token in text]
-    tokenized_text = [token.text for token in text]
-    
-    tokenized_text, tagged_text, found_terms_info = tag_terms(text, terms, nlp)
-
-    found_terms = list(found_terms_info.keys())
-    for i in range(len(found_terms) - 1):
-        for j in range(i + 1, len(found_terms)):
-            term_pair = (found_terms[i], found_terms[j])
-            relations_db = add_relation(term_pair, found_terms_info, tokenized_text, 
-                                        relations_db)
-            term_pair_reverse = (found_terms[i], found_terms[j])
-            relations_db = add_relation(term_pair_reverse, found_terms_info, tokenized_text, 
-                                        relations_db)
-    
-    return relations_db
 
 if __name__ == "__main__":
     
@@ -365,7 +137,7 @@ if __name__ == "__main__":
     terms_output_file = f"{output_data_dir}/kb_terms_spacy"
     
     if not os.path.exists(lexicon_output_file) or not os.path.exists(terms_output_file):
-        with open(lexicon_file, "r") as f:
+        with open(lexicon_input_file, "r") as f:
             lexicon = f.read()
         terms, lexicon = process_lexicon(lexicon)
         write_spacy_docs(terms, terms_output_file)
@@ -383,12 +155,12 @@ if __name__ == "__main__":
     else:
         relations_db = {"no-relation": {}}
         for relation_type in ["taxonomy", "structure"]:
-            print("Parsing {relation_type} relations")
+            print(f"Parsing {relation_type} relations")
             file = f"{raw_data_dir}/{relation_type}_relations.txt"
             with open(file) as f:
                 relations = f.readlines()
             relations_db = parse_relations(relations, relation_type, lexicon, relations_db, 
-                                           include_relations)
+                                           INCLUDE_RELATIONS)
         with open(intermed_relations_db_file, "w") as f:
             json.dump(relations_db, f, indent=4)
     

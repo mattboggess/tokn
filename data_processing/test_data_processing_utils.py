@@ -1,9 +1,10 @@
 import unittest
 import spacy
-from build_relations_database import get_closest_match, tag_terms, insert_relation_tags, add_relation
+from data_processing_utils import get_closest_match, tag_terms, insert_relation_tags, add_relation
+#insert_relation_tags, add_relation, read_spacy_docs
 
 
-class TestBuildRelationsDatabase(unittest.TestCase):
+class TestDataProcessingUtils(unittest.TestCase):
     
     def test_get_closet_matches(self):
         
@@ -34,7 +35,23 @@ class TestBuildRelationsDatabase(unittest.TestCase):
         output = tag_terms(text, terms)
 
         self.assertEqual(output, solution)
-       
+        
+        terms = ['He', 'helium', 'gas'] 
+        text = 'He talks about helium (He), which is a gas or plural gases.'
+
+        found_terms = {"he": {"text": ["He"], "tag": ["PRP"], "indices": [(5, 6)]},
+                       "helium": {"text": ["helium"], "tag": ["NN"], "indices": [(3, 4)]},
+                       "gas": {"text": ["gas", "gases"], "tag": ["NN", "NNS"], 
+                               "indices": [(11, 12), (14, 15)]}}
+        tokenized_text = ["He", "talks", "about", "helium", "(", "He", ")", ",", "which", "is",
+                          "a", "gas", "or", "plural", "gases", "."]
+        bioes_tags = ["O", "O", "O", "S", "O", "S", "O", "O", "O", "O", "O", "S", "O", "O", "S", "O"]
+        solution = (tokenized_text, bioes_tags, found_terms)
+        output = tag_terms(text, terms)
+
+        self.assertEqual(output, solution)
+        
+        
     def test_insert_relation_tags(self):
         tokenized_text = ["A", "biologist", "will", "tell", "you", "that", "a", "cell", "contains",
                           "a", "cell", "wall", "."]
