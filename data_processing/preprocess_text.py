@@ -21,7 +21,7 @@ def parse_openstax_terms(key_term_text):
     match = re.match(".*\((.+)\).*", term)
     if match:
         acronym = match.group(1)
-        term = term.replace(f"(acronym)", "")
+        term = term.replace(f"({acronym})", "")
         return [term.strip(), acronym.strip()]
     
     return [term.strip()] 
@@ -66,7 +66,6 @@ if __name__ == "__main__":
     
     # process openstax textbooks
     for textbook in OPENSTAX_TEXTBOOKS:
-        continue
         print(f"Processing {textbook} textbook")
         textbook_data = pd.read_csv(f"{raw_data_dir}/openstax/sentences_{textbook}_parsed.csv")
         
