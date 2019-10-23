@@ -1,12 +1,11 @@
 import unittest
 import spacy
 from data_processing_utils import get_closest_match, tag_terms, insert_relation_tags, add_relation
-#insert_relation_tags, add_relation, read_spacy_docs
-
+from data_processing_utils import read_spacy_docs
 
 class TestDataProcessingUtils(unittest.TestCase):
     
-    def test_get_closet_matches(self):
+    def test_get_closest_matches(self):
         
         indices1 = [(12, 15)]
         indices2 = [(18, 20)]
@@ -21,6 +20,9 @@ class TestDataProcessingUtils(unittest.TestCase):
         self.assertEqual(ix, (indices1[1], indices2[0]))
 
     def test_tag_terms(self):
+        terms = read_spacy_docs("../data/preprocessed_data/Life_Biology_kb_terms_spacy") 
+        text = 'By the end of this section, you will be able to do the following:    Describe the structure of eukaryotic cells   Compare animal cells with plant cells   State the role of the plasma membrane   Summarize the functions of the major cell organelles       Have you ever heard the phrase "form follows function?"'
+        print(tag_terms(text, terms))
 
         terms = ['cell', 'cell wall', 'biologist'] 
         text = 'A biologist will tell you that a cell contains a cell wall.'
@@ -74,22 +76,23 @@ class TestDataProcessingUtils(unittest.TestCase):
             },
             "no-relation": {}
         }
-        tokenized_text = ["A", "biologist", "will", "tell", "you", "that", "a", "cell", "contains",
+        tokenized_text = ["A", "biologist", "will", "tell", "you", "that", "cells", "contain",
                           "a", "cell", "wall", "."]
         found_terms = {"biologist": {"text": ["biologist"], "tag": ["NN"], "indices": [(1, 2)]},
-                       "cell": {"text": ["cell"], "tag": ["NN"], "indices": [(7, 8)]},
-                       "cell wall": {"text": ["cell wall"], "tag": ["NN NN"], "indices": [(10, 12)]}}
+                       "cell": {"text": ["cell"], "tag": ["NN"], "indices": [(6, 7)]},
+                       "cell wall": {"text": ["cell wall"], "tag": ["NN NN"], "indices": [(9, 11)]}}
         
         # solution
-        haspart_sentence = ["A", "biologist", "will", "tell", "you", "that", "a", "<e1>", "cell", 
-                            "</e1>", "contains", "a", "<e2>", "cell", "wall", "</e2>", "."]
-        nr_sent = ["A", "<e1>", "biologist", "</e1>", "will", "tell", "you", "that", 
-                    "a", "<e2>", "cell", "</e2>", "contains", "a", "cell", "wall", "."]
+        haspart_sentence = " ".join(["A", "biologist", "will", "tell", "you", "that",  "<e1>", 
+                                     "cells", "</e1>", "contain", "a", "<e2>", "cell", "wall", 
+                                     "</e2>", "."])
+        nr_sent = " ".join(["A", "<e1>", "biologist", "</e1>", "will", "tell", "you", "that", 
+                            "<e2>", "cells", "</e2>", "contain", "a", "cell", "wall", "."])
         relations_db_solution = {
             "has-part": {
                 "cell -> cell wall": {
                     "sentences": [haspart_sentence],
-                    "e1_representations": ["cell"],
+                    "e1_representations": ["cell", "cells"],
                     "e2_representations": ["cell wall"],
                 }
             },
@@ -97,11 +100,14 @@ class TestDataProcessingUtils(unittest.TestCase):
                 "biologist -> cell": {
                     "sentences": [nr_sent],
                     "e1_representations": ["biologist"],
-                    "e2_representations": ["cell"]
+                    "e2_representations": ["cells"]
                 }
             }
         }
         
+        output = add_relation(("cell", "cell wall"), found_terms, tokenized_text, 
+                              relations_db)
+        self.assertEqual(output["has-part"], relations_db_solution["has-part"])
         output = add_relation(("biologist", "cell"), found_terms, tokenized_text, 
                               relations_db)
         self.assertEqual(output["no-relation"], relations_db_solution["no-relation"])

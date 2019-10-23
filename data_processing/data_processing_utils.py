@@ -85,7 +85,7 @@ def add_relation(term_pair, term_info, tokenized_text, relations_db):
     term2_text = " ".join(tokenized_text[indices[1][0]:indices[1][1]])
     
     # tag term pair in the sentence
-    tokenized_text = insert_relation_tags(tokenized_text, indices)
+    tokenized_text = " ".join(insert_relation_tags(tokenized_text, indices))
     
     for relation in relations_db:
         if term_pair_key in relations_db[relation]: 
@@ -220,7 +220,7 @@ def tag_terms(text, terms, nlp=None):
         text_term_list = [token.text for token in spacy_term]
         term_lemma = " ".join(lemma_term_list)
         
-        # TODO: Match on text for lemmatized forms that are stop words
+        # match on text for lemmatized forms that are stop words
         if term_lemma in STOP_WORDS:
             match_term = text_term_list
             match_text = tokenized_text
@@ -235,7 +235,13 @@ def tag_terms(text, terms, nlp=None):
             if match_term == text_term_list and ix == 0:
                 continue
 
-            if match_text[ix:ix + term_length] == match_term:
+            # additional check to check for simple plural of uncommon biology terms
+            match_uncommon_plural = match_term.copy()
+            match_uncommon_plural[-1] = match_uncommon_plural[-1] + "s"
+            
+            if (match_text[ix:ix + term_length] == match_term) or \
+               (match_text[ix:ix + term_length] == match_uncommon_plural):
+                
                 term_text = " ".join([t.text for t in text[ix:ix + term_length]])
                 term_tag = " ".join([t.tag_ for t in text[ix:ix + term_length]])
                 # only add term if not part of larger term
@@ -295,7 +301,6 @@ def tag_bioes(tags, match_index, term_length):
             else:
                 tags[match_index + i] = "I"
     return tags
-
 
 def get_closest_match(indices1, indices2):
     """ Computes the closest pair of indices between two sets of indices.
