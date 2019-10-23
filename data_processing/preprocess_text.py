@@ -31,12 +31,10 @@ def process_lexicon(lexicon):
     list of Spacy processed terms and a lexicon csv mapping KB concepts to lists of text 
     representations and their lemma forms.
     """
-    # TODO: Handle verbs (filtered out currently where Concept-Word-Frame is)
     
     # get rid of extra column and read in as dataframe
-    lexicon = lexicon.replace(' | "n"', '').replace('"', '')
     lexicon = pd.read_csv(StringIO(lexicon), sep="\s*\|\s*", header=None, 
-                          names=["concept", "relation", "text"])
+                          names=["concept", "relation", "text", "pos"])
 
     # create mapping from kb concept to unique text representations
     lexicon = lexicon[~lexicon.text.str.contains("Concept-Word-Frame")]
@@ -47,6 +45,7 @@ def process_lexicon(lexicon):
     lemmas = []
     for concept in lexicon.concept:
         terms = list(lexicon.loc[lexicon.concept == concept, "text"])[0]
+        terms = [t.replace('"', "").strip() for t in terms]
         spacy_terms_tmp = [nlp(term) for term in terms]
         lemma_terms = list([" ".join([tok.lemma_ for tok in t]) for t in spacy_terms_tmp])
         spacy_terms += spacy_terms_tmp
@@ -67,6 +66,7 @@ if __name__ == "__main__":
     
     # process openstax textbooks
     for textbook in OPENSTAX_TEXTBOOKS:
+        continue
         print(f"Processing {textbook} textbook")
         textbook_data = pd.read_csv(f"{raw_data_dir}/openstax/sentences_{textbook}_parsed.csv")
         

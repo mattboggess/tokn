@@ -17,7 +17,7 @@ import numpy as np
 import itertools
 from spacy.tokens import DocBin
 from data_processing_constants import INCLUDE_RELATIONS
-from data_processing_utils import tag_relations
+from data_processing_utils import tag_relations, read_spacy_docs
 
 def extract_lemmas(lexicon, concept, instance):
     """ For a given concept, text representation in a relation this function 
@@ -27,6 +27,9 @@ def extract_lemmas(lexicon, concept, instance):
     # pull out equivalent lemma, text representations from lexicon
     if concept in lexicon.concept:
         instance_texts = lexicon.at[lexicon.concept == concept, "text"]
+        print(instance_texts)
+        print(instance_texts[0])
+        print(type(instance_texts))
         instance_lemmas = lexicon.at[lexicon.concept == concept, "lemma"]
     else:
         instance_texts = []
@@ -99,10 +102,10 @@ if __name__ == "__main__":
     warnings.filterwarnings('ignore')
     
     # Load in KB lexicon and terms 
-    lexicon_file = f"{preprocessed_data_dir}/lexicon.csv"
-    kb_terms_file = f"{preprocessed_data_dir}/kb_terms_spacy"
-    lexicon = pd.read_csv(lexicon_output_file)
-    terms = read_spacy_docs(terms_output_file, nlp)
+    lexicon_file = f"{preprocessed_data_dir}/Life_Biology_kb_lexicon.csv"
+    kb_terms_file = f"{preprocessed_data_dir}/Life_Biology_kb_terms_spacy"
+    lexicon = pd.read_csv(lexicon_file)
+    terms = read_spacy_docs(kb_terms_file, nlp)
         
     # extract all word-pairs for relations
     print("Extracting Word-Pairs for Relations")
@@ -123,10 +126,10 @@ if __name__ == "__main__":
             json.dump(relations_db, f, indent=4)
     
     # load biology textbook sentences 
-    bio_textbooks = ["Microbiology", "Life_Biology", "Biology_2e"]
+    bio_textbooks = ["Life_Biology", "Biology_2e"]
     sentences = []
     for textbook in bio_textbooks:
-        sentences += read_spacy_docs(f"{textbook}_sentences_spacy", nlp)
+        sentences += read_spacy_docs(f"{preprocessed_data_dir}/{textbook}_sentences_spacy", nlp)
         
     # tag sentences with relations and add to relations database
     print("Adding tagged sentences to relations database")

@@ -208,7 +208,6 @@ def tag_terms(text, terms, nlp=None):
         text = nlp(text)
 
     lemmatized_text = [token.lemma_ for token in text]
-    print(lemmatized_text)
     tokenized_text = [token.text for token in text]
     tagged_text = ['O'] * len(text)
     found_terms = defaultdict(lambda: {"text": [], "indices": [], "tag": []})
@@ -220,9 +219,6 @@ def tag_terms(text, terms, nlp=None):
         lemma_term_list = [token.lemma_ for token in spacy_term]
         text_term_list = [token.text for token in spacy_term]
         term_lemma = " ".join(lemma_term_list)
-        if term_lemma == "adenine":
-            print(lemma_term_list)
-            print(term_length)
         
         # TODO: Match on text for lemmatized forms that are stop words
         if term_lemma in STOP_WORDS:
@@ -239,7 +235,13 @@ def tag_terms(text, terms, nlp=None):
             if match_term == text_term_list and ix == 0:
                 continue
 
-            if match_text[ix:ix + term_length] == match_term:
+            # additional check to check for simple plural of uncommon biology terms
+            match_uncommon_plural = match_term.copy()
+            match_uncommon_plural[-1] = match_uncommon_plural[-1] + "s"
+            
+            if (match_text[ix:ix + term_length] == match_term) or \
+               (match_text[ix:ix + term_length] == match_uncommon_plural):
+                
                 term_text = " ".join([t.text for t in text[ix:ix + term_length]])
                 term_tag = " ".join([t.tag_ for t in text[ix:ix + term_length]])
                 # only add term if not part of larger term
