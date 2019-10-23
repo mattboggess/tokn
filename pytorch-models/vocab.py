@@ -2,11 +2,11 @@ import json
 import pandas as pd 
 import os
 from collections import Counter
-#From https://github.com/yunjey/seq2seq-dataloader/blob/master/build_vocab.py
+#Based on https://github.com/yunjey/seq2seq-dataloader/blob/master/build_vocab.py
 
 def build_vocab(data_dir, min_word_count=1):
     """
-    Creates word to id dictionary
+    Creates word to id dictionary and id to word dictionary
     """
     json_file = os.path.join(data_dir, "relations_db.json")
     counter = Counter()
@@ -41,6 +41,10 @@ def build_vocab(data_dir, min_word_count=1):
     return word_to_id, id_to_word
 
 def dump_word_id_map(data_dir, word_to_id, id_to_word):
+    """
+    Dumps the word to id and id to word dictionary into json files 
+    for dataset loading
+    """
     with open(os.path.join(data_dir, "word2id.json"), 'w+') as f:
         json.dump(word_to_id, f)
     with open(os.path.join(data_dir, "id2word.json"), 'w+') as f:
