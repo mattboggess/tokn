@@ -27,9 +27,6 @@ def extract_lemmas(lexicon, concept, instance):
     # pull out equivalent lemma, text representations from lexicon
     if concept in lexicon.concept:
         instance_texts = lexicon.at[lexicon.concept == concept, "text"]
-        print(instance_texts)
-        print(instance_texts[0])
-        print(type(instance_texts))
         instance_lemmas = lexicon.at[lexicon.concept == concept, "lemma"]
     else:
         instance_texts = []

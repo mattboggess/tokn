@@ -220,7 +220,7 @@ def tag_terms(text, terms, nlp=None):
         text_term_list = [token.text for token in spacy_term]
         term_lemma = " ".join(lemma_term_list)
         
-        # TODO: Match on text for lemmatized forms that are stop words
+        # match on text for lemmatized forms that are stop words
         if term_lemma in STOP_WORDS:
             match_term = text_term_list
             match_text = tokenized_text

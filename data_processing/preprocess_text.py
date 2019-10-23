@@ -118,7 +118,6 @@ if __name__ == "__main__":
     lexicon.to_csv(lexicon_output_file, index=False)
     
     print("Processing Life Biology Sentences")
-    #TODO: Get access to entire Life Biology textbook
     life_input_file = f"{raw_data_dir}/life_bio/life_bio_selected_sentences.txt"
     life_kb_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_sentences_spacy"
     life_output_file = f"{preprocessed_data_dir}/Life_Biology_sentences_spacy"
