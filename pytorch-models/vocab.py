@@ -19,7 +19,7 @@ def build_vocab(data_dir, min_word_count=1):
         for index, row in df.iterrows():
             sentences = row['sentences']
             for sentence in sentences:
-                sentence = [word.lower() for word in sentence]
+                sentence = [word.lower() for word in sentence.split(" ")]
                 counter.update(sentence)
 
     # create a dictionary and add special tokens
@@ -52,5 +52,5 @@ def dump_word_id_map(data_dir, word_to_id, id_to_word):
 
 
 if __name__ == "__main__":
-    word_to_id, id_to_word = build_vocab("data/")
-    dump_word_id_map("data/", word_to_id, id_to_word)
+    word_to_id, id_to_word = build_vocab("../data/relation_extraction")
+    dump_word_id_map("../data/relation_extraction", word_to_id, id_to_word)

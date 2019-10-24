@@ -1,6 +1,5 @@
 import numpy as np
 import torch
-from torchvision.utils import make_grid
 from base import BaseTrainer
 from utils import inf_loop, MetricTracker
 
@@ -38,7 +37,10 @@ class Trainer(BaseTrainer):
         """
         self.model.train()
         self.train_metrics.reset()
-        for batch_idx, (data, target) in enumerate(self.data_loader):
+        for batch_idx, (data, target, word_pair) in enumerate(self.data_loader):
+            print(data.size())
+            print(target.size())
+            print(word_pair)
             data, target = data.to(self.device), target.to(self.device)
 
             self.optimizer.zero_grad()
