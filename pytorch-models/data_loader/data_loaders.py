@@ -46,10 +46,11 @@ class RelationDataset(Dataset):
     def __getitem__(self, idx):
         sample = self.relation_df.iloc[idx, :]
         y_label = torch.Tensor([1 if sample['relation'] == relation else 0 for relation in self.relations])
+        y_label = y_label.to(torch.int64)
         word_pair = self.relation_df.index[0]
         
         bag_of_words = [self.preprocess(sentence) for sentence in sample['sentences']]
-        return (torch.Tensor(bag_of_words), y_label, word_pair)
+        return (torch.Tensor(bag_of_words).to(torch.int64), y_label, word_pair)
 
     def preprocess(self, sentence, text_length=50):
         sentence_tokenized = sentence.split(" ")
@@ -76,10 +77,11 @@ class RelationDataLoader(BaseDataLoader):
     """
     Data loader for biology relations
     """
-    def __init__(self, data_dir, batch_size, shuffle=True, validation_split=0.0, num_workers=1, 
-                 split="train", embedding_type="custom"):
+    def __init__(self, data_dir, batch_size, relations, shuffle=True, validation_split=0.0, 
+                 num_workers=1, split="train", embedding_type="custom"):
         self.data_dir = data_dir
-        self.dataset = RelationDataset(self.data_dir, split=split, embedding_type=embedding_type)
+        self.dataset = RelationDataset(self.data_dir, split=split, embedding_type=embedding_type,
+                                       relations=relations)
         super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers,
                          collate_fn = self.relation_collate_fn)
         

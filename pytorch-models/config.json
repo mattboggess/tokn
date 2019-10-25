@@ -3,8 +3,12 @@
     "n_gpu": 1,
 
     "arch": {
-        "type": "MnistModel",
-        "args": {}
+        "type": "MaxPoolBaseline",
+        "args": {
+            "num_embeddings": 20000,
+            "embedding_dim": 40,
+            "hidden_size": 20
+        }
     },
     "data_loader": {
         "type": "RelationDataLoader",
@@ -14,6 +18,7 @@
             "shuffle": true,
             "validation_split": 0.1,
             "num_workers": 0,
+            "relations": ["subclass-of"],
             "embedding_type": "custom",
             "split": "debug"
         }

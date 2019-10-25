@@ -2,21 +2,25 @@ import torch.nn as nn
 import torch.nn.functional as F
 from base import BaseModel
 
-
-class MnistModel(BaseModel):
-    def __init__(self, num_classes=10):
+class MaxPoolBaseline(BaseModel):
+    """
+    Arbritrary baseline model that collapses LSTM output with random word embeddings into
+    single vector that can be max-pooled across sentences. Sanity check.
+    """
+    def __init__(self, num_embeddings, embedding_dim, hidden_size):
         super().__init__()
-        self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
-        self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
-        self.conv2_drop = nn.Dropout2d()
-        self.fc1 = nn.Linear(320, 50)
-        self.fc2 = nn.Linear(50, num_classes)
-
+        self.embeddings = nn.Embedding(num_embeddings, embedding_dim)
+        self.lstm = nn.LSTM(embedding_dim, hidden_size)
+        self.maxpool = nn.MaxPool1d(1)
+        self.fc = nn.Linear(hidden_size * 50, 2)
+    
     def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv1(x), 2))
-        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
-        x = x.view(-1, 320)
-        x = F.relu(self.fc1(x))
-        x = F.dropout(x, training=self.training)
-        x = self.fc2(x)
-        return F.log_softmax(x, dim=1)
+        x = self.embeddings(x)
+        old_size = x.size()
+        x = x.view(-1, old_size[-2], old_size[-1])
+        x = self.lstm(x)[0]
+        x = x.view(old_size[0], old_size[1], -1)
+        x = x.permute(0, 2, 1)
+        x = self.maxpool(x)
+        x = x.squeeze(-1)
+        return x
