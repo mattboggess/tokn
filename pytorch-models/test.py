@@ -17,8 +17,11 @@ def main(config):
         batch_size=512,
         shuffle=False,
         validation_split=0.0,
-        training=False,
-        num_workers=2
+        split="debug",
+        num_workers=0,
+        max_sent_length=100,
+        embedding_type="custom",
+        relations=["has-part", "has-region"]
     )
 
     # build model architecture
@@ -45,7 +48,7 @@ def main(config):
     total_metrics = torch.zeros(len(metric_fns))
 
     with torch.no_grad():
-        for i, (data, target) in enumerate(tqdm(data_loader)):
+        for i, (data, target, word_pair) in enumerate(tqdm(data_loader)):
             data, target = data.to(device), target.to(device)
             output = model(data)
 

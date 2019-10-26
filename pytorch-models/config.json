@@ -1,13 +1,15 @@
 {
-    "name": "Relation Extraction",
+    "name": "RE_MaxPool_Baseline",
     "n_gpu": 1,
 
     "arch": {
-        "type": "MaxPoolBaseline",
+        "type": "MaxPoolTest",
         "args": {
-            "num_embeddings": 20000,
+            "num_embeddings": 50000,
             "embedding_dim": 40,
-            "hidden_size": 20
+            "hidden_size": 20,
+            "num_classes": 3,
+            "max_sent_length": 100
         }
     },
     "data_loader": {
@@ -18,9 +20,10 @@
             "shuffle": true,
             "validation_split": 0.1,
             "num_workers": 0,
-            "relations": ["subclass-of"],
+            "relations": ["has-part", "has-region"],
             "embedding_type": "custom",
-            "split": "debug"
+            "split": "debug",
+            "max_sent_length": 100
         }
     },
     "optimizer": {
@@ -33,7 +36,7 @@
     },
     "loss": "nll_loss",
     "metrics": [
-        "accuracy", "top_k_acc"
+        "accuracy"
     ],
     "lr_scheduler": {
         "type": "StepLR",
@@ -43,7 +46,7 @@
         }
     },
     "trainer": {
-        "epochs": 2,
+        "epochs": 20,
 
         "save_dir": "saved/",
         "save_period": 1,

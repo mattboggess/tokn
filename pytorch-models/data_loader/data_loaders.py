@@ -14,19 +14,27 @@ STRUCTURE_RELATIONS = ['has-part', 'possesses', 'has-region', 'is-inside', 'is-a
 class RelationDataset(Dataset):
     """Relation dataset."""
 
-    def __init__(self, data_dir, split="train", relations=ALL_RELATIONS, embedding_type="Bert"):
+    def __init__(self, data_dir, split="train", relations=ALL_RELATIONS, embedding_type="Bert",
+                 max_sent_length=10):
         """
-        Args:
-            data_dir (string): Path to the data directory with relations_db json file and words.txt 
-                               file for vocab2id generation
-            relations (string): list of relations 
+        Parameters
+        ----------
+        data_dir: str 
+            Path to where the relations data is stored 
+        split: str, ['train', 'test', 'debug'] 
+            The data split to load. debug is a small debugging dataset 
+        relations: list of str 
+            List of relations to include to classify between 
+        embedding_type: str, ['Bert', 'custom'] 
+            Type of embedding to use for the data loader. 
+        max_sent_length: int 
+            Maximum number of tokens for each sentence. Longer sentences will be truncated. Shorter
+            sentences will be padded.
         """
         all_relations = json.load(open(os.path.join(data_dir, f"relations_{split}.json")))
-        unused_relations = [relation for relation in all_relations.keys() 
-                            if relation not in relations]
         all_relations = {k: v for k,v in all_relations.items() if k in relations}
                                   
-        self.relations = relations + ["no-relation"]
+        self.relations = ["no-relation"] + relations
         self.relation_df = None 
         for relation in all_relations:
             for i in range(len(all_relations[relation])):
@@ -36,6 +44,7 @@ class RelationDataset(Dataset):
                 else:
                     self.relation_df = pd.concat([self.relation_df, df], sort=False)
                 
+        self.max_sent_length = max_sent_length
         self.embedding_type = embedding_type
         if self.embedding_type == "custom":
             self.vocab2id = json.load(open(os.path.join(data_dir, 'word2id.json')))
@@ -45,21 +54,27 @@ class RelationDataset(Dataset):
 
     def __getitem__(self, idx):
         sample = self.relation_df.iloc[idx, :]
-        y_label = torch.Tensor([1 if sample['relation'] == relation else 0 for relation in self.relations])
-        y_label = y_label.to(torch.int64)
+        y_label = self.relations.index(sample["relation"]) 
+        y_label = torch.Tensor([y_label]).to(torch.int64)
         word_pair = self.relation_df.index[0]
         
         bag_of_words = [self.preprocess(sentence) for sentence in sample['sentences']]
-        return (torch.Tensor(bag_of_words).to(torch.int64), y_label, word_pair)
+        bag_of_words = torch.Tensor(bag_of_words).to(torch.int64)
+        return (bag_of_words, y_label, word_pair)
 
-    def preprocess(self, sentence, text_length=50):
+    def preprocess(self, sentence):
         sentence_tokenized = sentence.split(" ")
         
-        # pad end of sentences to make same length
-        if len(sentence_tokenized) > text_length:
-            sentence_tokenized = sentence_tokenized[:text_length]
+        # add Bert sentence start token
+        if self.embedding_type == "Bert":
+            sentence_tokenized = ["[CLS]"] + sentence_tokenized
+        
+        # truncate or pad end of sentences to make same length
+        # TODO: Add padding mask so we actually ignore padded values when computing
+        if len(sentence_tokenized) > self.max_sent_length:
+            sentence_tokenized = sentence_tokenized[:self.max_sent_length]
         else:
-            for _ in range(text_length - len(sentence_tokenized)):
+            for _ in range(self.max_sent_length - len(sentence_tokenized)):
                 sentence_tokenized.append("<pad>")
         
         if self.embedding_type == "custom":
@@ -78,18 +93,42 @@ class RelationDataLoader(BaseDataLoader):
     Data loader for biology relations
     """
     def __init__(self, data_dir, batch_size, relations, shuffle=True, validation_split=0.0, 
-                 num_workers=1, split="train", embedding_type="custom"):
+                 num_workers=1, split="train", embedding_type="custom", max_sent_length=10):
+        """
+        Parameters
+        ----------
+        data_dir: str 
+            Path to where the relations data is stored 
+        batch_size: int
+            Number of word-pairs in each batch (TODO: Support > 1 batch size)
+        relations: list of str 
+            List of relations to include to classify between 
+        shuffle: bool
+            Whether to shuffle the order of the data being loaded in
+        validation_split: float, [0, 1] 
+            Fraction of data to hold out for validation 
+        num_workers: int 
+            Number of workers to use to read in data in parallel 
+        split: str, ['train', 'test', 'debug'] 
+            The data split to load. debug is a small debugging dataset 
+        embedding_type: str, ['Bert', 'custom'] 
+            Type of embedding to use for the data loader. 
+        max_sent_length: int 
+            Maximum number of tokens for each sentence. Longer sentences will be truncated. Shorter
+            sentences will be padded.
+        """
         self.data_dir = data_dir
         self.dataset = RelationDataset(self.data_dir, split=split, embedding_type=embedding_type,
-                                       relations=relations)
+                                       relations=relations, max_sent_length=max_sent_length)
         super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers,
                          collate_fn = self.relation_collate_fn)
         
     def relation_collate_fn(self, batch_data):
         # TODO: How do we handle batches since each bag has a different number of sentences?
+        #       Probably need to add "padding" with masks just like we do with sentences
         
         input_data = torch.stack([bd[0] for bd in batch_data])
-        target = torch.stack([bd[1] for bd in batch_data])
+        target = torch.stack([bd[1] for bd in batch_data]).squeeze(0)
         word_pairs = [bd[2] for bd in batch_data]
         
         return (input_data, target, word_pairs)

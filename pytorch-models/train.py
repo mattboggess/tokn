@@ -8,7 +8,10 @@ import model.metric as module_metric
 import model.model as module_arch
 from parse_config import ConfigParser
 from trainer import Trainer
+import os
 
+# hack to fix OMP error on Mac
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 # fix random seeds for reproducibility
 SEED = 123
