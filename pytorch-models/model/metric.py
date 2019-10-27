@@ -1,20 +1,27 @@
 import torch
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score 
 
+# write out file with FP, TP, FN, TN for all classes
+# training & validation & test
 
-def accuracy(output, target):
-    with torch.no_grad():
-        pred = torch.argmax(output, dim=1)
-        assert pred.shape[0] == len(target)
-        correct = 0
-        correct += torch.sum(pred == target).item()
-    return correct / len(target)
+def accuracy(true, pred):
+    return accuracy_score(true, pred)
 
+def micro_f1(true, pred):
+    return f1_score(true, pred, average="micro")
 
-def top_k_acc(output, target, k=3):
-    with torch.no_grad():
-        pred = torch.topk(output, k, dim=1)[1]
-        assert pred.shape[0] == len(target)
-        correct = 0
-        for i in range(k):
-            correct += torch.sum(pred[:, i] == target).item()
-    return correct / len(target)
+def macro_f1(true, pred):
+    return f1_score(true, pred, average="macro")
+
+def micro_precision(true, pred):
+    return precision_score(true, pred, average="micro")
+
+def macro_precision(true, pred):
+    return precision_score(true, pred, average="macro")
+
+def micro_recall(true, pred):
+    return recall_score(true, pred, average="micro")
+
+def macro_recall(true, pred):
+    return recall_score(true, pred, average="macro")
+

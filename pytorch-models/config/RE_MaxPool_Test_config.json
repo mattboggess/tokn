@@ -1,5 +1,5 @@
 {
-    "name": "RE_MaxPool_Baseline",
+    "name": "RE_MaxPool_Test",
     "n_gpu": 1,
 
     "arch": {
@@ -36,7 +36,8 @@
     },
     "loss": "nll_loss",
     "metrics": [
-        "accuracy"
+        "accuracy", "macro_f1", "micro_f1", "micro_precision", "macro_precision", 
+        "micro_recall", "macro_recall"
     ],
     "lr_scheduler": {
         "type": "StepLR",

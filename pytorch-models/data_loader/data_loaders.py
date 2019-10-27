@@ -56,7 +56,7 @@ class RelationDataset(Dataset):
         sample = self.relation_df.iloc[idx, :]
         y_label = self.relations.index(sample["relation"]) 
         y_label = torch.Tensor([y_label]).to(torch.int64)
-        word_pair = self.relation_df.index[0]
+        word_pair = self.relation_df.index[idx]
         
         bag_of_words = [self.preprocess(sentence) for sentence in sample['sentences']]
         bag_of_words = torch.Tensor(bag_of_words).to(torch.int64)
