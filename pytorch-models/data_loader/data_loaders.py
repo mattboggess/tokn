@@ -5,6 +5,7 @@ import os
 import torch
 import numpy as np
 import pandas as pd 
+from transformers import BertTokenizer
 
 ALL_RELATIONS = ['subclass-of', 'has-part', 'possesses', 'has-region', 'is-inside', 'is-at', 'element', 'abuts', 'is-outside']
 TAXONOMY_RELATIONS = ['subclass-of']
@@ -48,6 +49,10 @@ class RelationDataset(Dataset):
         self.embedding_type = embedding_type
         if self.embedding_type == "custom":
             self.vocab2id = json.load(open(os.path.join(data_dir, 'word2id.json')))
+        elif self.embedding_type == "Bert":
+            self.tokenizer = BertTokenizer.from_pretrained(
+                "bert-base-cased", cls_token="<cls>", pad_token="<pad>", sep_token="<end>",
+                additional_special_tokens=["<e1>", "</e1>", "<e2>", "</e2>"])
 
     def __len__(self):
         return self.relation_df.shape[0]
@@ -58,35 +63,69 @@ class RelationDataset(Dataset):
         y_label = torch.Tensor([y_label]).to(torch.int64)
         word_pair = self.relation_df.index[idx]
         
-        bag_of_words = [self.preprocess(sentence) for sentence in sample['sentences']]
+        bag_of_words = []
+        pad_mask = []
+        e1_mask = []
+        e2_mask = []
+        for sentence in sample['sentences']:
+            preprocess_result = self.preprocess(sentence)
+            if preprocess_result is None:
+                continue 
+            
+            bag_of_words.append(preprocess_result[0])
+            pad_mask.append(preprocess_result[1])
+            e1_mask.append(preprocess_result[2])
+            e2_mask.append(preprocess_result[3])
+                           
         bag_of_words = torch.Tensor(bag_of_words).to(torch.int64)
-        return (bag_of_words, y_label, word_pair)
+        pad_mask = torch.Tensor(pad_mask).to(torch.int64)
+        e1_mask = torch.Tensor(e1_mask).to(torch.int64)
+        e2_mask = torch.Tensor(e2_mask).to(torch.int64)
+        
+        return (bag_of_words, y_label, word_pair, pad_mask, e1_mask, e2_mask)
 
     def preprocess(self, sentence):
-        sentence_tokenized = sentence.split(" ")
         
-        # add Bert sentence start token
+        # tokenize sentence 
         if self.embedding_type == "Bert":
-            sentence_tokenized = ["[CLS]"] + sentence_tokenized
+            sentence_tokenized = ["<cls>"] + self.tokenizer.tokenize(sentence)
+        elif self.embedding_type == "custom":
+            sentence_tokenized = sentence.split(" ")
         
-        # truncate or pad end of sentences to make same length
-        # TODO: Add padding mask so we actually ignore padded values when computing
-        if len(sentence_tokenized) > self.max_sent_length:
-            sentence_tokenized = sentence_tokenized[:self.max_sent_length]
-        else:
-            for _ in range(self.max_sent_length - len(sentence_tokenized)):
-                sentence_tokenized.append("<pad>")
+        # truncate long sentences and add end of sentence token
+        if len(sentence_tokenized) > self.max_sent_length - 1:
+            sentence_tokenized = sentence_tokenized[:self.max_sent_length - 1]
+        sentence_tokenized += ["<end>"]
         
-        if self.embedding_type == "custom":
-            sequence = self._preprocess_custom(sentence_tokenized)
+        # pad sentences
+        sentence_tokenized, pad_mask = self.pad_sentence(sentence_tokenized)
+        
+        # get word pair masks
+        if "</e1>" not in sentence_tokenized or "</e2>" not in sentence_tokenized:
+            return None
+        e1_index = (sentence_tokenized.index("<e1>"), sentence_tokenized.index("</e1>"))
+        e1_mask = [1 if (i > e1_index[0] and i < e1_index[1]) else 0 
+                   for i in range(len(sentence_tokenized))]
+        e2_index = (sentence_tokenized.index("<e2>"), sentence_tokenized.index("</e2>"))
+        e2_mask = [1 if (i > e2_index[0] and i < e2_index[1]) else 0 
+                   for i in range(len(sentence_tokenized))]
+        
+        # convert to embedding ids
+        if self.embedding_type == "Bert":
+            sequence = self.tokenizer.convert_tokens_to_ids(sentence_tokenized)
+        elif self.embedding_type == "custom":
+            sequence = [self.vocab2id[token.lower()] 
+                        if token in self.vocab2id else self.vocab2id['<unk>'] 
+                        for token in sentence_tokenized]
             
-        return sequence
+        return sequence, pad_mask, e1_mask, e2_mask
     
-    def _preprocess_custom(self, sentence_tokenized):
-        sequence = [self.vocab2id[token.lower()] 
-                    if token in self.vocab2id else self.vocab2id['<unk>'] 
-                    for token in sentence_tokenized]
-        return sequence
+    def pad_sentence(self, sentence_tokenized, pad_token="<pad>"):
+        """pad end of sentences to match same length"""
+        for _ in range(self.max_sent_length - len(sentence_tokenized)):
+            sentence_tokenized.append("<pad>")
+        pad_mask = [0 if tok == "<pad>" else 1 for tok in sentence_tokenized]
+        return sentence_tokenized, pad_mask
             
 class RelationDataLoader(BaseDataLoader):
     """
@@ -130,5 +169,8 @@ class RelationDataLoader(BaseDataLoader):
         input_data = torch.stack([bd[0] for bd in batch_data])
         target = torch.stack([bd[1] for bd in batch_data]).squeeze(0)
         word_pairs = [bd[2] for bd in batch_data]
+        pad_mask = torch.stack([bd[3] for bd in batch_data])
+        e1_mask = torch.stack([bd[4] for bd in batch_data])
+        e2_mask = torch.stack([bd[5] for bd in batch_data])
         
-        return (input_data, target, word_pairs)
+        return (input_data, target, word_pairs, pad_mask, e1_mask, e2_mask)
