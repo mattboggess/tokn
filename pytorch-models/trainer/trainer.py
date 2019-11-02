@@ -35,19 +35,22 @@ class Trainer(BaseTrainer):
         :return: A log that contains average loss and metric in this epoch.
         """
         self.model.train()
-        self.train_metrics.reset()
         
         epoch_target = []
         epoch_pred = []
         epoch_word_pairs = []
         epoch_loss = 0
         
-        for batch_idx, (data, target, word_pair) in enumerate(self.data_loader):
+        for batch_idx, (data, target, word_pair, pad_mask, e1_mask, e2_mask) in enumerate(self.data_loader):
             data, target = data.to(self.device), target.to(self.device)
-            print(target)
+            pad_mask, e1_mask, e2_mask = pad_mask.to(self.device), e1_mask.to(self.device), e2_mask.to(self.device)
+            
+            # hack for when e tags get cut off?
+            if len(data.shape) < 3:
+                continue
 
             self.optimizer.zero_grad()
-            output = self.model(data)
+            output = self.model(data, pad_mask, e1_mask, e2_mask)
             with torch.no_grad():
                 pred = torch.argmax(output, dim=1)
             loss = self.criterion(output, target)
@@ -98,7 +101,6 @@ class Trainer(BaseTrainer):
         :return: A log that contains information about validation
         """
         self.model.eval()
-        self.valid_metrics.reset()
         with torch.no_grad():
             
             epoch_target = []
@@ -106,10 +108,15 @@ class Trainer(BaseTrainer):
             epoch_word_pairs = []
             epoch_loss = 0
             
-            for batch_idx, (data, target, word_pair) in enumerate(self.valid_data_loader):
+            for batch_idx, (data, target, word_pair, pad_mask, e1_mask, e2_mask) in enumerate(self.valid_data_loader):
                 data, target = data.to(self.device), target.to(self.device)
+                pad_mask, e1_mask, e2_mask = pad_mask.to(self.device), e1_mask.to(self.device), e2_mask.to(self.device)
 
-                output = self.model(data)
+                # hack for when e tags get cut off?
+                if len(data.shape) < 3:
+                    continue
+                    
+                output = self.model(data, pad_mask, e1_mask, e2_mask)
                 pred = torch.argmax(output, dim=1)
                 loss = self.criterion(output, target)
 

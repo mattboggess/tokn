@@ -2,6 +2,62 @@ import torch.nn as nn
 import torch.nn.functional as F
 from base import BaseModel
 import torch
+from transformers import BertModel
+
+class MaxPoolBert(BaseModel):
+    
+    def __init__(self, num_classes):
+        super().__init__()
+        #TODO: Add dropout
+        self.bert = BertModel.from_pretrained("bert-base-cased")
+        bert_config = self.bert.config.__dict__
+        self.fc_e = nn.Linear(bert_config["hidden_size"], bert_config["hidden_size"])
+        self.fc_cls = nn.Linear(bert_config["hidden_size"], bert_config["hidden_size"])
+        self.fc_class = nn.Linear(bert_config["hidden_size"] * 3, num_classes)
+        self.softmax = nn.Softmax(dim=-1)
+        
+    def forward(self, x, pad_mask, e1_mask, e2_mask):
+        
+        batch_size = x.shape[0]
+        num_sentences = x.shape[1]
+        seq_length = x.shape[2]
+        
+        # reshape to collapse batch size and num_sentences for bert input
+        x = x.view(batch_size * num_sentences, seq_length)
+        pad_mask = pad_mask.view(batch_size * num_sentences, seq_length)
+        
+        # pass through bert
+        bert_output = self.bert(x, attention_mask=pad_mask)
+        
+        # get sentence level output
+        cls_output = bert_output[1]
+        cls_output = cls_output.view(batch_size, num_sentences, cls_output.shape[-1])
+        
+        # compute e1 and e2 averages
+        full_output = bert_output[0]
+        full_output = full_output.view(batch_size, num_sentences, full_output.shape[-2], 
+                                       full_output.shape[-1])
+        e1_mask = e1_mask.unsqueeze(-1)
+        e2_mask = e2_mask.unsqueeze(-1)
+        e1_avg = (full_output * e1_mask).mean(dim=-2)
+        e2_avg = (full_output * e2_mask).mean(dim=-2)
+        
+        # pass through fully connected layers w/ activation functions
+        cls_output = self.fc_cls(cls_output).tanh()
+        e1_avg = self.fc_e(e1_avg).tanh()
+        e2_avg = self.fc_e(e2_avg).tanh()
+        
+        # concatenate sentence level, e1, and e2
+        rel_rep = torch.cat([cls_output, e1_avg, e2_avg], dim=-1)
+        
+        # max "pool" across sentences
+        rel_rep = torch.max(rel_rep, dim=-2)[0]
+        
+        # fully connected + softmax for classification
+        output = self.fc_class(rel_rep)
+        output = self.softmax(output)
+        
+        return output
 
 class MaxPoolTest(BaseModel):
     """
@@ -15,7 +71,7 @@ class MaxPoolTest(BaseModel):
         self.fc = nn.Linear(hidden_size * max_sent_length, num_classes)
         self.softmax = nn.Softmax(dim=-1)
     
-    def forward(self, x):
+    def forward(self, x, pad_mask, e1_mask, e2_mask):
         x = self.embeddings(x)
         old_size = x.size()
         x = x.view(-1, old_size[-2], old_size[-1])
