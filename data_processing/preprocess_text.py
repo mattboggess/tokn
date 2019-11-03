@@ -26,7 +26,7 @@ def parse_openstax_terms(key_term_text):
     
     return [term.strip()] 
 
-def process_lexicon(lexicon):
+def process_lexicon(lexicon, bio_concepts):
     """ Takes in a lexicon consisting of concept text representation pairs and turns this into a 
     list of Spacy processed terms and a lexicon csv mapping KB concepts to lists of text 
     representations and their lemma forms.
@@ -39,11 +39,20 @@ def process_lexicon(lexicon):
     # create mapping from kb concept to unique text representations
     lexicon = lexicon[~lexicon.text.str.contains("Concept-Word-Frame")]
     lexicon = lexicon.groupby("concept")["text"].apply(lambda x: list(set(x))).reset_index()
+    print(len(lexicon.concept))
+    print(len(bio_concepts))
+    print("Object" in bio_concepts)
+    print("Object" in lexicon.concept)
+    
+    print(len(lexicon))
+    lexicon = lexicon[lexicon.concept.isin(bio_concepts)]
+    print(len(lexicon))
 
     # spacy process terms to get lemmas
     spacy_terms = []
     lemmas = []
     for concept in lexicon.concept:
+        
         terms = list(lexicon.loc[lexicon.concept == concept, "text"])[0]
         terms = [t.replace('"', "").strip() for t in terms]
         spacy_terms_tmp = [nlp(term) for term in terms]
@@ -52,6 +61,8 @@ def process_lexicon(lexicon):
         lemmas.append(lemma_terms)
 
     lexicon["lemmas"] = lemmas
+    
+    # filter out upper ontology concepts
     return spacy_terms, lexicon
 
 if __name__ == "__main__":
@@ -66,6 +77,7 @@ if __name__ == "__main__":
     
     # process openstax textbooks
     for textbook in OPENSTAX_TEXTBOOKS:
+        continue
         print(f"Processing {textbook} textbook")
         textbook_data = pd.read_csv(f"{raw_data_dir}/openstax/sentences_{textbook}_parsed.csv")
         
@@ -108,11 +120,14 @@ if __name__ == "__main__":
         
     print("Processing Life Biology Lexicon")
     lexicon_input_file = f"{raw_data_dir}/life_bio/kb_lexicon.txt"
+    bio_concepts_file = f"{raw_data_dir}/life_bio/kb_biology_concepts.txt"
     lexicon_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_lexicon.csv"
     terms_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_terms_spacy"
     with open(lexicon_input_file, "r") as f:
         lexicon = f.read()
-    terms, lexicon = process_lexicon(lexicon)
+    with open(bio_concepts_file, "r") as f:
+        bio_concepts = set([t.strip() for t in f.readlines()])
+    terms, lexicon = process_lexicon(lexicon, bio_concepts)
     write_spacy_docs(terms, terms_output_file)
     lexicon.to_csv(lexicon_output_file, index=False)
     
@@ -129,6 +144,7 @@ if __name__ == "__main__":
         if i % 500 == 0:
             print(f"Preprocessing life biology sentence {i}/{len(life_bio_sentences)}")
             
+        # only add chapters 1-10 to subset used for kb matching
         spacy_sent = nlp(re.sub("^(\d*\.*)+\s*", "", sent))
         if int(sent.split(".")[1]) <= 10:
             sentences_kb_spacy.append(spacy_sent)
