@@ -26,7 +26,8 @@ if __name__ == "__main__":
     full_terms = []
     for file in term_files:
         input_terms = read_spacy_docs(f"{input_data_dir}/{file}", nlp)
-        full_terms += input_terms
+        if "Life_Biology" not in file:
+            full_terms += input_terms
         lemmas = [" ".join(t.lemma_ for t in term) for term in input_terms]
         if "Life_Biology" in file:
             terms["life_test"] += lemmas 
@@ -70,11 +71,12 @@ if __name__ == "__main__":
         sentences = read_spacy_docs(f"{input_data_dir}/{file}", nlp)
         for sentence in sentences:
             tokenized_sentence, tagged_sentence, term_info = tag_terms(sentence, deduped_terms, nlp)
+            if len(term_info.keys()) == 0:
+                continue
             
             # prevent overlap in splits
             if split == "train":
-                overlap = [term in terms["life_test"] for term in term_info] + \
-                          [term in terms["psych_test"] for term in term_info] + \
+                overlap = [term in terms["psych_test"] for term in term_info] + \
                           [term in terms["validation"] for term in term_info]
             else:
                 overlap = [term in terms["train"] for term in term_info]

@@ -122,7 +122,7 @@ if __name__ == "__main__":
     lexicon_input_file = f"{raw_data_dir}/life_bio/kb_lexicon.txt"
     bio_concepts_file = f"{raw_data_dir}/life_bio/kb_biology_concepts.txt"
     lexicon_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_lexicon.csv"
-    terms_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_terms_spacy"
+    terms_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_key_terms_spacy"
     with open(lexicon_input_file, "r") as f:
         lexicon = f.read()
     with open(bio_concepts_file, "r") as f:
