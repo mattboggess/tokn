@@ -81,6 +81,7 @@ def parse_relations(relations, relation_type, lexicon, relations_db, include_rel
         
         for pair in itertools.product(e1_pairs.keys(), e2_pairs.keys()):
             relations_db[relation][" -> ".join(pair)] = {"sentences": [], 
+                                                         "concept_pair": " -> ".join((c1, c2)),
                                                          "e1_representations": e1_pairs[pair[0]], 
                                                          "e2_representations": e2_pairs[pair[1]]}
     
@@ -100,7 +101,7 @@ if __name__ == "__main__":
     
     # Load in KB lexicon and terms 
     lexicon_file = f"{preprocessed_data_dir}/Life_Biology_kb_lexicon.csv"
-    kb_terms_file = f"{preprocessed_data_dir}/Life_Biology_kb_terms_spacy"
+    kb_terms_file = f"{preprocessed_data_dir}/Life_Biology_kb_key_terms_spacy"
     lexicon = pd.read_csv(lexicon_file)
     terms = read_spacy_docs(kb_terms_file, nlp)
         

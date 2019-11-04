@@ -122,7 +122,7 @@ class TermNERDataset(Dataset):
             sequence = self.tokenizer.convert_tokens_to_ids(sentence_tokenized)
         elif self.embedding_type == "custom":
             sequence = [self.vocab2id[token.lower()] 
-                        if token in self.vocab2id else self.vocab2id['<unk>'] 
+                        if token.lower() in self.vocab2id else self.vocab2id['<unk>'] 
                         for token in sentence_tokenized]
         
         # convert labels to numerical values

@@ -36,7 +36,7 @@ def build_vocab(data_dir, min_word_count=1):
     # add the words to the word2id dictionary
     for index, word in enumerate(words):
         word_to_id[word] = index + 4
-        id_to_word[index] = word
+        id_to_word[index + 4] = word
     
     return word_to_id, id_to_word
 

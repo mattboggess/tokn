@@ -39,14 +39,9 @@ def process_lexicon(lexicon, bio_concepts):
     # create mapping from kb concept to unique text representations
     lexicon = lexicon[~lexicon.text.str.contains("Concept-Word-Frame")]
     lexicon = lexicon.groupby("concept")["text"].apply(lambda x: list(set(x))).reset_index()
-    print(len(lexicon.concept))
-    print(len(bio_concepts))
-    print("Object" in bio_concepts)
-    print("Object" in lexicon.concept)
     
-    print(len(lexicon))
+    # filter out too general upper ontology words
     lexicon = lexicon[lexicon.concept.isin(bio_concepts)]
-    print(len(lexicon))
 
     # spacy process terms to get lemmas
     spacy_terms = []
