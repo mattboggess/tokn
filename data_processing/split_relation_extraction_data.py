@@ -62,11 +62,11 @@ if __name__ == "__main__":
                                                     "relation": "no-relation"}})
     
     with open(f"{data_dir}/relations_train.json", "w") as f:
-        json.dump(train_relations, f)
+        json.dump(train_relations, f, indent=4)
     with open(f"{data_dir}/relations_test.json", "w") as f:
-        json.dump(test_relations, f)
+        json.dump(test_relations, f, indent=4)
     with open(f"{data_dir}/relations_debug.json", "w") as f:
-        json.dump(mini_relations, f)
+        json.dump(mini_relations, f, indent=4)
                 
     
     
