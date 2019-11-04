@@ -115,7 +115,7 @@ class RelationDataset(Dataset):
             sequence = self.tokenizer.convert_tokens_to_ids(sentence_tokenized)
         elif self.embedding_type == "custom":
             sequence = [self.vocab2id[token.lower()] 
-                        if token in self.vocab2id else self.vocab2id['<unk>'] 
+                        if token.lower() in self.vocab2id else self.vocab2id['<unk>'] 
                         for token in sentence_tokenized]
             
         return sequence, pad_mask, e1_mask, e2_mask
