@@ -14,6 +14,7 @@ def nll_loss(output, target, bert_mask):
     bert_mask: torch.Tensor
       batch_size x max_sentence_length mask that is 1 for original tokens and 0 for added tokens 
     """
+    bert_mask = bert_mask.to(torch.float32)
     output = output.view(output.shape[0] * output.shape[1], -1) 
     target = target.view(target.shape[0] * target.shape[1]) 
     bert_mask = bert_mask.view(bert_mask.shape[0] * bert_mask.shape[1])

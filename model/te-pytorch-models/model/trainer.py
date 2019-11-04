@@ -129,9 +129,7 @@ class Trainer:
         # compute overall term identification metrics
         term_classifications = compute_term_categories(self.data_loader.dataset.term_counts,
                                                        epoch_terms)
-        print(term_classifications)
         log.update(**{m.__name__: m(term_classifications) for m in self.term_metric_ftns})
-        print(log)
         
         log["loss"] = epoch_loss / batch_idx
 
@@ -171,13 +169,11 @@ class Trainer:
                 pred = torch.argmax(output, dim=-1)
                 loss = self.criterion(output, batch_data["target"], batch_data["bert_mask"])
 
-                self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
-                
                 # compute term sentence level metrics
                 term_predictions = get_term_predictions(pred, batch_data["target"], 
                                                         batch_data["bert_mask"], 
                                                         batch_data["sentences"], self.valid_data_loader.tags)
-                self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
+                self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.writer.add_scalar("loss", loss.item())
                 for met in self.sentence_metric_ftns:
                     self.writer.add_scalar(met.__name__, met(term_predictions["target"], 
@@ -188,7 +184,7 @@ class Trainer:
                 epoch_pred += term_predictions["prediction"]
                 epoch_loss += loss.item()
                 epoch_terms.update(term_predictions["predicted_terms"])
-                    
+                
         # add histogram of model parameters to the tensorboard
         for name, p in self.model.named_parameters():
             self.writer.add_histogram(name, p, bins='auto')

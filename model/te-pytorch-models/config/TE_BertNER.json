@@ -5,14 +5,15 @@
     "arch": {
         "type": "BertNER",
         "args": {
-            "num_classes": 5
+            "num_classes": 5,
+            "dropout_rate": 0.3
         }
     },
     "data_loader": {
         "type": "TermNERDataLoader",
         "args":{
             "data_dir": "../../data/term_extraction",
-            "batch_size": 5,
+            "batch_size": 16,
             "shuffle": true,
             "num_workers": 0,
             "tags": ["O", "S", "B", "I", "E"],
@@ -23,7 +24,7 @@
     "optimizer": {
         "type": "Adam",
         "args":{
-            "lr": 3e-5,
+            "lr": 2e-5,
             "weight_decay": 0,
             "amsgrad": true
         }

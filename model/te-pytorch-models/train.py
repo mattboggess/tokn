@@ -24,10 +24,8 @@ def main(config):
     logger = config.get_logger('train')
 
     # setup data_loader instances
-    config._config["data_loader"]["split"] = "train"
-    data_loader = config.init_obj('data_loader', module_data)
-    config._config["data_loader"]["split"] = "validation"
-    valid_data_loader = config.init_obj('data_loader', module_data)
+    data_loader = config.init_obj('data_loader', module_data, split="train")
+    valid_data_loader = config.init_obj('data_loader', module_data, split="validation")
 
     # build model architecture, then print to console
     model = config.init_obj('arch', module_arch)
