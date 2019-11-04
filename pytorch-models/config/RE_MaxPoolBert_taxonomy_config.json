@@ -1,40 +1,39 @@
 {
-    "name": "TE_BertNER",
+    "name": "RE_MaxPoolBert_taxonomy",
     "n_gpu": 1,
 
     "arch": {
-        "type": "BertNER",
+        "type": "MaxPoolBert",
         "args": {
-            "num_classes": 5,
-            "dropout_rate": 0.3
+            "num_classes": 2
         }
     },
     "data_loader": {
-        "type": "TermNERDataLoader",
+        "type": "RelationDataLoader",
         "args":{
-            "data_dir": "../../data/term_extraction",
-            "batch_size": 16,
+            "data_dir": "../data/relation_extraction",
+            "batch_size": 1,
             "shuffle": true,
+            "validation_split": 0.1,
             "num_workers": 0,
-            "tags": ["O", "S", "B", "I", "E"],
+            "relations": ["subclass-of"],
             "embedding_type": "Bert",
-            "max_sent_length": 256
+            "split": "train",
+            "max_sent_length": 200
         }
     },
     "optimizer": {
         "type": "Adam",
         "args":{
-            "lr": 2e-5,
+            "lr": 3e-5,
             "weight_decay": 0,
             "amsgrad": true
         }
     },
     "loss": "nll_loss",
-    "sentence_metrics": [
-        "sentence_accuracy", "sentence_f1", "sentence_precision", "sentence_recall"
-    ],
-    "term_metrics": [
-        "term_f1", "term_precision", "term_recall"
+    "metrics": [
+        "accuracy", "macro_f1", "micro_f1", "micro_precision", "macro_precision", 
+        "micro_recall", "macro_recall"
     ],
     "lr_scheduler": {
         "type": "StepLR",

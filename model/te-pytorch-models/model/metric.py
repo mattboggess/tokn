@@ -94,7 +94,7 @@ def get_term_predictions(pred, target, bert_mask, sentences, tags):
             label = [target_tag]
             predicted_label = [pred_tag]
             token = [token]
-            while tags[target[i]] != "E":
+            while tags[target[i]] != "E" and i < len(target) - 1:
                 i += 1
                 label.append(target[i].item())
                 predicted_label.append(pred[i].item())
@@ -135,22 +135,22 @@ def compute_term_categories(terms, predicted_terms):
     output = {category: {} for category in categories}
     for category in categories:
         if category == "true_positives":
-            category_terms = set(terms.keys()).intersection(set(predicted_terms.keys()))
+            category_terms = set(terms.keys()).intersection(set(predicted_terms_spacy.keys()))
         elif category == "false_positives":
-            category_terms = set(predicted_terms.keys()).difference(set(terms.keys()))
+            category_terms = set(predicted_terms_spacy.keys()).difference(set(terms.keys()))
         elif category == "false_negatives":
-            category_terms = set(terms.keys()).difference(set(predicted_terms.keys()))
+            category_terms = set(terms.keys()).difference(set(predicted_terms_spacy.keys()))
         
         for ct in category_terms:
             if category == "true_positives":
-                output[category] = {ct: {"present": terms[ct],
-                                         "predicted": predicted_terms_spacy[ct]}}
+                output[category][ct] = {"present": terms[ct],
+                                        "predicted": predicted_terms_spacy[ct]}
             elif category == "false_positives":
-                output[category] = {ct: {"present": 0,
-                                         "predicted": predicted_terms_spacy[ct]}}
+                output[category][ct] = {"present": 0,
+                                        "predicted": predicted_terms_spacy[ct]}
             elif category == "false_negatives":
-                output[category] = {ct: {"present": terms[ct],
-                                         "predicted": 0}}
+                output[category][ct] = {"present": terms[ct],
+                                        "predicted": 0}
 
     return output
 

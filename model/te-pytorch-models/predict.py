@@ -15,7 +15,6 @@ def main(config, split, out_dir):
     logger = config.get_logger('test')
 
     # setup data_loader instances
-    print(split)
     data_loader = config.init_obj('data_loader', module_data, split=split)
 
     # build model architecture
@@ -91,11 +90,12 @@ if __name__ == '__main__':
                       help='path to latest checkpoint (default: None)')
     args.add_argument('-d', '--device', default=None, type=str,
                       help='indices of GPUs to enable (default: all)')
-    args.add_argument('-s', '--split', default=None, type=str,
-                      help='data split you want to evaluate trained moedl on (default: None)')
+    args.add_argument('-o', '--output_dir', default=".", type=str,
+                      help='output directory to place predictions')
+    args.add_argument('-i', '--input_file', default=None, type=str,
+                      help='input file containing text to make predictions on')
 
     config = ConfigParser.from_args(args)
-    split = args.parse_args().split
-    out_dir = "/".join(args.parse_args().resume.split("/")[:-1])
-    print(out_dir)
-    main(config, split, out_dir)
+    args = args.parse_args()
+    
+    main(config, args.input_file, args.output_dir)
