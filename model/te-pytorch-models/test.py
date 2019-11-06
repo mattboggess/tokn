@@ -11,7 +11,7 @@ from parse_config import ConfigParser
 from collections import Counter
 
 
-def main(config, split, out_dir):
+def main(config, split, out_dir, model_version):
     logger = config.get_logger('test')
 
     # setup data_loader instances
@@ -20,7 +20,6 @@ def main(config, split, out_dir):
 
     # build model architecture
     model = config.init_obj('arch', module_arch)
-    logger.info(model)
 
     # get function handles of loss and metrics
     loss_fn = getattr(module_loss, config['loss'])
@@ -40,10 +39,10 @@ def main(config, split, out_dir):
     model.eval()
 
     total_loss = 0.0
-
     epoch_target = []
     epoch_pred = []
     epoch_terms = Counter() 
+    
     with torch.no_grad():
         for i, batch_data in enumerate(data_loader):
             batch_data["data"] = batch_data["data"].to(device)
@@ -76,7 +75,12 @@ def main(config, split, out_dir):
     log.update(**{m.__name__: m(term_classifications) for m in term_metrics})
     
     
-    filename = f"{out_dir}/classifications-test_eval-{split}.json"
+    # write out metric and term classification results
+    filename = f"{out_dir}/{split}-{model_version}-term-classifications.json"
+    with open(filename, "w") as f:
+        json.dump(term_classifications, f, indent=4)
+        
+    filename = f"{out_dir}/{split}-{model_version}-metrics.json"
     with open(filename, "w") as f:
         json.dump(term_classifications, f, indent=4)
     
@@ -92,10 +96,11 @@ if __name__ == '__main__':
     args.add_argument('-d', '--device', default=None, type=str,
                       help='indices of GPUs to enable (default: all)')
     args.add_argument('-s', '--split', default=None, type=str,
-                      help='data split you want to evaluate trained moedl on (default: None)')
+                      help='data split you want to evaluate trained model on (default: None)')
 
     config = ConfigParser.from_args(args)
     split = args.parse_args().split
     out_dir = "/".join(args.parse_args().resume.split("/")[:-1])
-    print(out_dir)
-    main(config, split, out_dir)
+    model_version = args.parse_args().resume.split("/")[-1]
+    print(out_dir, model_version)
+    main(config, split, out_dir, model_version)

@@ -20,6 +20,7 @@ class Trainer:
 
         # setup GPU device if available, move model into configured device
         self.device, device_ids = self._prepare_device(config['n_gpu'])
+        print(self.device)
         self.model = model.to(self.device)
         if len(device_ids) > 1:
             self.model = torch.nn.DataParallel(model, device_ids=device_ids)
@@ -137,8 +138,8 @@ class Trainer:
             val_log = self._valid_epoch(epoch)
             log.update(**{'val_'+k : v for k, v in val_log.items()})
 
-        if self.lr_scheduler is not None:
-            self.lr_scheduler.step()
+        #if self.lr_scheduler is not None:
+        #    self.lr_scheduler.step()
         
         self.train_classifications = term_classifications
         return log
@@ -193,7 +194,7 @@ class Trainer:
         log = {m.__name__: m(epoch_target, epoch_pred) for m in self.sentence_metric_ftns}
         
         # compute overall term identification metrics
-        term_classifications = compute_term_categories(self.data_loader.dataset.term_counts,
+        term_classifications = compute_term_categories(self.valid_data_loader.dataset.term_counts,
                                                        epoch_terms)
         log.update(**{m.__name__: m(term_classifications) for m in self.term_metric_ftns})
         
@@ -295,25 +296,10 @@ class Trainer:
         torch.save(state, filename)
         self.logger.info("Saving checkpoint: {} ...".format(filename))
         
-        # save classifications
-        filename = f"{self.checkpoint_dir}/train-classifications-epoch{epoch}.json"
-        with open(filename, "w") as f:
-            json.dump(self.train_classifications, f, indent=4)
-        filename = f"{self.checkpoint_dir}/validation-classifications-epoch{epoch}.json"
-        with open(filename, "w") as f:
-            json.dump(self.validation_classifications, f, indent=4)
-            
         if save_best:
             best_path = str(self.checkpoint_dir / 'model_best.pth')
             torch.save(state, best_path)
             self.logger.info("Saving current best: model_best.pth ...")
-            
-            filename = f"{self.checkpoint_dir}/train-classifications-best.json"
-            with open(filename, "w") as f:
-                json.dump(self.train_classifications, f, indent=4)
-            filename = f"{self.checkpoint_dir}/validation-classifications-best.json"
-            with open(filename, "w") as f:
-                json.dump(self.validation_classifications, f, indent=4)
 
     def _resume_checkpoint(self, resume_path):
         """
