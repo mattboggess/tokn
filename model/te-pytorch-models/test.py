@@ -15,7 +15,6 @@ def main(config, split, out_dir, model_version):
     logger = config.get_logger('test')
 
     # setup data_loader instances
-    print(split)
     data_loader = config.init_obj('data_loader', module_data, split=split)
 
     # build model architecture
@@ -27,14 +26,14 @@ def main(config, split, out_dir, model_version):
     term_metrics = [getattr(module_metric, met) for met in config['term_metrics']]
 
     logger.info('Loading checkpoint: {} ...'.format(config.resume))
-    checkpoint = torch.load(config.resume)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    checkpoint = torch.load(config.resume, map_location=device)
     state_dict = checkpoint['state_dict']
     if config['n_gpu'] > 1:
         model = torch.nn.DataParallel(model)
     model.load_state_dict(state_dict)
 
     # prepare model for testing
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = model.to(device)
     model.eval()
 
@@ -82,7 +81,7 @@ def main(config, split, out_dir, model_version):
         
     filename = f"{out_dir}/{split}-{model_version}-metrics.json"
     with open(filename, "w") as f:
-        json.dump(term_classifications, f, indent=4)
+        json.dump(log, f, indent=4)
     
     logger.info(log)
 
@@ -101,6 +100,5 @@ if __name__ == '__main__':
     config = ConfigParser.from_args(args)
     split = args.parse_args().split
     out_dir = "/".join(args.parse_args().resume.split("/")[:-1])
-    model_version = args.parse_args().resume.split("/")[-1]
-    print(out_dir, model_version)
+    model_version = args.parse_args().resume.split("/")[-1].replace(".pth", "")
     main(config, split, out_dir, model_version)

@@ -53,7 +53,8 @@ def main(config, input_file, out_dir, model_version):
     model = config.init_obj('arch', module_arch)
 
     logger.info('Loading checkpoint: {} ...'.format(config.resume))
-    checkpoint = torch.load(config.resume)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    checkpoint = torch.load(config.resume, map_location=device)
     state_dict = checkpoint['state_dict']
     if config['n_gpu'] > 1:
         model = torch.nn.DataParallel(model)
