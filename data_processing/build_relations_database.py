@@ -107,21 +107,15 @@ if __name__ == "__main__":
         
     # extract all word-pairs for relations
     print("Extracting Word-Pairs for Relations")
-    intermed_relations_db_file = f"{output_data_dir}/relations_db_intermediate.json"
-    if os.path.exists(intermed_relations_db_file):
-        with open(intermed_relations_db_file, "r") as f:
-            relations_db = json.load(f)
-    else:
-        relations_db = {"no-relation": {}}
-        for relation_type in ["taxonomy", "structure"]:
-            print(f"Parsing {relation_type} relations")
-            file = f"{raw_data_dir}/{relation_type}_relations.txt"
-            with open(file) as f:
-                relations = f.readlines()
-            relations_db = parse_relations(relations, relation_type, lexicon, relations_db, 
-                                           INCLUDE_RELATIONS)
-        with open(intermed_relations_db_file, "w") as f:
-            json.dump(relations_db, f, indent=4)
+    relations_db = {"no-relation": {}}
+    for relation_type in ["taxonomy", "structure"]:
+        print(f"Parsing {relation_type} relations")
+        file = f"{raw_data_dir}/{relation_type}_relations.txt"
+        with open(file) as f:
+            relations = f.readlines()
+        relations_db = parse_relations(relations, relation_type, lexicon, relations_db, 
+                                       INCLUDE_RELATIONS)
+    print(relations_db)
     
     # load biology textbook sentences 
     bio_textbooks = ["Life_Biology", "Biology_2e"]
