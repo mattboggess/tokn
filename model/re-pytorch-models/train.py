@@ -2,12 +2,12 @@ import argparse
 import collections
 import torch
 import numpy as np
-import data_loader.data_loaders as module_data
+import model.data_loaders as module_data
 import model.loss as module_loss
 import model.metric as module_metric
 import model.model as module_arch
+from model.trainer import Trainer
 from parse_config import ConfigParser
-from trainer import Trainer
 import os
 
 # hack to fix OMP error on Mac
@@ -24,8 +24,8 @@ def main(config):
     logger = config.get_logger('train')
 
     # setup data_loader instances
-    data_loader = config.init_obj('data_loader', module_data)
-    valid_data_loader = data_loader.split_validation()
+    data_loader = config.init_obj('data_loader', module_data, split="train")
+    valid_data_loader = config.init_obj('data_loader', module_data, split="validation")
 
     # build model architecture, then print to console
     model = config.init_obj('arch', module_arch)

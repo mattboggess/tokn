@@ -11,21 +11,19 @@
     "data_loader": {
         "type": "RelationDataLoader",
         "args":{
-            "data_dir": "../data/relation_extraction",
+            "data_dir": "../../data/relation_extraction",
             "batch_size": 1,
             "shuffle": true,
-            "validation_split": 0.1,
             "num_workers": 0,
             "relations": ["subclass-of"],
             "embedding_type": "Bert",
-            "split": "train",
             "max_sent_length": 200
         }
     },
     "optimizer": {
         "type": "Adam",
         "args":{
-            "lr": 3e-5,
+            "lr": 2e-5,
             "weight_decay": 0,
             "amsgrad": true
         }
