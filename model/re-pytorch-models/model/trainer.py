@@ -83,13 +83,10 @@ class Trainer:
             batch_data["data"] = batch_data["data"].to(self.device)
             batch_data["target"] = batch_data["target"].to(self.device)
             batch_data["pad_mask"] = batch_data["pad_mask"].to(self.device) 
-            e1_mask = batch_data["e1_mask"].to(self.device)
-            e2_mask = batch_data["e2_mask"].to(self.device)
+            batch_data["e1_mask"] = batch_data["e1_mask"].to(self.device)
+            batch_data["e2_mask"] = batch_data["e2_mask"].to(self.device)
+            batch_data["sentence_mask"] = batch_data["sentence_mask"].to(self.device)
             
-            # hack for when e tags get cut off
-            if len(data.shape) < 3:
-                continue
-
             self.optimizer.zero_grad()
             output = self.model(batch_data)
             with torch.no_grad():

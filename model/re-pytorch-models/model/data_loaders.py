@@ -131,7 +131,7 @@ class RelationDataLoader(DataLoader):
     """
     Data loader for biology relations
     """
-    def __init__(self, data_dir, batch_size, relations, shuffle=True, 
+    def __init__(self, data_dir, batch_size, relations, shuffle=True, max_sentences=16, 
                  num_workers=1, split="train", embedding_type="custom", max_sent_length=10):
         """
         Parameters
@@ -155,21 +155,42 @@ class RelationDataLoader(DataLoader):
             sentences will be padded.
         """
         self.data_dir = data_dir
+        self.max_sentences = max_sentences
         self.dataset = RelationDataset(self.data_dir, split=split, embedding_type=embedding_type,
                                        relations=relations, max_sent_length=max_sent_length)
         super().__init__(self.dataset, batch_size=batch_size, shuffle=shuffle, 
                          num_workers=num_workers, collate_fn=self.relation_collate_fn)
         
     def relation_collate_fn(self, batch_data):
-        # TODO: How do we handle batches since each bag has a different number of sentences?
-        #       Probably need to add "padding" with masks just like we do with sentences
         
-        output = {}
-        output["data"] = torch.stack([bd[0] for bd in batch_data])
-        output["target"] = torch.stack([bd[1] for bd in batch_data]).squeeze(0)
-        output["word_pairs"] = [bd[2] for bd in batch_data]
-        output["pad_mask"] = torch.stack([bd[3] for bd in batch_data])
-        output["e1_mask"] = torch.stack([bd[4] for bd in batch_data])
-        output["e2_mask"] = torch.stack([bd[5] for bd in batch_data])
+        #max_input_sentences = max([bd[0].shape[0] for bd in batch_data]) 
+        #max_input_sentences = int(np.ceil(max_input_sentences / self.max_sentences) * self.max_sentences)
+        
+        output_fields = ["data", "target", "pad_mask", "e1_mask", "e2_mask", "sentence_mask"]
+        output = {k: [] for k in output_fields}
+        for bd in batch_data:
+            if len(bd[0].shape) < 2:
+                continue
+            output["data"].append(self.pad_sentences(bd[0]))
+            output["target"].append(bd[1])
+            output["pad_mask"].append(self.pad_sentences(bd[3]))
+            output["e1_mask"].append(self.pad_sentences(bd[4]))
+            output["e2_mask"].append(self.pad_sentences(bd[5]))
+            
+            # add sentence mask
+            num_pad = self.max_sentences - bd[0].shape[0]
+            output["sentence_mask"].append(torch.Tensor([1] * bd[0].shape[0] + [0] * num_pad))
+            
+        output = {k: torch.stack(output[k]) for k in output_fields}
+        output["word_pair"] = [bd[2] for bd in batch_data]
         
         return output 
+    
+    def pad_sentences(self, data):
+        if self.max_sentences > data.shape[0]:
+            num_pad = self.max_sentences - data.shape[0]
+            padding = torch.Tensor(np.zeros((num_pad, data.shape[1]))).to(torch.int64)
+            data = torch.cat((data, padding), 0)
+        else:
+            data = data[:self.max_sentences, :]
+        return data

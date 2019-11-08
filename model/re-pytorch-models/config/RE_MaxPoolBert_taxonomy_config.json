@@ -12,12 +12,13 @@
         "type": "RelationDataLoader",
         "args":{
             "data_dir": "../../data/relation_extraction",
-            "batch_size": 1,
+            "batch_size": 4,
             "shuffle": true,
             "num_workers": 0,
             "relations": ["subclass-of"],
             "embedding_type": "Bert",
-            "max_sent_length": 200
+            "max_sent_length": 100,
+            "max_sentences": 16
         }
     },
     "optimizer": {

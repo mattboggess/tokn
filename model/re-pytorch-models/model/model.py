@@ -16,7 +16,13 @@ class MaxPoolBert(BaseModel):
         self.fc_class = nn.Linear(bert_config["hidden_size"] * 3, num_classes)
         self.softmax = nn.Softmax(dim=-1)
         
-    def forward(self, x, pad_mask, e1_mask, e2_mask):
+    def forward(self, batch_data):
+        
+        x = batch_data["data"]
+        pad_mask = batch_data["pad_mask"]
+        e1_mask = batch_data["e1_mask"]
+        e2_mask = batch_data["e2_mask"]
+        sentence_mask = batch_data["sentence_mask"]
         
         batch_size = x.shape[0]
         num_sentences = x.shape[1]
@@ -50,7 +56,8 @@ class MaxPoolBert(BaseModel):
         # concatenate sentence level, e1, and e2
         rel_rep = torch.cat([cls_output, e1_avg, e2_avg], dim=-1)
         
-        # max "pool" across sentences
+        # max "pool" across sentences (mask out padding sentences)
+        rel_rep *= (sentence_mask.unsqueeze(-1) * -float("Inf"))
         rel_rep = torch.max(rel_rep, dim=-2)[0]
         
         # fully connected + softmax for classification
