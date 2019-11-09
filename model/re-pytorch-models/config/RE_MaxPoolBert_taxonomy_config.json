@@ -12,13 +12,13 @@
         "type": "RelationDataLoader",
         "args":{
             "data_dir": "../../data/relation_extraction",
-            "batch_size": 4,
+            "batch_size": 2,
             "shuffle": true,
             "num_workers": 0,
             "relations": ["subclass-of"],
             "embedding_type": "Bert",
-            "max_sent_length": 100,
-            "max_sentences": 16
+            "max_sent_length": 256,
+            "max_sentences": 8 
         }
     },
     "optimizer": {
@@ -42,13 +42,13 @@
         }
     },
     "trainer": {
-        "epochs": 10,
+        "epochs": 5,
 
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
         
-        "monitor": "min val_loss",
+        "monitor": "max val_micro_f1",
         "early_stop": 20,
 
         "tensorboard": true

@@ -179,7 +179,8 @@ class RelationDataLoader(DataLoader):
             
             # add sentence mask
             num_pad = self.max_sentences - bd[0].shape[0]
-            output["sentence_mask"].append(torch.Tensor([1] * bd[0].shape[0] + [0] * num_pad))
+            sent_mask = torch.Tensor([1] * min(self.max_sentences, bd[0].shape[0]) + [0] * num_pad)
+            output["sentence_mask"].append(sent_mask)
             
         output = {k: torch.stack(output[k]) for k in output_fields}
         output["word_pair"] = [bd[2] for bd in batch_data]
@@ -187,7 +188,7 @@ class RelationDataLoader(DataLoader):
         return output 
     
     def pad_sentences(self, data):
-        if self.max_sentences > data.shape[0]:
+        if self.max_sentences >= data.shape[0]:
             num_pad = self.max_sentences - data.shape[0]
             padding = torch.Tensor(np.zeros((num_pad, data.shape[1]))).to(torch.int64)
             data = torch.cat((data, padding), 0)

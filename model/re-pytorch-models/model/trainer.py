@@ -77,36 +77,36 @@ class Trainer:
         epoch_target = []
         epoch_pred = []
         epoch_word_pairs = []
-        epoch_loss = 0
+        epoch_loss = [] 
         
         for batch_idx, batch_data in enumerate(self.data_loader):
-            batch_data["data"] = batch_data["data"].to(self.device)
-            batch_data["target"] = batch_data["target"].to(self.device)
-            batch_data["pad_mask"] = batch_data["pad_mask"].to(self.device) 
-            batch_data["e1_mask"] = batch_data["e1_mask"].to(self.device)
-            batch_data["e2_mask"] = batch_data["e2_mask"].to(self.device)
-            batch_data["sentence_mask"] = batch_data["sentence_mask"].to(self.device)
+            
+            for field in ["data", "target", "pad_mask", "e1_mask", "e2_mask", "sentence_mask"]:
+                batch_data[field] = batch_data[field].to(self.device)
             
             self.optimizer.zero_grad()
             output = self.model(batch_data)
             with torch.no_grad():
-                pred = torch.argmax(output, dim=1)
-            loss = self.criterion(output, batch_data["target"])
+                pred = torch.argmax(output, dim=-1)
+            loss = self.criterion(output, batch_data["target"].squeeze(-1))
             loss.backward()
             self.optimizer.step()
 
             self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
             
             # accumulate epoch quantities 
-            epoch_target += [t.item() for t in target]
+            epoch_target += [t.item() for t in batch_data["target"]]
             epoch_pred += [p.item() for p in pred] 
-            epoch_word_pairs += word_pair
-            epoch_loss += loss.item()
+            epoch_word_pairs += batch_data["word_pair"]
+            epoch_loss += [loss.item()]
             
             # update metrics
-            self.writer.add_scalar("loss", epoch_loss / (batch_idx + 1))
-            for met in self.metric_ftns:
-                self.writer.add_scalar(met.__name__, met(epoch_target, epoch_pred))
+            avg_window = 3 
+            if len(epoch_word_pairs) > avg_window:
+                self.writer.add_scalar("loss", np.sum(epoch_loss[-avg_window:]) / avg_window)
+                for met in self.metric_ftns:
+                    self.writer.add_scalar(met.__name__, met(epoch_target[-avg_window:], 
+                                                             epoch_pred[-avg_window:]))
             
             if batch_idx % self.log_step == 0:
                 self.logger.debug('Train Epoch: {} {} Loss: {:.6f}'.format(
@@ -117,14 +117,17 @@ class Trainer:
 
             if batch_idx == self.len_epoch:
                 break
+                
         log = {m.__name__: m(epoch_target, epoch_pred) for m in self.metric_ftns}
+        log["loss"] = np.sum(epoch_loss) / len(self.data_loader)
 
         if self.do_validation:
             val_log = self._valid_epoch(epoch)
             log.update(**{'val_'+k : v for k, v in val_log.items()})
 
-        if self.lr_scheduler is not None:
-            self.lr_scheduler.step()
+        #if self.lr_scheduler is not None:
+        #    self.lr_scheduler.step()
+            
         return log
 
     def _valid_epoch(self, epoch):
@@ -140,37 +143,39 @@ class Trainer:
             epoch_target = []
             epoch_pred = []
             epoch_word_pairs = []
-            epoch_loss = 0
-            
-            for batch_idx, (data, target, word_pair, pad_mask, e1_mask, e2_mask) in enumerate(self.valid_data_loader):
-                data, target = data.to(self.device), target.to(self.device)
-                pad_mask, e1_mask, e2_mask = pad_mask.to(self.device), e1_mask.to(self.device), e2_mask.to(self.device)
+            epoch_loss = [] 
 
-                # hack for when e tags get cut off?
-                if len(data.shape) < 3:
-                    continue
+            for batch_idx, batch_data in enumerate(self.valid_data_loader):
+            
+                for field in ["data", "target", "pad_mask", "e1_mask", "e2_mask", "sentence_mask"]:
+                    batch_data[field] = batch_data[field].to(self.device)
                     
-                output = self.model(data, pad_mask, e1_mask, e2_mask)
-                pred = torch.argmax(output, dim=1)
-                loss = self.criterion(output, target)
+                output = self.model(batch_data)
+                pred = torch.argmax(output, dim=-1)
+                loss = self.criterion(output, batch_data["target"].squeeze(-1))
 
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 
                 # accumulate epoch quantities 
-                epoch_target += [t.item() for t in target]
+                epoch_target += [t.item() for t in batch_data["target"]]
                 epoch_pred += [p.item() for p in pred] 
-                epoch_word_pairs += word_pair
-                epoch_loss += loss.item()
+                epoch_word_pairs += batch_data["word_pair"]
+                epoch_loss += [loss.item()]
                 
                 # update metrics
-                self.writer.add_scalar("loss", epoch_loss / (batch_idx + 1))
-                for met in self.metric_ftns:
-                    self.writer.add_scalar(met.__name__, met(epoch_target, epoch_pred))
+                avg_window = 3 
+                if len(epoch_word_pairs) > avg_window:
+                    self.writer.add_scalar("loss", np.sum(epoch_loss[-avg_window:]) / avg_window)
+                    for met in self.metric_ftns:
+                        self.writer.add_scalar(met.__name__, met(epoch_target[-avg_window:], 
+                                                                 epoch_pred[-avg_window:]))
                     
         # add histogram of model parameters to the tensorboard
         for name, p in self.model.named_parameters():
             self.writer.add_histogram(name, p, bins='auto')
+            
         log = {m.__name__: m(epoch_target, epoch_pred) for m in self.metric_ftns}
+        log["loss"] = np.sum(epoch_loss) / len(self.valid_data_loader)
         return log
 
     def _progress(self, batch_idx):
@@ -261,9 +266,6 @@ class Trainer:
             'monitor_best': self.mnt_best,
             'config': self.config
         }
-        filename = str(self.checkpoint_dir / 'checkpoint-epoch{}.pth'.format(epoch))
-        torch.save(state, filename)
-        self.logger.info("Saving checkpoint: {} ...".format(filename))
         if save_best:
             best_path = str(self.checkpoint_dir / 'model_best.pth')
             torch.save(state, best_path)

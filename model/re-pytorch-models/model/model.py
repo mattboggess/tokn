@@ -1,8 +1,29 @@
 import torch.nn as nn
 import torch.nn.functional as F
-from base import BaseModel
 import torch
 from transformers import BertModel
+from abc import abstractmethod
+
+class BaseModel(nn.Module):
+    """
+    Base class for all models
+    """
+    @abstractmethod
+    def forward(self, *inputs):
+        """
+        Forward pass logic
+
+        :return: Model output
+        """
+        raise NotImplementedError
+
+    def __str__(self):
+        """
+        Model prints with number of trainable parameters
+        """
+        model_parameters = filter(lambda p: p.requires_grad, self.parameters())
+        params = sum([np.prod(p.size()) for p in model_parameters])
+        return super().__str__() + '\nTrainable parameters: {}'.format(params)
 
 class MaxPoolBert(BaseModel):
     
@@ -57,7 +78,7 @@ class MaxPoolBert(BaseModel):
         rel_rep = torch.cat([cls_output, e1_avg, e2_avg], dim=-1)
         
         # max "pool" across sentences (mask out padding sentences)
-        rel_rep *= (sentence_mask.unsqueeze(-1) * -float("Inf"))
+        rel_rep += ((1 - sentence_mask.unsqueeze(-1)) * -10**10)
         rel_rep = torch.max(rel_rep, dim=-2)[0]
         
         # fully connected + softmax for classification
