@@ -13,6 +13,8 @@ import pandas as pd
 import re
 import json
 
+STOP_WORDS = ["object", "aggregate", "group", "thing", "region"]
+
 def parse_openstax_terms(key_term_text):
     """ Parse openstax data to extract key terms (including acronyms). """
     if ":" not in key_term_text:
@@ -38,10 +40,12 @@ def process_lexicon(lexicon, bio_concepts):
 
     # create mapping from kb concept to unique text representations
     lexicon = lexicon[~lexicon.text.str.contains("Concept-Word-Frame")]
-    lexicon = lexicon.groupby("concept")["text"].apply(lambda x: list(set(x))).reset_index()
+    lexicon = lexicon.groupby("concept")["text"].apply(
+        lambda x: list(set([t for t in x if t not in STOP_WORDS]))).reset_index()
     
-    # filter out too general upper ontology words
+    # filter out too general upper ontology words and concepts that only have stop words 
     lexicon = lexicon[lexicon.concept.isin(bio_concepts)]
+    lexicon = lexicon[lexicon.text.map(len) > 0]
 
     # spacy process terms to get lemmas
     spacy_terms = []
@@ -126,25 +130,25 @@ if __name__ == "__main__":
     write_spacy_docs(terms, terms_output_file)
     lexicon.to_csv(lexicon_output_file, index=False)
     
-    print("Processing Life Biology Sentences")
-    life_input_file = f"{raw_data_dir}/life_bio/life_bio_selected_sentences.txt"
-    life_kb_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_sentences_spacy"
-    life_output_file = f"{preprocessed_data_dir}/Life_Biology_sentences_spacy"
-    with open(life_input_file, "r") as f:
-        life_bio_sentences = f.readlines()
-        
-    sentences_kb_spacy = []
-    sentences_spacy = []
-    for i, sent in enumerate(life_bio_sentences):
-        if i % 500 == 0:
-            print(f"Preprocessing life biology sentence {i}/{len(life_bio_sentences)}")
-            
-        # only add chapters 1-10 to subset used for kb matching
-        spacy_sent = nlp(re.sub("^(\d*\.*)+\s*", "", sent))
-        if int(sent.split(".")[1]) <= 10:
-            sentences_kb_spacy.append(spacy_sent)
-        sentences_spacy.append(spacy_sent)
-        
-    write_spacy_docs(sentences_spacy, life_output_file)
-    write_spacy_docs(sentences_kb_spacy, life_kb_output_file)
+    #print("Processing Life Biology Sentences")
+    #life_input_file = f"{raw_data_dir}/life_bio/life_bio_selected_sentences.txt"
+    #life_kb_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_sentences_spacy"
+    #life_output_file = f"{preprocessed_data_dir}/Life_Biology_sentences_spacy"
+    #with open(life_input_file, "r") as f:
+    #    life_bio_sentences = f.readlines()
+    #    
+    #sentences_kb_spacy = []
+    #sentences_spacy = []
+    #for i, sent in enumerate(life_bio_sentences):
+    #    if i % 500 == 0:
+    #        print(f"Preprocessing life biology sentence {i}/{len(life_bio_sentences)}")
+    #        
+    #    # only add chapters 1-10 to subset used for kb matching
+    #    spacy_sent = nlp(re.sub("^(\d*\.*)+\s*", "", sent))
+    #    if int(sent.split(".")[1]) <= 10:
+    #        sentences_kb_spacy.append(spacy_sent)
+    #    sentences_spacy.append(spacy_sent)
+    #    
+    #write_spacy_docs(sentences_spacy, life_output_file)
+    #write_spacy_docs(sentences_kb_spacy, life_kb_output_file)
     

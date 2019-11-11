@@ -20,9 +20,8 @@ class TestDataProcessingUtils(unittest.TestCase):
         self.assertEqual(ix, (indices1[1], indices2[0]))
 
     def test_tag_terms(self):
-        terms = read_spacy_docs("../data/preprocessed_data/Life_Biology_kb_terms_spacy") 
+        terms = read_spacy_docs("../data/preprocessed_data/Life_Biology_kb_key_terms_spacy") 
         text = 'By the end of this section, you will be able to do the following:    Describe the structure of eukaryotic cells   Compare animal cells with plant cells   State the role of the plasma membrane   Summarize the functions of the major cell organelles       Have you ever heard the phrase "form follows function?"'
-        print(tag_terms(text, terms))
 
         terms = ['cell', 'cell wall', 'biologist'] 
         text = 'A biologist will tell you that a cell contains a cell wall.'
@@ -52,6 +51,23 @@ class TestDataProcessingUtils(unittest.TestCase):
         output = tag_terms(text, terms)
 
         self.assertEqual(output, solution)
+        
+        terms = ['pineapple plant', 'renal-disease', 'zinc atom'] 
+        text = 'Here are some troublesome terms: pineapples, renal disease, zinc, and more.'
+
+        found_terms = {"pineapple plant": {"text": ["pineapples"], "tag": ["NNS"], "indices": [(6, 7)]},
+                       "renal-disease": {"text": ["renal disease"], "tag": ["JJ NN"], 
+                                         "indices": [(8, 10)]},
+                       "zinc atom": {"text": ["zinc"], "tag": ["NN"], "indices": [(11, 12)]}}
+        tokenized_text = ["Here", "are", "some", "troublesome", "terms", ":", "pineapples", ",",
+                          "renal", "disease", ",", "zinc", ",", "and", "more", "."]
+        bioes_tags = ["O", "O", "O", "O", "O", "O", "S", "O", "B", "E", "O", "S", "O", "O", "O", "O"]
+        solution = (tokenized_text, bioes_tags, found_terms)
+        output = tag_terms(text, terms)
+
+        self.assertEqual(output[0], solution[0])
+        self.assertEqual(output[1], solution[1])
+        self.assertDictEqual(output[2], solution[2])
         
         
     def test_insert_relation_tags(self):

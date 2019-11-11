@@ -6,6 +6,8 @@ import numpy as np
 import itertools
 from collections import defaultdict
 
+HEURISTIC_TOKENS = ["-", "plant", "substance", "atom"]
+
 def tag_relations(text, terms, relations_db, nlp=None):
     """ Tags all terms in a given text and then extracts all relations between pairs of these terms.
     
@@ -227,6 +229,17 @@ def tag_terms(text, terms, nlp=None):
         else:
             match_term = lemma_term_list
             match_text = lemmatized_text 
+            
+        # additional check to check for simple plural of uncommon biology terms
+        match_uncommon_plural = match_term.copy()
+        match_uncommon_plural[-1] = match_uncommon_plural[-1] + "s"
+
+        # additional check ignoring extra words/characters added by KB
+        match_heuristic = []
+        for token in match_term:
+            if token not in HEURISTIC_TOKENS:
+                match_heuristic += token.split("-")
+        heuristic_length = len(match_heuristic)
 
         for ix in range(len(text) - term_length):
             
@@ -234,22 +247,27 @@ def tag_terms(text, terms, nlp=None):
             # create false positives
             if match_term == text_term_list and ix == 0:
                 continue
-
-            # additional check to check for simple plural of uncommon biology terms
-            match_uncommon_plural = match_term.copy()
-            match_uncommon_plural[-1] = match_uncommon_plural[-1] + "s"
-            
-            if (match_text[ix:ix + term_length] == match_term) or \
-               (match_text[ix:ix + term_length] == match_uncommon_plural):
                 
-                term_text = " ".join([t.text for t in text[ix:ix + term_length]])
-                term_tag = " ".join([t.tag_ for t in text[ix:ix + term_length]])
-                # only add term if not part of larger term
-                if tagged_text[ix:ix + term_length] == ["O"] * term_length:
+            heuristic_match = (match_text[ix:ix + heuristic_length] == match_heuristic)
+            plural_match = (match_text[ix:ix + term_length] == match_uncommon_plural)
+            term_match = (match_text[ix:ix + term_length] == match_term)
+            
+            # if original term or any heuristic versions of term match tag the term
+            if heuristic_match or plural_match or term_match:
+                
+                if heuristic_match and not term_match:
+                    match_length = heuristic_length
+                else:
+                    match_length = term_length
+                
+                term_text = " ".join([t.text for t in text[ix:ix + match_length]])
+                term_tag = " ".join([t.tag_ for t in text[ix:ix + match_length]])
+                # only tag term if not part of larger term
+                if tagged_text[ix:ix + match_length] == ["O"] * match_length:
                     found_terms[term_lemma]["text"].append(term_text)
-                    found_terms[term_lemma]["indices"].append((ix, ix + term_length))
+                    found_terms[term_lemma]["indices"].append((ix, ix + match_length))
                     found_terms[term_lemma]["tag"].append(term_tag)
-                    tagged_text = tag_bioes(tagged_text, ix, term_length)
+                    tagged_text = tag_bioes(tagged_text, ix, match_length)
     
     return tokenized_text, tagged_text, dict(found_terms)
 
