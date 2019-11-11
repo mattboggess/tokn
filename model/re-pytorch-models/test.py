@@ -47,11 +47,9 @@ def main(config, split, out_dir, model_version):
             for field in ["data", "target", "pad_mask", "e1_mask", "e2_mask", "sentence_mask"]:
                 batch_data[field] = batch_data[field].to(device)
 
-            output = model(batch_data)
+            output = model(batch_data, evaluate=True)
             pred = torch.argmax(output, dim=-1)
-            if len(batch_data["target"]) > 1:
-                batch_data["target"] = batch_data["target"].squeeze()
-            loss = loss_fn(output, batch_data["target"])
+            loss = loss_fn(output, batch_data["target"].squeeze(-1))
 
             # accumulate epoch quantities 
             epoch_target += [t.item() for t in batch_data["target"]]

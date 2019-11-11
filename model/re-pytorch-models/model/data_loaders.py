@@ -182,6 +182,8 @@ class RelationDataLoader(DataLoader):
             sent_mask = torch.Tensor([1] * min(self.max_sentences, bd[0].shape[0]) + [0] * num_pad)
             output["sentence_mask"].append(sent_mask)
             
+        if not len(output["data"]):
+            return None
         output = {k: torch.stack(output[k]) for k in output_fields}
         output["word_pair"] = [bd[2] for bd in batch_data]
         

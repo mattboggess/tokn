@@ -1,11 +1,11 @@
 {
-    "name": "RE_MaxPoolBert_taxonomy",
+    "name": "RE_BagAttentionBert_taxonomy",
     "n_gpu": 1,
 
     "arch": {
-        "type": "MaxPoolBert",
+        "type": "BagAttentionBert",
         "args": {
-            "num_classes": 2
+            "num_classes": 5
         }
     },
     "data_loader": {
@@ -15,7 +15,7 @@
             "batch_size": 2,
             "shuffle": true,
             "num_workers": 0,
-            "relations": ["subclass-of"],
+            "relations": ["possesses", "has-part", "has-region", "element"],
             "embedding_type": "Bert",
             "max_sent_length": 256,
             "max_sentences": 8 
@@ -24,7 +24,7 @@
     "optimizer": {
         "type": "Adam",
         "args":{
-            "lr": 2e-4,
+            "lr": 2e-5,
             "weight_decay": 0,
             "amsgrad": true
         }
@@ -42,13 +42,13 @@
         }
     },
     "trainer": {
-        "epochs": 5,
+        "epochs": 15,
 
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
         
-        "monitor": "max val_micro_f1",
+        "monitor": "max val_macro_f1",
         "early_stop": 20,
 
         "tensorboard": true
