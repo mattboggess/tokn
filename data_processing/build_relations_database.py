@@ -115,7 +115,6 @@ if __name__ == "__main__":
             relations = f.readlines()
         relations_db = parse_relations(relations, relation_type, lexicon, relations_db, 
                                        INCLUDE_RELATIONS)
-    print(relations_db)
     
     # load biology textbook sentences 
     bio_textbooks = ["Life_Biology", "Biology_2e"]

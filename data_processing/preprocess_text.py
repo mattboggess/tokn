@@ -76,7 +76,6 @@ if __name__ == "__main__":
     
     # process openstax textbooks
     for textbook in OPENSTAX_TEXTBOOKS:
-        continue
         print(f"Processing {textbook} textbook")
         textbook_data = pd.read_csv(f"{raw_data_dir}/openstax/sentences_{textbook}_parsed.csv")
         
