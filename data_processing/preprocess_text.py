@@ -37,32 +37,48 @@ def process_lexicon(lexicon, bio_concepts):
     # get rid of extra column and read in as dataframe
     lexicon = pd.read_csv(StringIO(lexicon), sep="\s*\|\s*", header=None, 
                           names=["concept", "relation", "text", "pos"])
+    
+    concept_types = lexicon.query("text in ['Entity', 'Event']")
+    lexicon = lexicon.query("text not in ['Entity', 'Event']")
 
     # create mapping from kb concept to unique text representations
     lexicon = lexicon[~lexicon.text.str.contains("Concept-Word-Frame")]
     lexicon = lexicon.groupby("concept")["text"].apply(
         lambda x: list(set([t for t in x if t not in STOP_WORDS]))).reset_index()
     
-    # filter out too general upper ontology words and concepts that only have stop words 
+    # filter out too general upper ontology words, relation concepts, and concepts that only have stop words 
     lexicon = lexicon[lexicon.concept.isin(bio_concepts)]
     lexicon = lexicon[lexicon.text.map(len) > 0]
+    lexicon = lexicon[lexicon.text.apply(lambda x: "Relation" not in x)]
 
     # spacy process terms to get lemmas
     spacy_terms = []
-    lemmas = []
+    lexicon_output = {}
     for concept in lexicon.concept:
         
+        # extract text representations for the concept
         terms = list(lexicon.loc[lexicon.concept == concept, "text"])[0]
         terms = [t.replace('"', "").strip() for t in terms]
+        
+        # add text of concept itself
+        concept_text = concept.lower().replace("-", " ")
+        if concept_text not in terms:
+            terms.append(concept_text)
+        
+        # spacy preprocess and add lemmas
         spacy_terms_tmp = [nlp(term) for term in terms]
-        lemma_terms = list([" ".join([tok.lemma_ for tok in t]) for t in spacy_terms_tmp])
+        lemma_terms = [" ".join([tok.lemma_ for tok in t]) for t in spacy_terms_tmp]
+        
+        # accumulate spacy term representations
         spacy_terms += spacy_terms_tmp
-        lemmas.append(lemma_terms)
+        
+        # add concept entry to output lexicon
+        lexicon_output[concept] = {"text_representations": terms,
+                                   "class_label": concept_types.loc[concept_types.concept == concept, "text"].iat[0],
+                                   "lemma_representations": list(set(lemma_terms))}
 
-    lexicon["lemmas"] = lemmas
-    
     # filter out upper ontology concepts
-    return spacy_terms, lexicon
+    return spacy_terms, lexicon_output
 
 if __name__ == "__main__":
     
@@ -119,35 +135,38 @@ if __name__ == "__main__":
     print("Processing Life Biology Lexicon")
     lexicon_input_file = f"{raw_data_dir}/life_bio/kb_lexicon.txt"
     bio_concepts_file = f"{raw_data_dir}/life_bio/kb_biology_concepts.txt"
-    lexicon_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_lexicon.csv"
-    terms_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_key_terms_spacy"
     with open(lexicon_input_file, "r") as f:
         lexicon = f.read()
     with open(bio_concepts_file, "r") as f:
         bio_concepts = set([t.strip() for t in f.readlines()])
+        
     terms, lexicon = process_lexicon(lexicon, bio_concepts)
-    write_spacy_docs(terms, terms_output_file)
-    lexicon.to_csv(lexicon_output_file, index=False)
     
-    #print("Processing Life Biology Sentences")
-    #life_input_file = f"{raw_data_dir}/life_bio/life_bio_selected_sentences.txt"
-    #life_kb_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_sentences_spacy"
-    #life_output_file = f"{preprocessed_data_dir}/Life_Biology_sentences_spacy"
-    #with open(life_input_file, "r") as f:
-    #    life_bio_sentences = f.readlines()
-    #    
-    #sentences_kb_spacy = []
-    #sentences_spacy = []
-    #for i, sent in enumerate(life_bio_sentences):
-    #    if i % 500 == 0:
-    #        print(f"Preprocessing life biology sentence {i}/{len(life_bio_sentences)}")
-    #        
-    #    # only add chapters 1-10 to subset used for kb matching
-    #    spacy_sent = nlp(re.sub("^(\d*\.*)+\s*", "", sent))
-    #    if int(sent.split(".")[1]) <= 10:
-    #        sentences_kb_spacy.append(spacy_sent)
-    #    sentences_spacy.append(spacy_sent)
-    #    
-    #write_spacy_docs(sentences_spacy, life_output_file)
-    #write_spacy_docs(sentences_kb_spacy, life_kb_output_file)
+    lexicon_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_lexicon.json"
+    terms_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_key_terms_spacy"
+    write_spacy_docs(terms, terms_output_file)
+    with open(lexicon_output_file, "w") as f:
+        json.dump(lexicon, f, indent=4)
+    
+    print("Processing Life Biology Sentences")
+    life_input_file = f"{raw_data_dir}/life_bio/life_bio_selected_sentences.txt"
+    life_kb_output_file = f"{preprocessed_data_dir}/Life_Biology_kb_sentences_spacy"
+    life_output_file = f"{preprocessed_data_dir}/Life_Biology_sentences_spacy"
+    with open(life_input_file, "r") as f:
+        life_bio_sentences = f.readlines()
+        
+    sentences_kb_spacy = []
+    sentences_spacy = []
+    for i, sent in enumerate(life_bio_sentences):
+        if i % 500 == 0:
+            print(f"Preprocessing life biology sentence {i}/{len(life_bio_sentences)}")
+            
+        # only add chapters 1-10 to subset used for kb matching
+        spacy_sent = nlp(re.sub("^([\d*|summary]\.*)+\s*", "", sent))
+        if int(sent.split(".")[1]) <= 10:
+            sentences_kb_spacy.append(spacy_sent)
+        sentences_spacy.append(spacy_sent)
+        
+    write_spacy_docs(sentences_spacy, life_output_file)
+    write_spacy_docs(sentences_kb_spacy, life_kb_output_file)
     

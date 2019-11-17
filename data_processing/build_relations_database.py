@@ -25,9 +25,9 @@ def extract_lemmas(lexicon, concept, instance):
     """
     
     # pull out equivalent lemma, text representations from lexicon
-    if concept in lexicon.concept:
-        instance_texts = lexicon.at[lexicon.concept == concept, "text"]
-        instance_lemmas = lexicon.at[lexicon.concept == concept, "lemma"]
+    if concept in lexicon.keys():
+        instance_texts = lexicon[concept]["text_representations"]
+        instance_lemmas = lexicon[concept]["lemma_representations"]
     else:
         instance_texts = []
         instance_lemmas = []
@@ -64,7 +64,7 @@ def parse_relations(relations, relation_type, lexicon, relations_db, include_rel
     
         if relation_type == "taxonomy":
             c1, e1, relation, c2, e2 = [tok.strip() for tok in r.split("|")]
-        elif relation_type == "structure":
+        elif relation_type == "structure" or relation_type == "process":
             _, _, c1, e1, relation, c2, e2 = [tok.strip() for tok in r.split("|")]
 
             c1 = c1.strip("_").replace("_ABOX_", "").rstrip(string.digits)
@@ -100,15 +100,16 @@ if __name__ == "__main__":
     warnings.filterwarnings('ignore')
     
     # Load in KB lexicon and terms 
-    lexicon_file = f"{preprocessed_data_dir}/Life_Biology_kb_lexicon.csv"
+    lexicon_file = f"{preprocessed_data_dir}/Life_Biology_kb_lexicon.json"
     kb_terms_file = f"{preprocessed_data_dir}/Life_Biology_kb_key_terms_spacy"
-    lexicon = pd.read_csv(lexicon_file)
+    with open(lexicon_file, "r") as f:
+        lexicon = json.load(f)
     terms = read_spacy_docs(kb_terms_file, nlp)
         
     # extract all word-pairs for relations
     print("Extracting Word-Pairs for Relations")
     relations_db = {"no-relation": {}}
-    for relation_type in ["taxonomy", "structure"]:
+    for relation_type in ["taxonomy", "structure", "process"]:
         print(f"Parsing {relation_type} relations")
         file = f"{raw_data_dir}/{relation_type}_relations.txt"
         with open(file) as f:
