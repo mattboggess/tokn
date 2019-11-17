@@ -222,40 +222,41 @@ def tag_terms(text, terms, nlp=None):
         text_term_list = [token.text for token in spacy_term]
         term_lemma = " ".join(lemma_term_list)
         
-        # match on text for lemmatized forms that are stop words
-        if term_lemma in STOP_WORDS:
-            match_term = text_term_list
-            match_text = tokenized_text
-        else:
-            match_term = lemma_term_list
-            match_text = lemmatized_text 
-            
+        # skip short acronyms that can cause problems
+        if len(term_lemma) <= 2:
+            continue
+        
         # additional check to check for simple plural of uncommon biology terms
-        match_uncommon_plural = match_term.copy()
+        match_uncommon_plural = lemma_term_list.copy()
         match_uncommon_plural[-1] = match_uncommon_plural[-1] + "s"
 
-        # additional check ignoring extra words/characters added by KB
+        # additional check using heuristics on lemmatized version
         match_heuristic = []
-        for token in match_term:
-            if token not in HEURISTIC_TOKENS:
-                match_heuristic += token.split("-")
-        heuristic_length = len(match_heuristic)
-
+        if lemma_term_list[0] not in HEURISTIC_TOKENS:
+            for token in lemma_term_list:
+                if token not in HEURISTIC_TOKENS:
+                    match_heuristic += token.split("-")
+            heuristic_length = len(match_heuristic)
+        else:
+            heuristic_term = lemma_term_list
+            heuristic_length = len(lemma_term_list)
+        
         for ix in range(len(text) - term_length):
             
-            # don't match on first word for stop words since sentence capitalization will
-            # create false positives
-            if match_term == text_term_list and ix == 0:
-                continue
-                
-            heuristic_match = (match_text[ix:ix + heuristic_length] == match_heuristic)
-            plural_match = (match_text[ix:ix + term_length] == match_uncommon_plural)
-            term_match = (match_text[ix:ix + term_length] == match_term)
+            heuristic_match = (lemmatized_text[ix:ix + heuristic_length] == match_heuristic)
+            plural_match = (lemmatized_text[ix:ix + term_length] == match_uncommon_plural)
+            lemma_match = (lemmatized_text[ix:ix + term_length] == lemma_term_list)
+            text_match = (tokenized_text[ix:ix + term_length] == text_term_list)
             
-            # if original term or any heuristic versions of term match tag the term
-            if heuristic_match or plural_match or term_match:
+            # Only match on text if lemmatized version is a stop word (i.e. lower casing acronym)
+            if term_lemma in STOP_WORDS:
+                valid_match = text_match
+            else:
+                valid_match = heuristic_match or plural_match or text_match or lemma_match
+            
+            if valid_match:
                 
-                if heuristic_match and not term_match:
+                if heuristic_match and not lemma_match:
                     match_length = heuristic_length
                 else:
                     match_length = term_length
