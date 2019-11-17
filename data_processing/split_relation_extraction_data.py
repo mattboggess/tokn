@@ -24,6 +24,7 @@ if __name__ == "__main__":
     validation_relations = {}
     test_relations = {} 
     mini_relations = {}
+    full_relations = {}
     null_word_pairs = list(relations["no-relation"].keys())
     
     for relation in relations:
@@ -32,6 +33,7 @@ if __name__ == "__main__":
             test_relations[relation] = [] 
             validation_relations[relation] = []
             mini_relations[relation] = []
+            full_relations[relation] = []
             
             # split the data
             word_pairs = list(relations[relation].keys())
@@ -52,7 +54,7 @@ if __name__ == "__main__":
                 replace=False)
             test_sample = [wp for wp in eval_sample if wp not in validation_sample]
             
-            for split in ["train", "validation", "test", "mini"]:
+            for split in ["train", "validation", "test", "debug", "full"]:
                 if split == "train":
                     db = train_relations
                     pos_word_pairs = train_sample
@@ -62,9 +64,12 @@ if __name__ == "__main__":
                 elif split == "test":
                     db = test_relations
                     pos_word_pairs = test_sample
-                else:
+                elif split == "debug":
                     db = mini_relations
                     pos_word_pairs = test_sample[:min(5, len(test_sample))]
+                else:
+                    db = full_relations
+                    pos_word_pairs = word_pairs 
             
                 # match an equal number of negative word pairs
                 neg_word_pairs = np.random.choice(null_word_pairs, 
@@ -90,6 +95,8 @@ if __name__ == "__main__":
         json.dump(test_relations, f, indent=4)
     with open(f"{data_dir}/relations_debug.json", "w") as f:
         json.dump(mini_relations, f, indent=4)
+    with open(f"{data_dir}/relations_full.json", "w") as f:
+        json.dump(full_relations, f, indent=4)
                 
     
     

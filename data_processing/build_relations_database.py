@@ -16,7 +16,6 @@ import os
 import numpy as np
 import itertools
 from spacy.tokens import DocBin
-from data_processing_constants import INCLUDE_RELATIONS
 from data_processing_utils import tag_relations, read_spacy_docs
 
 def extract_lemmas(lexicon, concept, instance):
@@ -114,8 +113,7 @@ if __name__ == "__main__":
         file = f"{raw_data_dir}/{relation_type}_relations.txt"
         with open(file) as f:
             relations = f.readlines()
-        relations_db = parse_relations(relations, relation_type, lexicon, relations_db, 
-                                       INCLUDE_RELATIONS)
+        relations_db = parse_relations(relations, relation_type, lexicon, relations_db)
     
     # load biology textbook sentences 
     bio_textbooks = ["Life_Biology", "Biology_2e"]
