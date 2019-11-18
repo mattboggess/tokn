@@ -4,6 +4,7 @@ import os
 import torch
 import numpy as np
 import pandas as pd 
+from sklearn.utils.class_weight import compute_class_weight
 from transformers import BertTokenizer
 
 ALL_RELATIONS = ['subclass-of', 'has-part', 'possesses', 'has-region', 'is-inside', 'is-at', 'element', 'abuts', 'is-outside']
@@ -44,6 +45,9 @@ class RelationDataset(Dataset):
                     self.relation_df = df
                 else:
                     self.relation_df = pd.concat([self.relation_df, df], sort=False)
+        
+        self.class_weights = torch.Tensor(compute_class_weight("balanced", self.relations, 
+                                                               self.relation_df.relation))
                 
         self.max_sent_length = max_sent_length
         self.embedding_type = embedding_type

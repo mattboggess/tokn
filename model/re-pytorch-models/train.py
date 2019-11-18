@@ -1,6 +1,7 @@
 import argparse
 import collections
 import torch
+import transformers
 import numpy as np
 import model.data_loaders as module_data
 import model.loss as module_loss
@@ -24,8 +25,8 @@ def main(config):
     logger = config.get_logger('train')
 
     # setup data_loader instances
-    data_loader = config.init_obj('data_loader', module_data, split="train")
-    valid_data_loader = config.init_obj('data_loader', module_data, split="validation")
+    data_loader = config.init_obj('data_loader', module_data, split="debug")
+    valid_data_loader = config.init_obj('data_loader', module_data, split="debug")
 
     # build model architecture, then print to console
     model = config.init_obj('arch', module_arch)
@@ -37,7 +38,7 @@ def main(config):
 
     # build optimizer, learning rate scheduler. delete every lines containing lr_scheduler for disabling scheduler
     trainable_params = filter(lambda p: p.requires_grad, model.parameters())
-    optimizer = config.init_obj('optimizer', torch.optim, trainable_params)
+    optimizer = config.init_obj('optimizer', transformers.optimization, trainable_params)
 
     lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
 

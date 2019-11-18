@@ -5,7 +5,7 @@
     "arch": {
         "type": "BagAttentionBert",
         "args": {
-            "num_classes": 5
+            "num_classes": 6
         }
     },
     "data_loader": {
@@ -15,18 +15,17 @@
             "batch_size": 2,
             "shuffle": true,
             "num_workers": 0,
-            "relations": ["possesses", "has-part", "has-region", "element"],
+            "relations": ["subclass-of", "possesses", "has-part", "has-region", "element"],
             "embedding_type": "Bert",
             "max_sent_length": 256,
             "max_sentences": 8 
         }
     },
     "optimizer": {
-        "type": "Adam",
+        "type": "AdamW",
         "args":{
             "lr": 2e-5,
-            "weight_decay": 0,
-            "amsgrad": true
+            "weight_decay": 0.01
         }
     },
     "loss": "nll_loss",
@@ -49,7 +48,7 @@
         "verbosity": 2,
         
         "monitor": "max val_macro_f1",
-        "early_stop": 20,
+        "early_stop": 10,
 
         "tensorboard": true
     }
