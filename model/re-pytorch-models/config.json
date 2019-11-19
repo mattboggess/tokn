@@ -1,5 +1,5 @@
 {
-    "name": "RE_BagAttentionBert_taxonomy",
+    "name": "RE_BagAttentionBert_entity-entity",
     "n_gpu": 1,
 
     "arch": {
@@ -12,19 +12,19 @@
         "type": "RelationDataLoader",
         "args":{
             "data_dir": "../../data/relation_extraction",
-            "batch_size": 2,
+            "batch_size": 4,
             "shuffle": true,
             "num_workers": 0,
-            "relations": ["subclass-of", "possesses", "has-part", "has-region", "element"],
+            "relations": ["subclass-of", "has-part", "has-region", "possesses", "element"],
             "embedding_type": "Bert",
             "max_sent_length": 256,
-            "max_sentences": 8 
+            "max_sentences": 4 
         }
     },
     "optimizer": {
         "type": "AdamW",
         "args":{
-            "lr": 2e-5,
+            "lr": 1e-5,
             "weight_decay": 0.01
         }
     },
