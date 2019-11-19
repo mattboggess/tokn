@@ -4,6 +4,7 @@ import os
 import torch
 import numpy as np
 import pandas as pd 
+from sklearn.utils.class_weight import compute_class_weight
 from transformers import BertTokenizer
 
 ALL_RELATIONS = ['subclass-of', 'has-part', 'possesses', 'has-region', 'is-inside', 'is-at', 'element', 'abuts', 'is-outside']
@@ -44,6 +45,10 @@ class RelationDataset(Dataset):
                     self.relation_df = df
                 else:
                     self.relation_df = pd.concat([self.relation_df, df], sort=False)
+        self.relation_df.to_csv("tmp.csv")
+        
+        self.class_weights = torch.Tensor(compute_class_weight("balanced", self.relations, 
+                                                               self.relation_df.relation))
                 
         self.max_sent_length = max_sent_length
         self.embedding_type = embedding_type
@@ -168,6 +173,7 @@ class RelationDataLoader(DataLoader):
         
         output_fields = ["data", "target", "pad_mask", "e1_mask", "e2_mask", "sentence_mask"]
         output = {k: [] for k in output_fields}
+        output["word_pair"] = []
         for bd in batch_data:
             if len(bd[0].shape) < 2:
                 continue
@@ -176,6 +182,7 @@ class RelationDataLoader(DataLoader):
             output["pad_mask"].append(self.pad_sentences(bd[3]))
             output["e1_mask"].append(self.pad_sentences(bd[4]))
             output["e2_mask"].append(self.pad_sentences(bd[5]))
+            output["word_pair"].append(bd[2])
             
             # add sentence mask
             num_pad = self.max_sentences - bd[0].shape[0]
@@ -184,10 +191,10 @@ class RelationDataLoader(DataLoader):
             
         if not len(output["data"]):
             return None
-        output = {k: torch.stack(output[k]) for k in output_fields}
-        output["word_pair"] = [bd[2] for bd in batch_data]
+        batch_output = {k: torch.stack(output[k]) for k in output_fields}
+        batch_output["word_pair"] = output["word_pair"]
         
-        return output 
+        return batch_output 
     
     def pad_sentences(self, data):
         if self.max_sentences >= data.shape[0]:

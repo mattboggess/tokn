@@ -91,7 +91,8 @@ class Trainer:
             output = self.model(batch_data, evaluate=False)
             with torch.no_grad():
                 pred = torch.argmax(output, dim=-1)
-            loss = self.criterion(output, batch_data["target"].squeeze(-1))
+            loss = self.criterion(output, batch_data["target"].squeeze(-1), 
+                                  self.data_loader.dataset.class_weights.to(self.device))
             loss.backward()
             self.optimizer.step()
 
@@ -104,7 +105,7 @@ class Trainer:
             epoch_loss += [loss.item()]
             
             # update metrics
-            avg_window = 3 
+            avg_window = 20 
             if len(epoch_word_pairs) > avg_window:
                 self.writer.add_scalar("loss", np.sum(epoch_loss[-avg_window:]) / avg_window)
                 for met in self.metric_ftns:
@@ -128,8 +129,8 @@ class Trainer:
             val_log = self._valid_epoch(epoch)
             log.update(**{'val_'+k : v for k, v in val_log.items()})
 
-        #if self.lr_scheduler is not None:
-        #    self.lr_scheduler.step()
+        if self.lr_scheduler is not None:
+            self.lr_scheduler.step()
             
         return log
 
@@ -155,7 +156,8 @@ class Trainer:
                     
                 output = self.model(batch_data, evaluate=True)
                 pred = torch.argmax(output, dim=-1)
-                loss = self.criterion(output, batch_data["target"].squeeze(-1))
+                loss = self.criterion(output, batch_data["target"].squeeze(-1),
+                                      self.data_loader.dataset.class_weights.to(self.device))
 
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 
@@ -166,7 +168,7 @@ class Trainer:
                 epoch_loss += [loss.item()]
                 
                 # update metrics
-                avg_window = 3 
+                avg_window = 20 
                 if len(epoch_word_pairs) > avg_window:
                     self.writer.add_scalar("loss", np.sum(epoch_loss[-avg_window:]) / avg_window)
                     for met in self.metric_ftns:

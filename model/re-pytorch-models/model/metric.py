@@ -1,9 +1,6 @@
 import torch
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score 
 
-# write out file with FP, TP, FN, TN for all classes
-# training & validation & test
-
 def accuracy(true, pred):
     return accuracy_score(true, pred)
 

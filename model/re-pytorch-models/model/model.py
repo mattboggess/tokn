@@ -89,15 +89,18 @@ class MaxPoolBert(BaseModel):
     
 class BagAttentionBert(BaseModel):
     
-    def __init__(self, num_classes):
+    def __init__(self, num_classes, dropout_rate=0.3):
         super().__init__()
-        #TODO: Add dropout
         self.bert = BertModel.from_pretrained("bert-base-cased")
         bert_config = self.bert.config.__dict__
         self.fc_e = nn.Linear(bert_config["hidden_size"], bert_config["hidden_size"])
+        nn.init.kaiming_uniform_(self.fc_e.weight)
         self.fc_cls = nn.Linear(bert_config["hidden_size"], bert_config["hidden_size"])
+        nn.init.kaiming_uniform_(self.fc_cls.weight)
         self.fc_class = nn.Linear(bert_config["hidden_size"] * 3, num_classes)
+        nn.init.kaiming_uniform_(self.fc_class.weight)
         self.softmax = nn.LogSoftmax(dim=-1)
+        self.dropout = nn.Dropout(dropout_rate)
         
     def forward(self, batch_data, evaluate=True):
         
@@ -132,9 +135,9 @@ class BagAttentionBert(BaseModel):
         e2_avg = (full_output * e2_mask.to(torch.float32)).mean(dim=-2)
         
         # pass through fully connected layers w/ activation functions
-        cls_output = self.fc_cls(cls_output).tanh()
-        e1_avg = self.fc_e(e1_avg).tanh()
-        e2_avg = self.fc_e(e2_avg).tanh()
+        cls_output = self.fc_cls(self.dropout(cls_output)).relu()
+        e1_avg = self.fc_e(self.dropout(e1_avg)).relu()
+        e2_avg = self.fc_e(self.dropout(e2_avg)).relu()
         
         # concatenate sentence level, e1, and e2
         rel_rep = torch.cat([cls_output, e1_avg, e2_avg], dim=-1)
