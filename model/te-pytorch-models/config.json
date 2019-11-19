@@ -22,14 +22,13 @@
         }
     },
     "optimizer": {
-        "type": "Adam",
+        "type": "AdamW",
         "args":{
             "lr": 2e-5,
-            "weight_decay": 0,
-            "amsgrad": true
+            "weight_decay": 0.01
         }
     },
-    "loss": "weighted_nll_loss",
+    "loss": "nll_loss",
     "sentence_metrics": [
         "sentence_accuracy", "sentence_f1", "sentence_precision", "sentence_recall"
     ],

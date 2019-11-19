@@ -93,7 +93,8 @@ class Trainer:
             output = self.model(batch_data)
             with torch.no_grad():
                 pred = torch.argmax(output, dim=-1)
-            loss = self.criterion(output, batch_data["target"], batch_data["bert_mask"])
+            loss = self.criterion(output, batch_data["target"], batch_data["bert_mask"],
+                                  self.data_loader.dataset.class_weights.to(self.device))
             loss.backward()
             self.optimizer.step()
 
@@ -167,12 +168,14 @@ class Trainer:
                     
                 output = self.model(batch_data)
                 pred = torch.argmax(output, dim=-1)
-                loss = self.criterion(output, batch_data["target"], batch_data["bert_mask"])
+                loss = self.criterion(output, batch_data["target"], batch_data["bert_mask"],
+                                      self.data_loader.dataset.class_weights.to(self.device))
 
                 # compute term sentence level metrics
                 term_predictions = get_term_predictions(pred, batch_data["target"], 
                                                         batch_data["bert_mask"], 
-                                                        batch_data["sentences"], self.valid_data_loader.tags)
+                                                        batch_data["sentences"], 
+                                                        self.valid_data_loader.tags)
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.writer.add_scalar("loss", loss.item())
                 for met in self.sentence_metric_ftns:

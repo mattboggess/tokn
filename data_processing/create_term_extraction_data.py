@@ -98,8 +98,8 @@ if __name__ == "__main__":
                 term_extraction_data["full"]["textbook"].append(textbook)
             
             # create small debug split 
-            if len(term_extraction_data["full"]["sentences"]) == 10:
-                term_extraction_data["debug"] = term_extraction_data["full"]
+            if len(term_extraction_data["full"]["sentences"]) == 32:
+                term_extraction_data["debug"] = term_extraction_data["full"].copy()
             
             # prevent overlap across train/test splits
             if split == "train":
