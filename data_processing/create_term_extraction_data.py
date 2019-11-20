@@ -5,6 +5,7 @@ import warnings
 import os
 import json
 import re
+import copy
 
 
 if __name__ == "__main__":
@@ -99,7 +100,7 @@ if __name__ == "__main__":
             
             # create small debug split 
             if len(term_extraction_data["full"]["sentences"]) == 32:
-                term_extraction_data["debug"] = term_extraction_data["full"].copy()
+                term_extraction_data["debug"] = copy.deepcopy(term_extraction_data["full"])
             
             # prevent overlap across train/test splits
             if split == "train":

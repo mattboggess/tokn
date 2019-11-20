@@ -3,17 +3,18 @@
     "n_gpu": 1,
 
     "arch": {
-        "type": "BertNER",
+        "type": "BertCRFNER",
         "args": {
             "num_classes": 5,
-            "dropout_rate": 0.3
+            "dropout_rate": 0.3,
+            "tags": ["O", "S", "B", "I", "E"]
         }
     },
     "data_loader": {
         "type": "TermNERDataLoader",
         "args":{
             "data_dir": "../../data/term_extraction",
-            "batch_size": 16,
+            "batch_size": 4,
             "shuffle": true,
             "num_workers": 0,
             "tags": ["O", "S", "B", "I", "E"],
@@ -24,11 +25,11 @@
     "optimizer": {
         "type": "AdamW",
         "args":{
-            "lr": 2e-5,
+            "lr": 1e-5,
             "weight_decay": 0.01
         }
     },
-    "loss": "nll_loss",
+    "loss": "crf_loss",
     "sentence_metrics": [
         "sentence_accuracy", "sentence_f1", "sentence_precision", "sentence_recall"
     ],
@@ -43,7 +44,7 @@
         }
     },
     "trainer": {
-        "epochs": 5,
+        "epochs": 20,
 
         "save_dir": "saved/",
         "save_period": 1,
