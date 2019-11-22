@@ -49,8 +49,19 @@ def main(config, split, out_dir, model_version):
             batch_data["pad_mask"] = batch_data["pad_mask"].to(device)
             batch_data["bert_mask"] = batch_data["bert_mask"].to(device)
             
+            if len(batch_data["target"].shape) < 2:
+                batch_data["target"] = batch_data["target"].unsqueeze(0)
+            
             output = model(batch_data)
             pred = torch.argmax(output, dim=-1)
+            if config["arch"]["type"] == "BertCRFNER": 
+                pred = model.decode(output, batch_data["bert_mask"])
+            else:
+                pred = torch.argmax(output, dim=-1)
+            loss = loss_fn(output, batch_data["target"], batch_data["bert_mask"],
+                           data_loader.dataset.class_weights.to(device),
+                           model)
+            
             term_predictions = get_term_predictions(pred, batch_data["target"], 
                                                     batch_data["bert_mask"], 
                                                     batch_data["sentences"], data_loader.tags)
@@ -58,7 +69,6 @@ def main(config, split, out_dir, model_version):
             epoch_pred += term_predictions["prediction"]
             epoch_terms.update(term_predictions["predicted_terms"])
 
-            loss = loss_fn(output, batch_data["target"], batch_data["bert_mask"])
             batch_size = batch_data["data"].shape[0]
             total_loss += loss.item() * batch_size
 
@@ -83,7 +93,7 @@ def main(config, split, out_dir, model_version):
     with open(filename, "w") as f:
         json.dump(log, f, indent=4)
     
-    logger.info(log)
+    print(log)
 
 
 if __name__ == '__main__':
@@ -97,7 +107,7 @@ if __name__ == '__main__':
     args.add_argument('-s', '--split', default=None, type=str,
                       help='data split you want to evaluate trained model on (default: None)')
 
-    config = ConfigParser.from_args(args)
+    config = ConfigParser.from_args(args, test=True)
     split = args.parse_args().split
     out_dir = "/".join(args.parse_args().resume.split("/")[:-1])
     model_version = args.parse_args().resume.split("/")[-1].replace(".pth", "")

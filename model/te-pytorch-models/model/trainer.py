@@ -89,13 +89,15 @@ class Trainer:
             batch_data["pad_mask"] = batch_data["pad_mask"].to(self.device)
             batch_data["bert_mask"] = batch_data["bert_mask"].to(self.device)
             
+            if len(batch_data["target"].shape) < 2:
+                batch_data["target"] = batch_data["target"].unsqueeze(0)
+            
             self.optimizer.zero_grad()
             output = self.model(batch_data)
             
             with torch.no_grad():
                 if self.config["arch"]["type"] == "BertCRFNER": 
                     pred = self.model.decode(output, batch_data["bert_mask"])
-                    pred = torch.tensor([[0] + p for p in pred])
                 else:
                     pred = torch.argmax(output, dim=-1)
             loss = self.criterion(output, batch_data["target"], batch_data["bert_mask"],
@@ -129,8 +131,6 @@ class Trainer:
 
             if batch_idx == self.len_epoch:
                 break
-#             if batch_idx == 5:
-#                 break
                 
         # compute epoch level sentence metrics
         log = {m.__name__: m(epoch_target, epoch_pred) for m in self.sentence_metric_ftns}
@@ -173,11 +173,13 @@ class Trainer:
                 batch_data["target"] = batch_data["target"].to(self.device)
                 batch_data["pad_mask"] = batch_data["pad_mask"].to(self.device)
                 batch_data["bert_mask"] = batch_data["bert_mask"].to(self.device)
+                
+                if len(batch_data["target"].shape) < 2:
+                    batch_data["target"] = batch_data["target"].unsqueeze(0)
                     
                 output = self.model(batch_data)
                 if self.config["arch"]["type"] == "BertCRFNER": 
                     pred = self.model.decode(output, batch_data["bert_mask"])
-                    pred = torch.tensor([[0] + p for p in pred])
                 else:
                     pred = torch.argmax(output, dim=-1)
                 loss = self.criterion(output, batch_data["target"], batch_data["bert_mask"],

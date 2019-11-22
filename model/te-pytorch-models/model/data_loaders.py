@@ -48,6 +48,7 @@ class TermNERDataset(Dataset):
         self.term_df = pd.DataFrame(df)
         
         # compute class weights to handle class imbalance
+        tags = [t for t in tags if t in tag_classes]
         self.class_weights = torch.Tensor(compute_class_weight("balanced", tags, tag_classes))
                 
         self.max_sent_length = max_sent_length

@@ -62,12 +62,12 @@ class BertCRFNER(BaseModel):
         self.crf = CRF(len(tags), batch_first=True)
         
         # Can't start with interior/end of term phrase
-        #self.crf.start_transitions.data[tags.index("I")] = -1e5
-        #self.crf.start_transitions.data[tags.index("E")] = -1e5
+        self.crf.start_transitions.data[tags.index("I")] = -1e5
+        self.crf.start_transitions.data[tags.index("E")] = -1e5
         
         # Can't end with interior/beginning of term phrase
-        #self.crf.end_transitions.data[tags.index("I")] = -1e5
-        #self.crf.end_transitions.data[tags.index("B")] = -1e5
+        self.crf.end_transitions.data[tags.index("I")] = -1e5
+        self.crf.end_transitions.data[tags.index("B")] = -1e5
         
         # Unlikely to immediately transition to another term 
         self.crf.transitions.data[tags.index("E"), tags.index("B")] = -1e5
@@ -93,11 +93,24 @@ class BertCRFNER(BaseModel):
         s, _ = self.bert(batch_data["data"], attention_mask=batch_data["pad_mask"])
         s = self.dropout(s)
         emissions = self.fc(s)
-        s = self.softmax(s)
+        #s = self.softmax(s)
         return emissions 
 
     def decode(self, emissions, mask):
-        emissions = emissions[:, 1:, :]
-        mask = mask.to(torch.uint8)[:, 1:]
-        return self.crf.decode(emissions)
+        preds = []
+        for i in range(emissions.shape[0]):
+            m = mask[i, :] == 1
+            ems = emissions[i, m, :].unsqueeze(0)
+            seq = self.crf.decode(ems)[0]
+            
+            seq_ix = 0
+            tmp = []
+            for i in range(len(m)):
+                if m[i]:
+                    tmp.append(seq[seq_ix])
+                    seq_ix += 1
+                else:
+                    tmp.append(0)
+            preds.append(tmp)
+        return torch.Tensor(preds).to(torch.int32) 
 

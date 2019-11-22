@@ -24,8 +24,11 @@ def nll_loss(output, target, bert_mask, class_weights, model=None):
     return loss
 
 def crf_loss(emissions, target, bert_mask, class_weights, model):
-    emissions = emissions[:, 1:, :]
-    mask = bert_mask.to(torch.uint8)[:, 1:]
-    tags = target[:, 1:]
-    ll = model.crf(emissions, tags, mask=mask)
+    ll = 0
+    for i in range(emissions.shape[0]):
+        mask = bert_mask[i, :] == 1
+        ems = emissions[i, mask, :].unsqueeze(0)
+        tags = target[i, mask].unsqueeze(0)
+        ll += model.crf(ems, tags)
+        
     return -ll

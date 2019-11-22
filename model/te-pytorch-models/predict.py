@@ -77,8 +77,14 @@ def main(config, input_file, out_dir, model_version):
             batch_data["pad_mask"] = batch_data["pad_mask"].to(device)
             batch_data["bert_mask"] = batch_data["bert_mask"].to(device)
             
+            if len(batch_data["target"].shape) < 2:
+                batch_data["target"] = batch_data["target"].unsqueeze(0)
+            
             output = model(batch_data)
-            pred = torch.argmax(output, dim=-1)
+            if config["arch"]["type"] == "BertCRFNER": 
+                pred = model.decode(output, batch_data["bert_mask"])
+            else:
+                pred = torch.argmax(output, dim=-1)
             term_predictions = get_term_predictions(pred, batch_data["target"], 
                                                     batch_data["bert_mask"], 
                                                     batch_data["sentences"], data_loader.tags)
