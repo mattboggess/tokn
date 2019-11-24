@@ -1,6 +1,7 @@
 import argparse
 import torch
 import json
+from utils import tag_terms
 from tqdm import tqdm
 import model.data_loaders as module_data
 import model.loss as module_loss
@@ -77,8 +78,14 @@ def main(config, input_file, out_dir, model_version):
             batch_data["pad_mask"] = batch_data["pad_mask"].to(device)
             batch_data["bert_mask"] = batch_data["bert_mask"].to(device)
             
+            if len(batch_data["target"].shape) < 2:
+                batch_data["target"] = batch_data["target"].unsqueeze(0)
+            
             output = model(batch_data)
-            pred = torch.argmax(output, dim=-1)
+            if config["arch"]["type"] == "BertCRFNER": 
+                pred = model.decode(output, batch_data["bert_mask"])
+            else:
+                pred = torch.argmax(output, dim=-1)
             term_predictions = get_term_predictions(pred, batch_data["target"], 
                                                     batch_data["bert_mask"], 
                                                     batch_data["sentences"], data_loader.tags)
@@ -87,13 +94,19 @@ def main(config, input_file, out_dir, model_version):
             epoch_terms.update(term_predictions["predicted_terms"])
 
     
-    predicted_terms = "\n".join(list(epoch_terms.keys()))
-    filename = f"{out_dir}/{model_version}_predicted_terms.txt"
+    predicted_terms = list(epoch_terms.keys())
+    result = tag_terms(text, predicted_terms, nlp)
+    
+    filename = f"{out_dir}/{model_version}_predicted_terms.json"
     with open(filename, "w") as f:
-        f.write(predicted_terms)
+        json.dump(result["found_terms"], f)
+        
+    filename = f"{out_dir}/{model_version}_annotated_text.txt"
+    with open(filename, "w") as f:
+        f.write(result["annotated_text"])
     
     os.remove(tmp_input_file)
-    logger.info(predicted_terms)
+    logger.info(result["found_terms"])
 
 
 if __name__ == '__main__':
@@ -111,6 +124,6 @@ if __name__ == '__main__':
 
     config = ConfigParser.from_args(args)
     args = args.parse_args()
-    model_version = "-".join(args.resume.split("/")[-3:])
+    model_version = "-".join(args.resume.split("/")[-3:])[:-4]
     
     main(config, args.input_file, args.output_dir, model_version)

@@ -89,11 +89,20 @@ class Trainer:
             batch_data["pad_mask"] = batch_data["pad_mask"].to(self.device)
             batch_data["bert_mask"] = batch_data["bert_mask"].to(self.device)
             
+            if len(batch_data["target"].shape) < 2:
+                batch_data["target"] = batch_data["target"].unsqueeze(0)
+            
             self.optimizer.zero_grad()
             output = self.model(batch_data)
+            
             with torch.no_grad():
-                pred = torch.argmax(output, dim=-1)
-            loss = self.criterion(output, batch_data["target"], batch_data["bert_mask"])
+                if self.config["arch"]["type"] == "BertCRFNER": 
+                    pred = self.model.decode(output, batch_data["bert_mask"])
+                else:
+                    pred = torch.argmax(output, dim=-1)
+            loss = self.criterion(output, batch_data["target"], batch_data["bert_mask"],
+                                  self.data_loader.dataset.class_weights.to(self.device),
+                                  self.model)
             loss.backward()
             self.optimizer.step()
 
@@ -164,15 +173,24 @@ class Trainer:
                 batch_data["target"] = batch_data["target"].to(self.device)
                 batch_data["pad_mask"] = batch_data["pad_mask"].to(self.device)
                 batch_data["bert_mask"] = batch_data["bert_mask"].to(self.device)
+                
+                if len(batch_data["target"].shape) < 2:
+                    batch_data["target"] = batch_data["target"].unsqueeze(0)
                     
                 output = self.model(batch_data)
-                pred = torch.argmax(output, dim=-1)
-                loss = self.criterion(output, batch_data["target"], batch_data["bert_mask"])
+                if self.config["arch"]["type"] == "BertCRFNER": 
+                    pred = self.model.decode(output, batch_data["bert_mask"])
+                else:
+                    pred = torch.argmax(output, dim=-1)
+                loss = self.criterion(output, batch_data["target"], batch_data["bert_mask"],
+                                      self.data_loader.dataset.class_weights.to(self.device),
+                                      self.model)
 
                 # compute term sentence level metrics
                 term_predictions = get_term_predictions(pred, batch_data["target"], 
                                                         batch_data["bert_mask"], 
-                                                        batch_data["sentences"], self.valid_data_loader.tags)
+                                                        batch_data["sentences"], 
+                                                        self.valid_data_loader.tags)
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.writer.add_scalar("loss", loss.item())
                 for met in self.sentence_metric_ftns:
@@ -184,6 +202,10 @@ class Trainer:
                 epoch_pred += term_predictions["prediction"]
                 epoch_loss += loss.item()
                 epoch_terms.update(term_predictions["predicted_terms"])
+                
+#                 if batch_idx == 5:
+#                     print(self.model.crf.transitions.data)
+#                     break
                 
         # add histogram of model parameters to the tensorboard
         for name, p in self.model.named_parameters():
@@ -291,9 +313,9 @@ class Trainer:
             'monitor_best': self.mnt_best,
             'config': self.config
         }
-        filename = str(self.checkpoint_dir / 'checkpoint-epoch{}.pth'.format(epoch))
-        torch.save(state, filename)
-        self.logger.info("Saving checkpoint: {} ...".format(filename))
+        #filename = str(self.checkpoint_dir / 'checkpoint-epoch{}.pth'.format(epoch))
+        #torch.save(state, filename)
+        #self.logger.info("Saving checkpoint: {} ...".format(filename))
         
         if save_best:
             best_path = str(self.checkpoint_dir / 'model_best.pth')

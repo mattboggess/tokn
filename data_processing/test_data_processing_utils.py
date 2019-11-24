@@ -34,6 +34,7 @@ class TestDataProcessingUtils(unittest.TestCase):
         bioes_tags = ["O", "S", "O", "O", "O", "O", "O", "S", "O", "O", "B", "E", "O"]
         solution = (tokenized_text, bioes_tags, found_terms)
         output = tag_terms(text, terms)
+        print(output)
 
         self.assertEqual(output, solution)
         

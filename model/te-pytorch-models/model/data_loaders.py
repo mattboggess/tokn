@@ -4,6 +4,7 @@ import os
 import torch
 import numpy as np
 import pandas as pd 
+from sklearn.utils.class_weight import compute_class_weight
 from transformers import BertTokenizer
 
 
@@ -38,11 +39,17 @@ class TermNERDataset(Dataset):
         self.term_counts = data["terms"]
                                   
         df = {"sentence": [], "tag": [], "textbook": []}
+        tag_classes = []
         for sentence, tag, textbook in zip(data["sentences"], data["tags"], data["textbook"]):
             df["sentence"].append(sentence)
             df["tag"].append(tag)
             df["textbook"].append(textbook)
+            tag_classes += tag.split(" ")
         self.term_df = pd.DataFrame(df)
+        
+        # compute class weights to handle class imbalance
+        tags = [t for t in tags if t in tag_classes]
+        self.class_weights = torch.Tensor(compute_class_weight("balanced", tags, tag_classes))
                 
         self.max_sent_length = max_sent_length
         self.embedding_type = embedding_type

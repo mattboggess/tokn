@@ -49,7 +49,8 @@ def main(config, split, out_dir, model_version):
 
             output = model(batch_data, evaluate=True)
             pred = torch.argmax(output, dim=-1)
-            loss = loss_fn(output, batch_data["target"].squeeze(-1), weights=data_loader.dataset.class_weights.to(device))
+            loss = loss_fn(output, batch_data["target"].squeeze(-1),
+                           data_loader.dataset.class_weights.to(device))
 
             # accumulate epoch quantities 
             epoch_target += [t.item() for t in batch_data["target"]]
