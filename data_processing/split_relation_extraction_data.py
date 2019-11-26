@@ -1,6 +1,7 @@
 # Splits relation extraction data into train and test splits for model evaluation 
 import json
 import numpy as np
+import re
 
 TEST_FRACTION = 0.15
 VALIDATION_FRACTION = 0.15
@@ -86,6 +87,14 @@ if __name__ == "__main__":
                                                          "relation": relation}})
                     db[relation].append({neg_word_pair: {"sentences": neg_examples, 
                                                          "relation": "no-relation"}})
+                    
+                    # add no-relation flipped version of word pair so it learns directionality
+                    rep = {"e1": "e2", "e2": "e1"}
+                    pattern = re.compile("|".join(rep.keys()))
+                    flip_wp = " -> ".join(pos_word_pair.split(" -> ")[::-1])
+                    flip_examples = [pattern.sub(lambda m: rep[re.escape(m.group(0))], pe) for pe in pos_examples] 
+                    db[relation].append({flip_wp: {"sentences": flip_examples, 
+                                                   "relation": "no-relation"}})
     
     with open(f"{data_dir}/relations_train.json", "w") as f:
         json.dump(train_relations, f, indent=4)
