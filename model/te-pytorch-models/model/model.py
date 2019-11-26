@@ -30,7 +30,7 @@ class BaseModel(nn.Module):
 
 class BertNER(BaseModel):
     
-    def __init__(self, num_classes, dropout_rate=0.1):
+    def __init__(self, num_classes, dropout_rate=0.3, tags=["O", "S", "B", "I", "E"]):
         super().__init__()
         self.bert = BertModel.from_pretrained("bert-base-cased")
         bert_config = self.bert.config.__dict__
