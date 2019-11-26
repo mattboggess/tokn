@@ -7,24 +7,29 @@ import pandas as pd
 from sklearn.utils.class_weight import compute_class_weight
 from transformers import BertTokenizer
 
-ALL_RELATIONS = ['subclass-of', 'has-part', 'possesses', 'has-region', 'is-inside', 'is-at', 'element', 'abuts', 'is-outside']
-TAXONOMY_RELATIONS = ['subclass-of']
-STRUCTURE_RELATIONS = ['has-part', 'possesses', 'has-region', 'is-inside', 'is-at', 'element', 'abuts', 'is-outside']
+RELATION_MAPPING = {
+    "taxonomy": ["subclass-of"],
+    "meronym": ["has-part", "has-region", "element", "possesses", "material"],
+    "spatial": ["is-at", "is-between", "is-inside", "is-outside", "abuts"],
+    "event_structure": ["first-subevent", "subevent", "next-event"],
+    "participant": ["agent", "object", "instrument", "raw-material", "result", "site"],
+    "causal": ["causes", "enables", "prevents", "inhibits"]
+}
 
 class RelationDataset(Dataset):
     """Relation dataset."""
 
-    def __init__(self, data_dir, split="train", relations=ALL_RELATIONS, embedding_type="Bert",
-                 max_sent_length=10):
+    def __init__(self, data_dir, relations, split="train", embedding_type="Bert", 
+                 max_sent_length=10, predict=False):
         """
         Parameters
         ----------
         data_dir: str 
             Path to where the relations data is stored 
-        split: str, ['train', 'validation', 'test', 'debug'] 
-            The data split to load. debug is a small debugging dataset 
         relations: list of str 
             List of relations to include to classify between 
+        split: str, ['train', 'validation', 'test', 'debug'] 
+            The data split to load. debug is a small debugging dataset 
         embedding_type: str, ['Bert', 'custom'] 
             Type of embedding to use for the data loader. 
         max_sent_length: int 
@@ -32,23 +37,42 @@ class RelationDataset(Dataset):
             sentences will be padded.
         """
         
-        # filter to relations classifying between
         all_relations = json.load(open(os.path.join(data_dir, f"relations_{split}.json")))
-        all_relations = {k: v for k,v in all_relations.items() if k in relations}
+        
+        # all relations are dummy coded as no-relation if predicting on new data
+        if predict:
+            all_relations = {k: v for k,v in all_relations.items() if k in ["no-relation"]}
+        # read in relations consolidating those in same family if family is passed 
+        else:
+            tmp = {}
+            for relation in relations:
+                if relation in RELATION_MAPPING:
+                    tmp[relation] = []
+                    for r in RELATION_MAPPING[relation]:
+                        if r in all_relations:
+                            tmp[relation] += all_relations[r]
+                else:
+                    tmp[relation] = all_relations[relation]
+            all_relations = tmp
                                   
+        # add no-relation and convert into dataframe
         self.relations = ["no-relation"] + relations
         self.relation_df = None 
         for relation in all_relations:
             for i in range(len(all_relations[relation])):
                 df = pd.DataFrame.from_dict(all_relations[relation][i], orient='index')
+                df.loc[df.relation != "no-relation", "relation"] = relation
                 if self.relation_df is None:
                     self.relation_df = df
                 else:
                     self.relation_df = pd.concat([self.relation_df, df], sort=False)
-        self.relation_df.to_csv("tmp.csv")
         
-        self.class_weights = torch.Tensor(compute_class_weight("balanced", self.relations, 
-                                                               self.relation_df.relation))
+        # compute weights to adjust for class imbalance
+        if not predict:
+            self.class_weights = torch.Tensor(compute_class_weight("balanced", self.relations, 
+                                                                   self.relation_df.relation))
+        else:
+            self.class_weights = torch.Tensor([1.0] * len(self.relations))
                 
         self.max_sent_length = max_sent_length
         self.embedding_type = embedding_type
@@ -137,7 +161,8 @@ class RelationDataLoader(DataLoader):
     Data loader for biology relations
     """
     def __init__(self, data_dir, batch_size, relations, shuffle=True, max_sentences=16, 
-                 num_workers=1, split="train", embedding_type="custom", max_sent_length=10):
+                 num_workers=1, split="train", embedding_type="custom", max_sent_length=10,
+                 predict=False):
         """
         Parameters
         ----------
@@ -162,7 +187,8 @@ class RelationDataLoader(DataLoader):
         self.data_dir = data_dir
         self.max_sentences = max_sentences
         self.dataset = RelationDataset(self.data_dir, split=split, embedding_type=embedding_type,
-                                       relations=relations, max_sent_length=max_sent_length)
+                                       relations=relations, max_sent_length=max_sent_length,
+                                       predict=predict)
         super().__init__(self.dataset, batch_size=batch_size, shuffle=shuffle, 
                          num_workers=num_workers, collate_fn=self.relation_collate_fn)
         

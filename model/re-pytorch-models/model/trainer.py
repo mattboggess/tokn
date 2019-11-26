@@ -88,7 +88,7 @@ class Trainer:
                 batch_data[field] = batch_data[field].to(self.device)
             
             self.optimizer.zero_grad()
-            output = self.model(batch_data, evaluate=False)
+            output, probs = self.model(batch_data, evaluate=False)
             with torch.no_grad():
                 pred = torch.argmax(output, dim=-1)
             loss = self.criterion(output, batch_data["target"].squeeze(-1), 
@@ -154,7 +154,7 @@ class Trainer:
                 for field in ["data", "target", "pad_mask", "e1_mask", "e2_mask", "sentence_mask"]:
                     batch_data[field] = batch_data[field].to(self.device)
                     
-                output = self.model(batch_data, evaluate=True)
+                output, probs = self.model(batch_data, evaluate=True)
                 pred = torch.argmax(output, dim=-1)
                 loss = self.criterion(output, batch_data["target"].squeeze(-1),
                                       self.data_loader.dataset.class_weights.to(self.device))
