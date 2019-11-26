@@ -8,7 +8,7 @@ import model.loss as module_loss
 import model.metric as module_metric
 import model.model as module_arch
 from parse_config import ConfigParser
-from model.metric import get_word_pair_classifications
+from model.metric import get_word_pair_classifications, compute_relation_metrics
 
 
 def main(config, split, out_dir, model_version):
@@ -32,6 +32,9 @@ def main(config, split, out_dir, model_version):
         model = torch.nn.DataParallel(model)
     model.load_state_dict(state_dict)
 
+    predictions = {}
+    relations = data_loader.dataset.relations
+    
     # prepare model for testing
     model = model.to(device)
     model.eval()
@@ -47,7 +50,13 @@ def main(config, split, out_dir, model_version):
             for field in ["data", "target", "pad_mask", "e1_mask", "e2_mask", "sentence_mask"]:
                 batch_data[field] = batch_data[field].to(device)
 
-            output = model(batch_data, evaluate=True)
+            output, probs = model(batch_data, evaluate=True)
+            for i in range(batch_data["data"].shape[0]):
+                predictions[batch_data["word_pair"][i]] = {}
+                ix = np.argsort(np.array(probs[i, :]))[::-1]
+                predictions[batch_data["word_pair"][i]]["relations"] = [relations[j] for j in ix] 
+                predictions[batch_data["word_pair"][i]]["confidence"] = [probs[i, j].item() for j in ix] 
+                
             pred = torch.argmax(output, dim=-1)
             loss = loss_fn(output, batch_data["target"].squeeze(-1),
                            data_loader.dataset.class_weights.to(device))
@@ -66,13 +75,20 @@ def main(config, split, out_dir, model_version):
     
     wp_classifications = get_word_pair_classifications(
         epoch_pred, epoch_target, epoch_word_pairs, data_loader.dataset.relations)
-    filename = f"{out_dir}/{split}-{model_version}-word-pair-classifications.json"
-    with open(filename, "w") as f:
-        json.dump(wp_classifications, f, indent=4)
-        
+    log.update(compute_relation_metrics(wp_classifications))
+    
     filename = f"{out_dir}/{split}-{model_version}-metrics.json"
     with open(filename, "w") as f:
         json.dump(log, f, indent=4)
+        
+    filename = f"{out_dir}/{split}-{model_version}-word-pair-errors.json"
+    with open(filename, "w") as f:
+        json.dump(wp_classifications, f, indent=4)
+        
+    filename = f"{out_dir}/{split}-{model_version}-word-pair-predictions.json"
+    with open(filename, "w") as f:
+        json.dump(predictions, f, indent=4)
+        
     print(log)
 
 
