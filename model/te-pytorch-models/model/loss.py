@@ -18,7 +18,6 @@ def nll_loss(output, target, bert_mask, class_weights, model=None):
     output = output.view(output.shape[0] * output.shape[1], -1)
     target = target.view(target.shape[0] * target.shape[1])
     bert_mask = bert_mask.view(bert_mask.shape[0] * bert_mask.shape[1])
-    loss = F.nll_loss(output, target, reduction="none")
     loss = F.nll_loss(output, target, reduction="none", weight=class_weights)
     loss = torch.sum(loss * bert_mask) / torch.sum(bert_mask)
     return loss

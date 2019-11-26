@@ -1,0 +1,58 @@
+{
+    "name": "BertSoftmax",
+    "n_gpu": 1,
+
+    "arch": {
+        "type": "BertNER",
+        "args": {
+            "num_classes": 5,
+            "dropout_rate": 0.3,
+            "tags": ["O", "S", "B", "I", "E"]
+        }
+    },
+    "data_loader": {
+        "type": "TermNERDataLoader",
+        "args":{
+            "data_dir": "../../data/term_extraction",
+            "batch_size": 8,
+            "shuffle": true,
+            "num_workers": 0,
+            "tags": ["O", "S", "B", "I", "E"],
+            "embedding_type": "Bert",
+            "max_sent_length": 256 
+        }
+    },
+    "optimizer": {
+        "type": "AdamW",
+        "args":{
+            "lr": 3e-5,
+            "weight_decay": 0.01
+        }
+    },
+    "loss": "nll_loss",
+    "sentence_metrics": [
+        "sentence_accuracy", "sentence_f1", "sentence_precision", "sentence_recall"
+    ],
+    "term_metrics": [
+        "term_f1", "term_precision", "term_recall"
+    ],
+    "lr_scheduler": {
+        "type": "StepLR",
+        "args": {
+            "step_size": 50,
+            "gamma": 0.0
+        }
+    },
+    "trainer": {
+        "epochs": 10,
+
+        "save_dir": "saved/",
+        "save_period": 1,
+        "verbosity": 2,
+        
+        "monitor": "max val_term_recall",
+        "early_stop": 3,
+
+        "tensorboard": true
+    }
+}

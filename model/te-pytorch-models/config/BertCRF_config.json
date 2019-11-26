@@ -1,5 +1,5 @@
 {
-    "name": "TE_BertCRF",
+    "name": "BertCRF",
     "n_gpu": 1,
 
     "arch": {
@@ -44,14 +44,14 @@
         }
     },
     "trainer": {
-        "epochs": 20,
+        "epochs": 10,
 
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
         
-        "monitor": "max val_term_f1",
-        "early_stop": 20,
+        "monitor": "max val_term_recall",
+        "early_stop": 3,
 
         "tensorboard": true
     }
