@@ -106,7 +106,6 @@ class BagAttentionBert(BaseModel):
             # fully connected + softmax for classification
             output = self.fc_class(bag_rep)
             prob = F.softmax(output, dim=1)
-            print(prob)
             output = self.softmax(output)
             
         # don't know which relation to determine attention on when testing

@@ -1,9 +1,12 @@
 # TOKN Pytorch Term Extraction Models 
 
-The code in this folder is adapted slightly from the following openly available pytorch template:
+The code in this folder is adapted from an open source [pytorch deep learning template](). Refer to
+the documentation provided at the link for more information on the structure of this repo.
 
 
-## Installation 
+## Installation & Environment
+
+### Local
 
 Install the required Python libraries:
 
@@ -13,7 +16,24 @@ Download the Stanford NLP models to enable the text preprocessing pipeline for p
 
 `import stanfordnlp; stanfordnlp.download('en')`
 
-## Training, Testing, & Predicting
+### AWS 
+
+## Making Predictions
+
+The predict.py script takes in a text file and outputs predicted terms for that the text in that file.
+
+`python predict.py 
+     -r saved/models/{config_name}/{run_date_name}/{model_name}.pth 
+     -i {input_text_file} 
+     -o {output_dir}`
+
+Example:
+   
+ `python predict.py -r saved/models/TE_BertNER/weighted/weighted_model_best.pth -i example_passage.txt`
+ 
+## Saved Models 
+
+## Training & Testing
 
 ### Train 
 
@@ -39,16 +59,6 @@ Outputs two files to the same folder defined by r argument:
     count across all sentences (with repetitions for terms). term metrics take all terms classified
     at least once and calculate metrics with this list against the list of tagged terms
 
-### Predict
-
-The predict.py script takes in a text file and outputs predicted terms for that the text in that file.
-
-`python predict.py -r saved/models/{config_name}/{run_date_name}/{model_name}.pth 
-  -i {input_text_file} -o {output_dir}`
-
-Example:
-   
- `python predict.py -r saved/models/TE_BertNER/weighted/weighted_model_best.pth -i example_passage.txt`
 
 ## Folder Structure
   ```

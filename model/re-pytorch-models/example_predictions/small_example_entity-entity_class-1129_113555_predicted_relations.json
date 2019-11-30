@@ -1,0 +1,58 @@
+{
+    "microfilament -> cytoskeleton": {
+        "relations": [
+            "meronym",
+            "taxonomy",
+            "spatial",
+            "no-relation"
+        ],
+        "confidence": [
+            0.9926647543907166,
+            0.005122429691255093,
+            0.001369718462228775,
+            0.0008431085734628141
+        ]
+    },
+    "protein -> microfilament": {
+        "relations": [
+            "meronym",
+            "taxonomy",
+            "no-relation",
+            "spatial"
+        ],
+        "confidence": [
+            0.9154280424118042,
+            0.0816425159573555,
+            0.0015400322154164314,
+            0.0013894360745325685
+        ]
+    },
+    "cytoskeleton -> protein": {
+        "relations": [
+            "spatial",
+            "meronym",
+            "no-relation",
+            "taxonomy"
+        ],
+        "confidence": [
+            0.6745670437812805,
+            0.32079294323921204,
+            0.0033745612017810345,
+            0.0012654736638069153
+        ]
+    },
+    "meiosis -> ribosome": {
+        "relations": [
+            "no-relation",
+            "taxonomy",
+            "meronym",
+            "spatial"
+        ],
+        "confidence": [
+            0.8839002251625061,
+            0.11506078392267227,
+            0.0008974000811576843,
+            0.000141651660669595
+        ]
+    }
+}

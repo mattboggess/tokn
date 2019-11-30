@@ -25,46 +25,6 @@ def inf_loop(data_loader):
     for loader in repeat(data_loader):
         yield from loader
 
-class MetricTracker:
-    def __init__(self, *keys, writer=None):
-        self.writer = writer
-        self._data = pd.DataFrame(index=keys, columns=['total', 'counts', 'average'])
-        self.reset()
-        
-    def reset(self):
-        for col in self._data.columns:
-            self._data[col].values[:] = 0
-
-    def update(self, key, value, n=1):
-        if self.writer is not None:
-            self.writer.add_scalar(key, value)
-        self._data.total[key] += value * n
-        self._data.counts[key] += n
-        self._data.average[key] = self._data.total[key] / self._data.counts[key]
-
-    def avg(self, key):
-        return self._data.average[key]
-    
-    def result(self):
-        return dict(self._data.average)
-
-class MultiClassMetricTracker:
-    def __init__(self, *keys, writer=None):
-        self.writer = writer
-        self._data = pd.DataFrame(index=keys, columns=['total', 'counts', 'average'])
-        self.reset()
-        
-    def reset(self):
-        for col in self._data.columns:
-            self._data[col].values[:] = 0
-
-    def update(self, key, value, n=1):
-        if self.writer is not None:
-            self.writer.add_scalar(key, value)
-        self._data.total[key] += value * n
-        self._data.counts[key] += n
-        self._data.average[key] = self._data.total[key] / self._data.counts[key]
-
 def tag_terms(text, terms, nlp=None):
     """ Identifies and tags any terms in a given input text.
 
@@ -117,7 +77,7 @@ def tag_terms(text, terms, nlp=None):
          'cell': {'text': ['cell'], 'indices': [(7, 8)], 'tag': ['NN'], 'type': ['Entity']}}}
     """
     from spacy.lang.en.stop_words import STOP_WORDS
-    spacy.tokens.token.Token.set_extension('workaround', default='')
+    spacy.tokens.token.Token.set_extension('workaround', default='', force=True)
     
     HEURISTIC_TOKENS = ["-", "plant", "substance", "atom"]
     
@@ -174,12 +134,14 @@ def tag_terms(text, terms, nlp=None):
             plural_match = (lemmatized_text[ix:ix + term_length] == match_uncommon_plural)
             lemma_match = (lemmatized_text[ix:ix + term_length] == lemma_term_list)
             text_match = (tokenized_text[ix:ix + term_length] == text_term_list)
+            lower_match = ([t.lower() for t in tokenized_text[ix:ix + term_length]] ==
+                           [t.lower() for t in text_term_list])
             
             # Only match on text if lemmatized version is a stop word (i.e. lower casing acronym)
             if term_lemma in STOP_WORDS:
                 valid_match = text_match
             else:
-                valid_match = heuristic_match or plural_match or text_match or lemma_match
+                valid_match = heuristic_match or plural_match or text_match or lemma_match or lower_match
             
             if valid_match:
                 
@@ -226,6 +188,111 @@ def tag_terms(text, terms, nlp=None):
         "found_terms": dict(found_terms)
     }
 
+def merge_term_results(results1, results2, offset=0):
+    for term in results2:
+        if term not in results1:
+            results1[term] = results2[term]
+        else:
+            for field in ["text", "indices", "pos", "type"]:
+                if field == "indices":
+                    indices_adj = [(t[0] + offset, t[1] + offset) for t in results2[term][field]]
+                    results1[term][field] += indices_adj 
+                else:
+                    results1[term][field] += results2[term][field]
+    return results1
+    return results1
+
+def postprocess_tagged_terms(tag_results, offset=0):
+    """
+    Takes in extracted terms and annotated text and updates the results by joining any consecutive
+    singleton terms into a single term phrase.
+    """
+    
+    term_lemmas = []
+    term_texts = []
+    term_indices = []
+    term_types = []
+    term_pos = []
+    
+    found_terms = tag_results["found_terms"]
+    annotated_text = tag_results["annotated_text"]
+    for term in found_terms:
+        
+        # flatten the dictionary
+        term_lemmas += [term] * len(found_terms[term]["text"]) 
+        term_texts += found_terms[term]["text"]
+        term_indices += [(t[0] + offset, t[1] + offset) for t in found_terms[term]["indices"]]
+        term_types += found_terms[term]["type"]
+        term_pos += found_terms[term]["pos"]
+    
+    sort_ix = [i[0] for i in sorted(enumerate(term_indices), key=lambda x:x[1][0])]
+    new_results = {}
+    i = 0
+    while i < len(sort_ix):
+        ix = sort_ix[i]
+        term_ix = term_indices[ix]
+        start = term_ix[0]
+        end = term_ix[1] 
+        lemma = term_lemmas[ix] 
+        text = term_texts[ix]
+        pos = term_pos[ix]
+        typ = term_types[ix]
+        replace_text = f"<{typ}>{text}</{typ}>"
+        
+        while i + 1 < len(sort_ix):
+            next_ix = sort_ix[i + 1]
+            if term_indices[next_ix][0] == term_ix[1]:
+                if "V" not in pos and "V" not in term_pos[next_ix]:
+                    pos = f"{pos} {term_pos[next_ix]}"
+                    text = f"{text} {term_texts[next_ix]}"
+                    lemma = f"{lemma} {term_lemmas[next_ix]}"
+                    typ = term_types[next_ix]
+                    replace_text = f"{replace_text} <{typ}>{term_texts[next_ix]}</{typ}>"
+                    term_ix = term_indices[next_ix]
+                    ix = sort_ix[next_ix]
+                    end = term_ix[1]
+                    i += 1
+                else:
+                    break
+                    
+            # capture key term phrase with hyphen
+            elif tag_results["tokenized_text"][term_ix[1]] == "-" and \
+               term_indices[next_ix][0] == term_ix[1] + 1:
+                if "V" not in pos and "V" not in term_pos[next_ix]:
+                    pos = f"{pos} {term_pos[next_ix]}"
+                    text = f"{text}-{term_texts[next_ix]}"
+                    lemma = f"{lemma}-{term_lemmas[next_ix]}"
+                    typ = term_types[next_ix]
+                    replace_text = f"{replace_text}-<{typ}>{term_texts[next_ix]}</{typ}>"
+                    term_ix = term_indices[next_ix]
+                    ix = sort_ix[next_ix]
+                    end = term_ix[1]
+                    i += 1
+                else:
+                    break
+            else:
+                break
+                    
+        # merging terms
+        if lemma in new_results:
+            new_results[lemma]["type"].append(typ)
+            new_results[lemma]["text"].append(text)
+            new_results[lemma]["pos"].append(pos)
+            new_results[lemma]["indices"].append((start, end))
+        else:
+            new_results[lemma] = {
+                "type": [typ],
+                "text": [text],
+                "indices": [(start, end)],
+                "pos": [pos]}
+
+        annotated_text = annotated_text.replace(replace_text, 
+                                                f"<{typ}>{text}</{typ}>")
+                    
+        i += 1
+    
+    return {"found_terms": new_results, "annotated_text": annotated_text}
+        
 def determine_term_type(term):
     """ Categorizes a term as either entity or event based on several derived rules.
 

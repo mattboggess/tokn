@@ -1,0 +1,146 @@
+{
+    "microfilament -> cytoskeleton": {
+        "relations": [
+            "has-part",
+            "subclass-of",
+            "no-relation",
+            "has-region",
+            "possesses",
+            "element"
+        ],
+        "confidence": [
+            0.9915247559547424,
+            0.003291103057563305,
+            0.0028980437200516462,
+            0.0016976080369204283,
+            0.00046516343718394637,
+            0.0001233645307365805
+        ]
+    },
+    "cytoskeleton -> microfilament": {
+        "relations": [
+            "has-part",
+            "subclass-of",
+            "no-relation",
+            "has-region",
+            "possesses",
+            "element"
+        ],
+        "confidence": [
+            0.9914576411247253,
+            0.003334599081426859,
+            0.0029138235840946436,
+            0.0017066731816157699,
+            0.0004650549963116646,
+            0.00012226763647049665
+        ]
+    },
+    "microfilament -> protein": {
+        "relations": [
+            "has-part",
+            "subclass-of",
+            "no-relation",
+            "has-region",
+            "possesses",
+            "element"
+        ],
+        "confidence": [
+            0.8767368793487549,
+            0.10627548396587372,
+            0.012802202254533768,
+            0.002131988760083914,
+            0.0014752623392269015,
+            0.0005782077205367386
+        ]
+    },
+    "protein -> microfilament": {
+        "relations": [
+            "has-part",
+            "subclass-of",
+            "no-relation",
+            "has-region",
+            "possesses",
+            "element"
+        ],
+        "confidence": [
+            0.8795536756515503,
+            0.1031758189201355,
+            0.013065296225249767,
+            0.0021327603608369827,
+            0.0014938391977921128,
+            0.000578587525524199
+        ]
+    },
+    "cytoskeleton -> protein": {
+        "relations": [
+            "has-part",
+            "no-relation",
+            "subclass-of",
+            "has-region",
+            "possesses",
+            "element"
+        ],
+        "confidence": [
+            0.9914302229881287,
+            0.0036257763858884573,
+            0.002479171147570014,
+            0.0018604319775477052,
+            0.0004822266928385943,
+            0.00012221622455399483
+        ]
+    },
+    "protein -> cytoskeleton": {
+        "relations": [
+            "has-part",
+            "no-relation",
+            "subclass-of",
+            "has-region",
+            "possesses",
+            "element"
+        ],
+        "confidence": [
+            0.9915982484817505,
+            0.0035755163989961147,
+            0.0023919062223285437,
+            0.0018218333134427667,
+            0.0004891338758170605,
+            0.00012326816795393825
+        ]
+    },
+    "ribosome -> meiosis": {
+        "relations": [
+            "subclass-of",
+            "no-relation",
+            "has-part",
+            "possesses",
+            "element",
+            "has-region"
+        ],
+        "confidence": [
+            0.9891576766967773,
+            0.007151029538363218,
+            0.0015444396995007992,
+            0.0012747857253998518,
+            0.000657380442135036,
+            0.00021464383462443948
+        ]
+    },
+    "meiosis -> ribosome": {
+        "relations": [
+            "subclass-of",
+            "no-relation",
+            "has-part",
+            "possesses",
+            "element",
+            "has-region"
+        ],
+        "confidence": [
+            0.9891483187675476,
+            0.007160437759011984,
+            0.0015476068947464228,
+            0.0012717986246570945,
+            0.0006570210098288953,
+            0.0002147233026335016
+        ]
+    }
+}

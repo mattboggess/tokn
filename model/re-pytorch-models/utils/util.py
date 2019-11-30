@@ -2,6 +2,7 @@ import json
 import pandas as pd
 from pathlib import Path
 from itertools import repeat
+import itertools
 from collections import OrderedDict, defaultdict
 import stanfordnlp
 import spacy
@@ -29,64 +30,27 @@ def inf_loop(data_loader):
     for loader in repeat(data_loader):
         yield from loader
 
-class MetricTracker:
-    def __init__(self, *keys, writer=None):
-        self.writer = writer
-        self._data = pd.DataFrame(index=keys, columns=['total', 'counts', 'average'])
-        self.reset()
-        
-    def reset(self):
-        for col in self._data.columns:
-            self._data[col].values[:] = 0
-
-    def update(self, key, value, n=1):
-        if self.writer is not None:
-            self.writer.add_scalar(key, value)
-        self._data.total[key] += value * n
-        self._data.counts[key] += n
-        self._data.average[key] = self._data.total[key] / self._data.counts[key]
-
-    def avg(self, key):
-        return self._data.average[key]
+def postprocess_relation_predictions(predictions):
     
-    def result(self):
-        return dict(self._data.average)
-
-class MultiClassMetricTracker:
-    def __init__(self, *keys, writer=None):
-        self.writer = writer
-        self._data = pd.DataFrame(index=keys, columns=['total', 'counts', 'average'])
-        self.reset()
+    output = {}
+    word_pairs = [wp.split(" -> ") for wp in predictions.keys()]
+    for wp in word_pairs:
+        fp = " -> ".join([wp[0], wp[1]])
+        bp = " -> ".join([wp[1], wp[0]])
         
-    def reset(self):
-        for col in self._data.columns:
-            self._data[col].values[:] = 0
-
-    def update(self, key, value, n=1):
-        if self.writer is not None:
-            self.writer.add_scalar(key, value)
-        self._data.total[key] += value * n
-        self._data.counts[key] += n
-        self._data.average[key] = self._data.total[key] / self._data.counts[key]
+        if predictions[fp]["relations"][0] == predictions[bp]["relations"][0]:
+            if predictions[fp]["confidence"][0] > predictions[bp]["confidence"][0]:
+                output[fp] = predictions[fp]
+            else:
+                output[bp] = predictions[bp]
+        else:
+            output[fp] = predictions[fp]
+            output[bp] = predictions[bp]
+    return output
 
 def tag_relations(text, terms, bags, nlp=None):
-    """ Tags all terms in a given text and then extracts all relations between pairs of these terms.
-    
-    Parameters
-    ----------
-    text: str 
-        Input text that we want to add relations for 
-    terms: list of str | spacy.tokens.doc.Doc
-        List of terms which we will tag the sentence and look for relations between 
-    relations_db: dict
-        Dictionary mapping relations to word pairs and sentences we will update
-    nlp: Spacy nlp pipeline
-        Optional Spacy nlp pipeline object used for processing text
-    
-    Returns
-    -------
-    dict
-        Updated relations dictionary database
+    """ Modified version of tag relations that handles the special case of making predictions
+        on new data without known relation labels.
     """
     
     # default to Stanford NLP pipeline wrapped in Spacy
@@ -251,7 +215,7 @@ def tag_terms(text, terms, nlp=None):
          'cell': {'text': ['cell'], 'indices': [(7, 8)], 'tag': ['NN'], 'type': ['Entity']}}}
     """
     from spacy.lang.en.stop_words import STOP_WORDS
-    spacy.tokens.token.Token.set_extension('workaround', default='')
+    spacy.tokens.token.Token.set_extension('workaround', default='', force=True)
     
     HEURISTIC_TOKENS = ["-", "plant", "substance", "atom"]
     
@@ -263,7 +227,7 @@ def tag_terms(text, terms, nlp=None):
     # preprocess with spacy if needed
     if type(terms[0]) != spacy.tokens.doc.Doc:
         terms = [nlp(term) for term in terms]
-    if (type(text) != spacy.tokens.doc.Doc and type(text) != spacy.tokens.span.Span):
+    if type(text) != spacy.tokens.doc.Doc:
         text = nlp(text)
     
     # set up a custom representation of the text where we can add term type annotations
@@ -308,12 +272,14 @@ def tag_terms(text, terms, nlp=None):
             plural_match = (lemmatized_text[ix:ix + term_length] == match_uncommon_plural)
             lemma_match = (lemmatized_text[ix:ix + term_length] == lemma_term_list)
             text_match = (tokenized_text[ix:ix + term_length] == text_term_list)
+            lower_match = ([t.lower() for t in tokenized_text[ix:ix + term_length]] ==
+                           [t.lower() for t in text_term_list])
             
             # Only match on text if lemmatized version is a stop word (i.e. lower casing acronym)
             if term_lemma in STOP_WORDS:
                 valid_match = text_match
             else:
-                valid_match = heuristic_match or plural_match or text_match or lemma_match
+                valid_match = heuristic_match or plural_match or text_match or lemma_match or lower_match
             
             if valid_match:
                 
@@ -359,7 +325,6 @@ def tag_terms(text, terms, nlp=None):
         "annotated_text": annotated_text,
         "found_terms": dict(found_terms)
     }
-
 def determine_term_type(term):
     """ Categorizes a term as either entity or event based on several derived rules.
 
