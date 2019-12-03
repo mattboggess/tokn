@@ -84,7 +84,7 @@ def main(config, input_file, out_dir, term_file, model_version):
         lines = f.readlines()
         text = "\n".join(lines)
         
-    logger.info("Preprocessing Input Text")
+    print("Preprocessing Input Text")
     input_data = {"sentences": [], "tags": [], "textbook": [], "terms": {}}
     spacy_text = []
     for line in tqdm(lines):
@@ -105,12 +105,12 @@ def main(config, input_file, out_dir, term_file, model_version):
         
     # load pre-specified terms if provided
     if term_file:
-        logger.info("Using Pre-Specified Terms")
+        print("Using Pre-Specified Terms")
         with open(term_file, "r") as f:
             predicted_terms = json.load(f)
     # get terms via model predictions
     else:
-        logger.info("Predicting terms using model")
+        print("Predicting terms using model")
         # write out to tmp file compatible with model for loading
         tmp_input_file = "./term_extraction_tmp.json"
         with open(tmp_input_file, "w") as f:
@@ -121,7 +121,7 @@ def main(config, input_file, out_dir, term_file, model_version):
         os.remove(tmp_input_file)
             
     # tag/annotate the text with our predicted terms
-    logger.info("Annotating Input Text")
+    print("Annotating Input Text")
     predicted_terms = list(predicted_terms.keys())
     predicted_terms = [nlp(term, disable=["ner", "parser"]) for term in predicted_terms]
     

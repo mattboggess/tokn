@@ -43,7 +43,7 @@ def main(config, split, out_dir, model_version):
     epoch_terms = Counter() 
     
     with torch.no_grad():
-        for i, batch_data in enumerate(data_loader):
+        for i, batch_data in enumerate(tqdm(data_loader)):
             batch_data["data"] = batch_data["data"].to(device)
             batch_data["target"] = batch_data["target"].to(device)
             batch_data["pad_mask"] = batch_data["pad_mask"].to(device)

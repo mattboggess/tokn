@@ -80,10 +80,12 @@ def main(config, input_text, terms, out_dir, model_version):
         
         
     # build input term pair bags
-    terms = [nlp(term) for term in terms]
+    terms = [nlp(term, disable=["ner", "parser"]) for term in terms]
     bags = {"no-relation": []}
-    logger.info("Preprocessing Data")
+    print("Preprocessing Data")
     for line in tqdm(lines):
+        if len(line.strip()) == 0:
+            continue
         doc = nlp(line, disable=["ner", "parser"])
         for sent in doc.sents:
             bags = tag_relations(sent, terms, bags, nlp)
@@ -93,7 +95,7 @@ def main(config, input_text, terms, out_dir, model_version):
     with open(tmp_input_file, "w") as f:
         json.dump(bags, f)
     
-    logger.info("")
+    print("Predicting Relations")
     predictions = relation_model_predict(config, logger)
     predictions = postprocess_relation_predictions(predictions)
     

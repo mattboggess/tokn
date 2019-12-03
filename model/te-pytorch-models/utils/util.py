@@ -113,7 +113,7 @@ def tag_terms(text, terms, nlp=None):
         if len(term_lemma) <= 2:
             continue
         
-        # additional check to check for simple plural of uncommon biology terms
+        # additional check to check for simple plural/single of uncommon biology terms
         match_uncommon_plural = lemma_term_list.copy()
         match_uncommon_plural[-1] = match_uncommon_plural[-1] + "s"
 

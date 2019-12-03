@@ -227,7 +227,7 @@ def tag_terms(text, terms, nlp=None):
     # preprocess with spacy if needed
     if type(terms[0]) != spacy.tokens.doc.Doc:
         terms = [nlp(term) for term in terms]
-    if type(text) != spacy.tokens.doc.Doc:
+    if (type(text) != spacy.tokens.doc.Doc and type(text) != spacy.tokens.span.Span):
         text = nlp(text)
     
     # set up a custom representation of the text where we can add term type annotations
