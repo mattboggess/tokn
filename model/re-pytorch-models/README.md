@@ -1,136 +1,149 @@
-# PyTorch Template Project
-PyTorch deep learning project made easy.
+# TOKN Pytorch Relation Extraction Models 
 
-<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
-
-<!-- code_chunk_output -->
-
-* [PyTorch Template Project](#pytorch-template-project)
-	* [Requirements](#requirements)
-	* [Features](#features)
-	* [Folder Structure](#folder-structure)
-	* [Usage](#usage)
-		* [Config file format](#config-file-format)
-		* [Using config files](#using-config-files)
-		* [Resuming from checkpoints](#resuming-from-checkpoints)
-    * [Using Multiple GPU](#using-multiple-gpu)
-	* [Customization](#customization)
-		* [Custom CLI options](#custom-cli-options)
-		* [Data Loader](#data-loader)
-		* [Trainer](#trainer)
-		* [Model](#model)
-		* [Loss and metrics](#loss-and-metrics)
-			* [Multiple metrics](#multiple-metrics)
-		* [Additional logging](#additional-logging)
-		* [Validation data](#validation-data)
-		* [Checkpoints](#checkpoints)
-    * [Tensorboard Visualization](#tensorboard-visualization)
-	* [Contribution](#contribution)
-	* [TODOs](#todos)
-	* [License](#license)
-	* [Acknowledgements](#acknowledgments)
-
-<!-- /code_chunk_output -->
-
-## Requirements
-* Python >= 3.5 (3.6 recommended)
-* PyTorch >= 0.4 (1.2 recommended)
-* tqdm (Optional for `test.py`)
-* tensorboard >= 1.14 (see [Tensorboard Visualization][#tensorboardx-visualization])
-
-## Features
-* Clear folder structure which is suitable for many deep learning projects.
-* `.json` config file support for convenient parameter tuning.
-* Customizable command line options for more convenient parameter tuning.
-* Checkpoint saving and resuming.
-* Abstract base classes for faster development:
-  * `BaseTrainer` handles checkpoint saving/resuming, training process logging, and more.
-  * `BaseDataLoader` handles batch generation, data shuffling, and validation data splitting.
-  * `BaseModel` provides basic model summary.
+The code in this folder is adapted from an open source [pytorch deep learning template](https://github.com/victoresque/pytorch-template). Refer to
+the documentation provided at the link for more detailed information on the structure of this repo.
 
 ## Folder Structure
   ```
-  pytorch-template/
+  re-pytorch-models/
   │
   ├── train.py - main script to start training
   ├── test.py - evaluation of trained model
+  ├── predict.py - predict set of relations from input text and input list of terms
   │
-  ├── config.json - holds configuration for training
+  ├── config - folder that holds json configuration files 
   ├── parse_config.py - class to handle config file and cli options
   │
-  ├── new_project.py - initialize new project with template files
-  │
-  ├── base/ - abstract base classes
-  │   ├── base_data_loader.py
-  │   ├── base_model.py
-  │   └── base_trainer.py
-  │
-  ├── data_loader/ - anything about data loading goes here
-  │   └── data_loaders.py
-  │
-  ├── data/ - default directory for storing input data
-  │
   ├── model/ - models, losses, and metrics
-  │   ├── model.py
-  │   ├── metric.py
-  │   └── loss.py
+  │   ├── model.py: Contains pytorch model architectures
+  │   ├── data_loaders.py: Contains data loader classes for reading in batches of data
+  │   ├── metric.py: Contains metric functions used to evaluate the model
+  │   ├── loss.py: Contains loss functions used to train the model
+  │   └── trainer.py: Contains a trainer class used to train the model
   │
   ├── saved/
   │   ├── models/ - trained models are saved here
   │   └── log/ - default logdir for tensorboard and logging output
-  │
-  ├── trainer/ - trainers
-  │   └── trainer.py
   │
   ├── logger/ - module for tensorboard visualization and logging
   │   ├── visualization.py
   │   ├── logger.py
   │   └── logger_config.json
   │  
-  └── utils/ - small utility functions
-      ├── util.py
-      └── ...
+  └── utils/ - Contains important data preprocessing functions for the predict script
   ```
 
-## Usage
-The code in this repo is an MNIST example of the template.
-Try `python train.py -c config.json` to run code.
+## Installation & Environment
 
-### Config file format
+### Local
+
+Install the required Python libraries:
+
+`pip install -r requirements.txt`
+
+Download the Stanford NLP models to enable the text preprocessing pipeline for prediction:
+
+`import stanfordnlp; stanfordnlp.download('en')`
+
+### AWS 
+
+Training was done on a virtual AWS machine with GPU. We used the [AWS Deep Learning AMI (Ubuntu)](https://aws.amazon.com/blogs/machine-learning/get-started-with-deep-learning-using-the-aws-deep-learning-ami/) image on a p2.xlarge instance with a single GPU. The image comes with a bunch of different pre-configured conda environments. We used the pytorch_p36 environment (conda activate pytorch_p36) and then pip installed additional Python packages as needed.
+
+## Training
+
+The train.py script is responsible for training new models. It requires a json configuration file in order to run: 
+
+`python train.py -c config/{name_of_config}.json`
+
+See below for a description of the config file, but this specifies all the hyperparameters and the model architecture to be used. As part of the training process, tensorboard visualization information and a log of the terminal output will be written to the saved/logs folder. To visualize the loss and various metrics during or after training in tensorboard run:
+
+`tensorboard --logdir saved/log` 
+
+As part of the training process, a version of the model will be saved to disk each epoch if its performance on some validation metric is the best seen so far. These models get saved as follows:
+
+`saved/models/{config_name}/{run_timestamp}/model_best.pth`
+
+Additionally, a copy of the config file used to specify training will also be stored in this same directory. For testing and predicting, one can specify the path to the model_best.pth file for the model of choice to load in the pre-trained weights.
+
+Besides making changes in the config file, one can also change the data splits to train and validate on by changing the argument to the data loader constructions on line 28 and 29 of train.py.
+
+## Evaluating 
+
+The test.py script is responsible for evaluating trained models. It requires a pre-trained model to evaluate as well as a data split to evaluate on as follows:
+
+`python test.py -r saved/models/{config_name}/{run_timestamp}/model_best.pth -s {data_split}`
+
+Valid data splits currently include debug (small data set for debugging purposes), train (70% of Life Biology KB relations), validation (15% of Life Biology KB relations), test (15% of Life Biology KB relations). 
+
+This script will load the model and then run the given split through it generating predictions which will then be compared to the labels for evaluation. The script will output three files to the same directory where the saved model lives:
+
+`saved/models/{config_name}/{run_timestamp}/{data_split}-model_best-metrics.json`
+
+This is a json file containing the metrics on the provided data split. These are just common classification metrics including accuracy, recall, precision, and F1 both averaged across classes and within classes. 
+
+`saved/models/{config_name}/{run_timestamp}/{data_split}-model_best-word-pair-errors.json`
+
+This second file contains false_positives, true_positives, and false_negatives word pairs comparing the model's output to the provided list of relations for each relation type.
+
+`saved/models/{config_name}/{run_timestamp}/{data_split}-model_best-word-pair-errors.json`
+
+This third file contains predictions for each input word-pair. For each word pair, it provides a list of relations representing the predicted relation from most confidence to least confident along with the associated confidence scores (softmax probabilities). 
+
+## Predicting
+
+The predict.py script takes in a text file and term file and outputs predicted relations for all term pairs that share at least one sentence in the input text file (supported term input file formats are json in the output format from accompanying term extraction models in the original parent directory of this project or simple text file with one term per line). Here is the outline for the call to the predict.py script. 
+
+`python predict.py 
+     -r saved/models/{config_name}/{run_date_name}/{model_name}.pth 
+     -t {term_file}.[json|txt]
+     -i {input_text_file} 
+     -o {output_dir}`
+
+
+This script outputs a single file:
+  - {input_filename}_{config_name}-{run_timestamp}_predicted_relations.json: This is a json file with an entry for every term pair that shares at least one sentence in the input text. Each term pair has an ordered list of relation types/classes and their associated confidences ordered from most confident to least confident (same format as test script output).
+
+Predictions are made for both directions for each term pair. The predict script postprocesses the predicted relations by only keeping the direction for a term pair that has the highest confidence in the case that the same prediction is made for both directions.
+  
+## Config file format
+
 Config files are in `.json` format:
 ```javascript
 {
-  "name": "Mnist_LeNet",        // training session name
-  "n_gpu": 1,                   // number of GPUs to use for training.
+  "name": "entity-entity_class",        // training session name (folder name given in saved directory) 
+  "n_gpu": 1,                           // number of GPUs to use for training.
   
   "arch": {
-    "type": "MnistModel",       // name of model architecture to train
+    "type": "BagAttentionBert",         // name of model architecture to train
     "args": {
-
+      "dropout_rate": 0.3,   
+      "num_classes": 4
     }                
   },
   "data_loader": {
-    "type": "MnistDataLoader",         // selecting data loader
+    "type": "RelationDataLoader",         // selecting data loader
     "args":{
-      "data_dir": "data/",             // dataset path
-      "batch_size": 64,                // batch size
-      "shuffle": true,                 // shuffle training data before splitting
-      "validation_split": 0.1          // size of validation dataset. float(portion) or int(number of samples)
-      "num_workers": 2,                // number of cpu processes to be used for data loading
+      "data_dir": "../../data/term_extraction",             // dataset path
+      "batch_size": 4,                   // batch size
+      "shuffle": true,                   // shuffle training data before splitting
+      "relations": ["taxonomy", "meronym", "spatial"], // relation types or classes to predict 
+      "num_workers": 0,                  // number of cpu processes to be used for data loading
+      "embedding_type": "Bert",          // Type of embedding to use
+      "max_sent_length": 256,            // Maximum number of tokens allowed for a sentence
+      "max_sentences": 4                 // Maximum number of sentences allowed in each bag 
     }
   },
   "optimizer": {
-    "type": "Adam",
+    "type": "AdamW",
     "args":{
-      "lr": 0.001,                     // learning rate
-      "weight_decay": 0,               // (optional) weight decay
-      "amsgrad": true
+      "lr": 3e-5,                     // learning rate
+      "weight_decay": 0.01            // (optional) weight decay
     }
   },
   "loss": "nll_loss",                  // loss
   "metrics": [
-    "accuracy", "top_k_acc"            // list of metrics to evaluate
-  ],                         
+      "accuracy", "micro_f1", "macro_f1", "micro_recall", "macro_recall", "micro_precision", "macro_precision"
+  ],
   "lr_scheduler": {
     "type": "StepLR",                  // learning rate scheduler
     "args":{
@@ -139,240 +152,17 @@ Config files are in `.json` format:
     }
   },
   "trainer": {
-    "epochs": 100,                     // number of training epochs
-    "save_dir": "saved/",              // checkpoints are saved in save_dir/models/name
-    "save_freq": 1,                    // save checkpoints every save_freq epochs
-    "verbosity": 2,                    // 0: quiet, 1: per epoch, 2: full
+    "epochs": 10,                     // number of training epochs
+    "save_dir": "saved/",             // checkpoints are saved in save_dir/models/name
+    "save_freq": 1,                   // save checkpoints every save_freq epochs
+    "verbosity": 2,                   // 0: quiet, 1: per epoch, 2: full
   
-    "monitor": "min val_loss"          // mode and metric for model performance monitoring. set 'off' to disable.
-    "early_stop": 10	                 // number of epochs to wait before early stop. set 0 to disable.
+    "monitor": "max val_macro_f1"     // mode and metric for model performance monitoring. set 'off' to disable.
+    "early_stop": 3	                  // number of epochs to wait before early stop. set 0 to disable.
   
-    "tensorboard": true,               // enable tensorboard visualization
+    "tensorboard": true,              // enable tensorboard visualization
   }
 }
 ```
 
-Add addional configurations if you need.
 
-### Using config files
-Modify the configurations in `.json` config files, then run:
-
-  ```
-  python train.py --config config.json
-  ```
-
-### Resuming from checkpoints
-You can resume from a previously saved checkpoint by:
-
-  ```
-  python train.py --resume path/to/checkpoint
-  ```
-
-### Using Multiple GPU
-You can enable multi-GPU training by setting `n_gpu` argument of the config file to larger number.
-If configured to use smaller number of gpu than available, first n devices will be used by default.
-Specify indices of available GPUs by cuda environmental variable.
-  ```
-  python train.py --device 2,3 -c config.json
-  ```
-  This is equivalent to
-  ```
-  CUDA_VISIBLE_DEVICES=2,3 python train.py -c config.py
-  ```
-
-## Customization
-
-### Project initialization
-Use the `new_project.py` script to make your new project directory with template files.
-`python new_project.py ../NewProject` then a new project folder named 'NewProject' will be made.
-This script will filter out unneccessary files like cache, git files or readme file. 
-
-### Custom CLI options
-
-Changing values of config file is a clean, safe and easy way of tuning hyperparameters. However, sometimes
-it is better to have command line options if some values need to be changed too often or quickly.
-
-This template uses the configurations stored in the json file by default, but by registering custom options as follows
-you can change some of them using CLI flags.
-
-  ```python
-  # simple class-like object having 3 attributes, `flags`, `type`, `target`.
-  CustomArgs = collections.namedtuple('CustomArgs', 'flags type target')
-  options = [
-      CustomArgs(['--lr', '--learning_rate'], type=float, target=('optimizer', 'args', 'lr')),
-      CustomArgs(['--bs', '--batch_size'], type=int, target=('data_loader', 'args', 'batch_size'))
-      # options added here can be modified by command line flags.
-  ]
-  ```
-`target` argument should be sequence of keys, which are used to access that option in the config dict. In this example, `target` 
-for the learning rate option is `('optimizer', 'args', 'lr')` because `config['optimizer']['args']['lr']` points to the learning rate.
-`python train.py -c config.json --bs 256` runs training with options given in `config.json` except for the `batch size`
-which is increased to 256 by command line options.
-
-
-### Data Loader
-* **Writing your own data loader**
-
-1. **Inherit ```BaseDataLoader```**
-
-    `BaseDataLoader` is a subclass of `torch.utils.data.DataLoader`, you can use either of them.
-
-    `BaseDataLoader` handles:
-    * Generating next batch
-    * Data shuffling
-    * Generating validation data loader by calling
-    `BaseDataLoader.split_validation()`
-
-* **DataLoader Usage**
-
-  `BaseDataLoader` is an iterator, to iterate through batches:
-  ```python
-  for batch_idx, (x_batch, y_batch) in data_loader:
-      pass
-  ```
-* **Example**
-
-  Please refer to `data_loader/data_loaders.py` for an MNIST data loading example.
-
-### Trainer
-* **Writing your own trainer**
-
-1. **Inherit ```BaseTrainer```**
-
-    `BaseTrainer` handles:
-    * Training process logging
-    * Checkpoint saving
-    * Checkpoint resuming
-    * Reconfigurable performance monitoring for saving current best model, and early stop training.
-      * If config `monitor` is set to `max val_accuracy`, which means then the trainer will save a checkpoint `model_best.pth` when `validation accuracy` of epoch replaces current `maximum`.
-      * If config `early_stop` is set, training will be automatically terminated when model performance does not improve for given number of epochs. This feature can be turned off by passing 0 to the `early_stop` option, or just deleting the line of config.
-
-2. **Implementing abstract methods**
-
-    You need to implement `_train_epoch()` for your training process, if you need validation then you can implement `_valid_epoch()` as in `trainer/trainer.py`
-
-* **Example**
-
-  Please refer to `trainer/trainer.py` for MNIST training.
-
-* **Iteration-based training**
-
-  `Trainer.__init__` takes an optional argument, `len_epoch` which controls number of batches(steps) in each epoch.
-
-### Model
-* **Writing your own model**
-
-1. **Inherit `BaseModel`**
-
-    `BaseModel` handles:
-    * Inherited from `torch.nn.Module`
-    * `__str__`: Modify native `print` function to prints the number of trainable parameters.
-
-2. **Implementing abstract methods**
-
-    Implement the foward pass method `forward()`
-
-* **Example**
-
-  Please refer to `model/model.py` for a LeNet example.
-
-### Loss
-Custom loss functions can be implemented in 'model/loss.py'. Use them by changing the name given in "loss" in config file, to corresponding name.
-
-#### Metrics
-Metric functions are located in 'model/metric.py'.
-
-You can monitor multiple metrics by providing a list in the configuration file, e.g.:
-  ```json
-  "metrics": ["accuracy", "top_k_acc"],
-  ```
-
-### Additional logging
-If you have additional information to be logged, in `_train_epoch()` of your trainer class, merge them with `log` as shown below before returning:
-
-  ```python
-  additional_log = {"gradient_norm": g, "sensitivity": s}
-  log = log.update(additional_log)
-  return log
-  ```
-
-### Testing
-You can test trained model by running `test.py` passing path to the trained checkpoint by `--resume` argument.
-
-### Validation data
-To split validation data from a data loader, call `BaseDataLoader.split_validation()`, then it will return a data loader for validation of size specified in your config file.
-The `validation_split` can be a ratio of validation set per total data(0.0 <= float < 1.0), or the number of samples (0 <= int < `n_total_samples`).
-
-**Note**: the `split_validation()` method will modify the original data loader
-**Note**: `split_validation()` will return `None` if `"validation_split"` is set to `0`
-
-### Checkpoints
-You can specify the name of the training session in config files:
-  ```json
-  "name": "MNIST_LeNet",
-  ```
-
-The checkpoints will be saved in `save_dir/name/timestamp/checkpoint_epoch_n`, with timestamp in mmdd_HHMMSS format.
-
-A copy of config file will be saved in the same folder.
-
-**Note**: checkpoints contain:
-  ```python
-  {
-    'arch': arch,
-    'epoch': epoch,
-    'state_dict': self.model.state_dict(),
-    'optimizer': self.optimizer.state_dict(),
-    'monitor_best': self.mnt_best,
-    'config': self.config
-  }
-  ```
-
-### Tensorboard Visualization
-This template supports Tensorboard visualization by using either  `torch.utils.tensorboard` or [TensorboardX](https://github.com/lanpa/tensorboardX).
-
-1. **Install**
-
-    If you are using pytorch 1.1 or higher, install tensorboard by 'pip install tensorboard>=1.14.0'.
-
-    Otherwise, you should install tensorboardx. Follow installation guide in [TensorboardX](https://github.com/lanpa/tensorboardX).
-
-2. **Run training** 
-
-    Make sure that `tensorboard` option in the config file is turned on.
-
-    ```
-     "tensorboard" : true
-    ```
-
-3. **Open Tensorboard server** 
-
-    Type `tensorboard --logdir saved/log/` at the project root, then server will open at `http://localhost:6006`
-
-By default, values of loss and metrics specified in config file, input images, and histogram of model parameters will be logged.
-If you need more visualizations, use `add_scalar('tag', data)`, `add_image('tag', image)`, etc in the `trainer._train_epoch` method.
-`add_something()` methods in this template are basically wrappers for those of `tensorboardX.SummaryWriter` and `torch.utils.tensorboard.SummaryWriter` modules. 
-
-**Note**: You don't have to specify current steps, since `WriterTensorboard` class defined at `logger/visualization.py` will track current steps.
-
-## Contribution
-Feel free to contribute any kind of function or enhancement, here the coding style follows PEP8
-
-Code should pass the [Flake8](http://flake8.pycqa.org/en/latest/) check before committing.
-
-## TODOs
-
-- [ ] Multiple optimizers
-- [ ] Support more tensorboard functions
-- [x] Using fixed random seed
-- [x] Support pytorch native tensorboard
-- [x] `tensorboardX` logger support
-- [x] Configurable logging layout, checkpoint naming
-- [x] Iteration-based training (instead of epoch-based)
-- [x] Adding command line option for fine-tuning
-
-## License
-This project is licensed under the MIT License. See  LICENSE for more details
-
-## Acknowledgements
-This project is inspired by the project [Tensorflow-Project-Template](https://github.com/MrGemy95/Tensorflow-Project-Template) by [Mahmoud Gemy](https://github.com/MrGemy95)
