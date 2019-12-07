@@ -29,6 +29,9 @@ class BaseModel(nn.Module):
         return super().__str__() + '\nTrainable parameters: {}'.format(params)
 
 class BertNER(BaseModel):
+    """
+    Fine-tuned Bert model for key term NER sequence tagging with softmax output.
+    """
     
     def __init__(self, num_classes, dropout_rate=0.3, tags=["O", "S", "B", "I", "E"]):
         super().__init__()
@@ -46,6 +49,10 @@ class BertNER(BaseModel):
         return s
 
 class BertCRFNER(BaseModel):
+    """
+    Fine-tuned Bert model for key term NER sequence tagging with conditional random field output
+    to constrain reasonable tagging sequences (i.e. can't start a new phrase before ending previous one).
+    """
     
     def __init__(self, num_classes, dropout_rate=0.3, tags=["O", "S", "B", "I", "E"]):
         super().__init__()

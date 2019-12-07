@@ -28,13 +28,17 @@ class RelationDataset(Dataset):
             Path to where the relations data is stored 
         relations: list of str 
             List of relations to include to classify between 
-        split: str, ['train', 'validation', 'test', 'debug'] 
-            The data split to load. debug is a small debugging dataset 
+        split: str, ['train', 'validation', 'test', 'full', 'debug'] 
+            The data split to load. debug is a small debugging dataset. full is the union of
+            train, validation, and test
         embedding_type: str, ['Bert', 'custom'] 
             Type of embedding to use for the data loader. 
         max_sent_length: int 
             Maximum number of tokens for each sentence. Longer sentences will be truncated. Shorter
             sentences will be padded.
+        predict: bool
+            Indicator whether we are actually training the model or making predictions on new
+            data without labels
         """
         
         all_relations = json.load(open(os.path.join(data_dir, f"relations_{split}.json")))
@@ -68,11 +72,11 @@ class RelationDataset(Dataset):
                     self.relation_df = pd.concat([self.relation_df, df], sort=False)
         
         # compute weights to adjust for class imbalance
-        #if not predict:
-        #    self.class_weights = torch.Tensor(compute_class_weight("balanced", self.relations, 
-        #                                                           self.relation_df.relation))
-        #else:
-        self.class_weights = torch.Tensor([1.0] * len(self.relations))
+        if not predict:
+            self.class_weights = torch.Tensor(compute_class_weight("balanced", self.relations, 
+                                                                   self.relation_df.relation))
+        else:
+            self.class_weights = torch.Tensor([1.0] * len(self.relations))
                 
         self.max_sent_length = max_sent_length
         self.embedding_type = embedding_type
@@ -87,6 +91,9 @@ class RelationDataset(Dataset):
         return self.relation_df.shape[0]
 
     def __getitem__(self, idx):
+        """
+        Retrieves an entire bag of sentences for the idx'th word pair.
+        """
         sample = self.relation_df.iloc[idx, :]
         y_label = self.relations.index(sample["relation"]) 
         y_label = torch.Tensor([y_label]).to(torch.int64)
@@ -114,6 +121,11 @@ class RelationDataset(Dataset):
         return (bag_of_words, y_label, word_pair, pad_mask, e1_mask, e2_mask)
 
     def preprocess(self, sentence):
+        """
+        Tokenizes an input sentence to be compatible with indices for selected embeddings. Also
+        defines masks that denote where the two terms are in the sentence as well as extra padding
+        to align sentence lengths.
+        """
         
         # tokenize sentence 
         if self.embedding_type == "Bert":
@@ -158,7 +170,7 @@ class RelationDataset(Dataset):
             
 class RelationDataLoader(DataLoader):
     """
-    Data loader for biology relations
+    Data loader for relations
     """
     def __init__(self, data_dir, batch_size, relations, shuffle=True, max_sentences=16, 
                  num_workers=1, split="train", embedding_type="custom", max_sent_length=10,
@@ -174,6 +186,8 @@ class RelationDataLoader(DataLoader):
             List of relations to include to classify between 
         shuffle: bool
             Whether to shuffle the order of the data being loaded in
+        max_sentences: int
+            The maximum number of sentences to be included in bag for a given word pair.
         num_workers: int 
             Number of workers to use to read in data in parallel 
         split: str, ['train', 'validation', test', 'debug'] 
@@ -183,6 +197,9 @@ class RelationDataLoader(DataLoader):
         max_sent_length: int 
             Maximum number of tokens for each sentence. Longer sentences will be truncated. Shorter
             sentences will be padded.
+        predict: bool
+            Indicator whether we are actually training the model or making predictions on new
+            data without labels
         """
         self.data_dir = data_dir
         self.max_sentences = max_sentences
@@ -193,9 +210,10 @@ class RelationDataLoader(DataLoader):
                          num_workers=num_workers, collate_fn=self.relation_collate_fn)
         
     def relation_collate_fn(self, batch_data):
-        
-        #max_input_sentences = max([bd[0].shape[0] for bd in batch_data]) 
-        #max_input_sentences = int(np.ceil(max_input_sentences / self.max_sentences) * self.max_sentences)
+        """
+        Aggregrates multiple word pairs into a single batch. Also adds padded sentences at
+        the bag level so that each word pair bag has the same number of sentences.
+        """
         
         output_fields = ["data", "target", "pad_mask", "e1_mask", "e2_mask", "sentence_mask"]
         output = {k: [] for k in output_fields}

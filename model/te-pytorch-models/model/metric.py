@@ -42,6 +42,7 @@ def term_f1(term_classifications):
 
 def get_term_predictions(pred, target, bert_mask, sentences, tags):
     """
+    Extracts predicted terms and term phrases from a set of tags for a sentence. 
     """
     # flatten batch dimension
     pred = pred.view(pred.shape[0] * pred.shape[1])
@@ -118,7 +119,9 @@ def get_term_predictions(pred, target, bert_mask, sentences, tags):
 
 
 def compute_term_categories(terms, predicted_terms):
-    """""" 
+    """
+    Categorizes set of predicted terms into false positives, true positives, and false negatives.
+    """ 
     warnings.filterwarnings('ignore')
     sys.stdout = open(os.devnull, "w")
     snlp = stanfordnlp.Pipeline(lang="en")

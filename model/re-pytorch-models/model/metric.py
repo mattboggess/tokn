@@ -26,6 +26,9 @@ def macro_recall(true, pred):
     return recall_score(true, pred, average="macro")
 
 def compute_relation_metrics(wp_classifications):
+    """
+    Converts a set of word pair classifications into relation specific classification metric.
+    """
     
     output = {}
     for relation in wp_classifications.keys():
@@ -46,6 +49,9 @@ def compute_relation_metrics(wp_classifications):
     return output
 
 def get_word_pair_classifications(predictions, target, word_pairs, relations):
+    """
+    Converts input predictions into dictionary listing fps, tps, and fns word pairs for each relation.
+    """
     
     wp_classifications = {}
     for relation in relations:

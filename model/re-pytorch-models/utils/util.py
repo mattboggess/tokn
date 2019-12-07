@@ -31,6 +31,9 @@ def inf_loop(data_loader):
         yield from loader
 
 def postprocess_relation_predictions(predictions):
+    """ For word pairs with the same predicted relation in both directions, removes the
+    direction for which it is least confident.
+    """
     
     output = {}
     word_pairs = [wp.split(" -> ") for wp in predictions.keys()]

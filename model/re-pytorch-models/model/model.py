@@ -27,6 +27,26 @@ class BaseModel(nn.Module):
 
     
 class BagAttentionBert(BaseModel):
+    """
+    Adaptation of BERT to distant supervised relation extraction.
+    
+    This model is a hybrid of two other relation extraction models:
+      - Lin et al. 2017: Neural Relation Extraction with Selective Attention over Instances
+      - Wu & He, 2019: Enriching Pre-trained Language Model with Entity Information for Relation Classification 
+    
+    We use the modified version of BERT for relation extraction in Wu & He, 2019. The inputs are
+    passed through BERT as usual but know special tokens are added around each term. We then take
+    the sentence level output, and the average of each term representation output from the final layer of BERT
+    and concatenate these. 
+    
+    Since the data is labeled under distant supervision, we repeat the above process for a set of sentences
+    containing two terms known as a "bag". This gives us the BERT representation described above for 
+    each of these sentences. To get a single representation for the bag, we define an attention layer
+    over all of the sentences in each bag that learns to upweight sentences that represent the
+    relation and downweight noisy sentences as was done in Lin et al. 2017.
+    
+    This collapsed output is then fed into a softmax layer to predict the relation for a given term pair.
+    """
     
     def __init__(self, num_classes, dropout_rate=0.3):
         super().__init__()
@@ -114,10 +134,10 @@ class BagAttentionBert(BaseModel):
             output = []
             prob = []
             for i in range(batch_size):
-                bag = rel_rep[i, :] # sentences in bag x Bert representation length
-                attn_scores = torch.matmul(rel_rep[i, :], attn_matrix) # sentences in bag x num_classes
-                attn_scores[~(sentence_mask[i, :].to(torch.bool))] = float("-inf") # sentences in bag x num_classes
-                attn_weights = F.softmax(attn_scores, dim=0) # sentences in bag x num_classes
+                bag = rel_rep[i, :] 
+                attn_scores = torch.matmul(rel_rep[i, :], attn_matrix) 
+                attn_scores[~(sentence_mask[i, :].to(torch.bool))] = float("-inf") 
+                attn_weights = F.softmax(attn_scores, dim=0) 
                 
                 bag_rep = torch.matmul(attn_weights.T, bag)
                 bag_output = self.fc_class(bag_rep)
@@ -129,6 +149,13 @@ class BagAttentionBert(BaseModel):
         return output, prob
     
 class MaxPoolBert(BaseModel):
+    """
+    Similar to the attention implementation, but instead of defining an attention distribution over
+    sentences in a particular bag, one simply takes the max value across all sentence representations
+    in each bag. This was proposed in:
+    
+    Xiang et al, 2016: Relation Extraction with Multi-instance Multi-label Convolutional Neural Networks
+    """
     
     def __init__(self, num_classes):
         super().__init__()
