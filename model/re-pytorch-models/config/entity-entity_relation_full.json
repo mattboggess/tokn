@@ -1,11 +1,11 @@
 {
-    "name": "RE_BagAttentionBert_entity-entity",
+    "name": "entity-entity_class",
     "n_gpu": 1,
 
     "arch": {
         "type": "BagAttentionBert",
         "args": {
-            "num_classes": 6
+            "num_classes": 4
         }
     },
     "data_loader": {
@@ -15,7 +15,7 @@
             "batch_size": 4,
             "shuffle": true,
             "num_workers": 0,
-            "relations": ["subclass-of", "has-part", "has-region", "possesses", "element"],
+            "relations": ["taxonomy", "meronym", "spatial"],
             "embedding_type": "Bert",
             "max_sent_length": 256,
             "max_sentences": 4 
@@ -41,14 +41,14 @@
         }
     },
     "trainer": {
-        "epochs": 15,
+        "epochs": 7,
 
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
         
-        "monitor": "max val_macro_f1",
-        "early_stop": 10,
+        "monitor": "off",
+        "early_stop": 0,
 
         "tensorboard": true
     }

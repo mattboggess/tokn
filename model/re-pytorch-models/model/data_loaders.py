@@ -68,11 +68,11 @@ class RelationDataset(Dataset):
                     self.relation_df = pd.concat([self.relation_df, df], sort=False)
         
         # compute weights to adjust for class imbalance
-        if not predict:
-            self.class_weights = torch.Tensor(compute_class_weight("balanced", self.relations, 
-                                                                   self.relation_df.relation))
-        else:
-            self.class_weights = torch.Tensor([1.0] * len(self.relations))
+        #if not predict:
+        #    self.class_weights = torch.Tensor(compute_class_weight("balanced", self.relations, 
+        #                                                           self.relation_df.relation))
+        #else:
+        self.class_weights = torch.Tensor([1.0] * len(self.relations))
                 
         self.max_sent_length = max_sent_length
         self.embedding_type = embedding_type

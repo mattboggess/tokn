@@ -1,11 +1,11 @@
 {
-    "name": "RE_ent-ent_class",
+    "name": "entity-entity_class",
     "n_gpu": 1,
 
     "arch": {
         "type": "BagAttentionBert",
         "args": {
-            "num_classes": 4
+            "num_classes": 2
         }
     },
     "data_loader": {
@@ -15,7 +15,7 @@
             "batch_size": 4,
             "shuffle": true,
             "num_workers": 0,
-            "relations": ["taxonomy", "meronym", "spatial"],
+            "relations": ["taxonomy"],
             "embedding_type": "Bert",
             "max_sent_length": 256,
             "max_sentences": 4 
@@ -41,7 +41,7 @@
         }
     },
     "trainer": {
-        "epochs": 15,
+        "epochs": 20,
 
         "save_dir": "saved/",
         "save_period": 1,

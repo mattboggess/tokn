@@ -1,38 +1,31 @@
 {
-    "name": "RE_MaxPoolTest_taxonomy",
+    "name": "entity-entity_relation",
     "n_gpu": 1,
 
     "arch": {
-        "type": "MaxPoolTest",
+        "type": "BagAttentionBert",
         "args": {
-            "num_classes": 2,
-            "num_embeddings": 60000,
-            "embedding_dim": 100,
-            "max_sent_length": 256,
-            "hidden_size": 120
-            
+            "num_classes": 6
         }
     },
     "data_loader": {
         "type": "RelationDataLoader",
         "args":{
-            "data_dir": "../data/relation_extraction",
-            "batch_size": 1,
+            "data_dir": "../../data/relation_extraction",
+            "batch_size": 8,
             "shuffle": true,
-            "validation_split": 0.1,
             "num_workers": 0,
-            "relations": ["subclass-of"],
-            "embedding_type": "custom",
-            "split": "debug",
-            "max_sent_length": 256
+            "relations": ["subclass-of", "has-part", "has-region", "possesses", "element"],
+            "embedding_type": "Bert",
+            "max_sent_length": 256,
+            "max_sentences": 2 
         }
     },
     "optimizer": {
-        "type": "Adam",
+        "type": "AdamW",
         "args":{
-            "lr": 0.001,
-            "weight_decay": 0,
-            "amsgrad": true
+            "lr": 1e-5,
+            "weight_decay": 0.01
         }
     },
     "loss": "nll_loss",
@@ -44,7 +37,7 @@
         "type": "StepLR",
         "args": {
             "step_size": 50,
-            "gamma": 0.1
+            "gamma": 0.0
         }
     },
     "trainer": {
@@ -54,8 +47,8 @@
         "save_period": 1,
         "verbosity": 2,
         
-        "monitor": "min val_macro_f1",
-        "early_stop": 0,
+        "monitor": "max val_macro_f1",
+        "early_stop": 3,
 
         "tensorboard": true
     }

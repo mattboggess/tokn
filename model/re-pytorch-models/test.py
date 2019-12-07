@@ -53,7 +53,7 @@ def main(config, split, out_dir, model_version):
             output, probs = model(batch_data, evaluate=True)
             for i in range(batch_data["data"].shape[0]):
                 predictions[batch_data["word_pair"][i]] = {}
-                ix = np.argsort(np.array(probs[i, :]))[::-1]
+                ix = np.argsort(np.array(probs[i, :].to("cpu")))[::-1]
                 predictions[batch_data["word_pair"][i]]["relations"] = [relations[j] for j in ix] 
                 predictions[batch_data["word_pair"][i]]["confidence"] = [probs[i, j].item() for j in ix] 
                 
