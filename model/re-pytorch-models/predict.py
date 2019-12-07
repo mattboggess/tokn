@@ -7,7 +7,7 @@ import os
 import sys
 import stanfordnlp
 from tqdm import tqdm
-from utils import tag_relations
+from utils import tag_relations, postprocess_relation_predictions
 import model.data_loaders as module_data
 import model.loss as module_loss
 import model.metric as module_metric
@@ -17,34 +17,7 @@ from model.metric import get_word_pair_classifications, compute_relation_metrics
 import stanfordnlp
 from spacy_stanfordnlp import StanfordNLPLanguage
 
-
-def main(config, input_text, terms, out_dir, model_version):
-    logger = config.get_logger('test')
-    
-    # set up spacy nlp engine
-    warnings.filterwarnings('ignore')
-    sys.stdout = open(os.devnull, "w")
-    snlp = stanfordnlp.Pipeline(lang="en")
-    nlp = StanfordNLPLanguage(snlp)
-    sys.stdout = sys.__stdout__
-    
-    # read in text and terms 
-    with open(input_text, "r") as f:
-        text = f.read()
-    with open(terms, "r") as f:
-        terms = f.readlines()
-        
-    # build input term pair bags
-    terms = [nlp(term) for term in terms]
-    doc = nlp(text)
-    bags = {"no-relation": []}
-    for s in doc.sents:
-        bags = tag_relations(s, terms, bags, nlp)
-    
-    # write out to tmp file for loading which we delete later
-    tmp_input_file = "./relations_tmp.json"
-    with open(tmp_input_file, "w") as f:
-        json.dump(bags, f)
+def relation_model_predict(config, logger):
     
     # setup data_loader instance to load in our tmp file
     data_loader = config.init_obj('data_loader', module_data, split="tmp", data_dir=".", 
@@ -76,18 +49,63 @@ def main(config, input_text, terms, out_dir, model_version):
             for field in ["data", "pad_mask", "e1_mask", "e2_mask", "sentence_mask"]:
                 batch_data[field] = batch_data[field].to(device)
 
-            output = model(batch_data, evaluate=True)
+            output, prob = model(batch_data, evaluate=True)
             for i in range(batch_data["data"].shape[0]):
                 predictions[batch_data["word_pair"][i]] = {}
                 ix = np.argsort(np.array(output[i, :]))[::-1]
                 predictions[batch_data["word_pair"][i]]["relations"] = [relations[j] for j in ix] 
-                predictions[batch_data["word_pair"][i]]["confidence"] = [10**output[i, j].item() for j in ix] 
+                predictions[batch_data["word_pair"][i]]["confidence"] = [prob[i, j].item() for j in ix] 
+    
+    return predictions
+
+def main(config, input_text, terms, out_dir, model_version):
+    logger = config.get_logger('test')
+    
+    # set up spacy nlp engine
+    warnings.filterwarnings('ignore')
+    sys.stdout = open(os.devnull, "w")
+    snlp = stanfordnlp.Pipeline(lang="en")
+    nlp = StanfordNLPLanguage(snlp)
+    sys.stdout = sys.__stdout__
+    
+    # read in text and terms 
+    with open(input_text, "r") as f:
+        lines = f.readlines()
+    if terms.endswith(".txt"):
+        with open(terms, "r") as f:
+            terms = f.readlines()
+    elif terms.endswith(".json"):
+        with open(terms, "r") as f:
+            terms = list(json.load(f).keys())
+        
+        
+    # build input term pair bags
+    terms = [nlp(term, disable=["ner", "parser"]) for term in terms]
+    bags = {"no-relation": []}
+    print("Preprocessing Data")
+    for line in tqdm(lines):
+        if len(line.strip()) == 0:
+            continue
+        doc = nlp(line, disable=["ner", "parser"])
+        for sent in doc.sents:
+            bags = tag_relations(sent, terms, bags, nlp)
+    
+    # write out to tmp file for loading which we delete later
+    tmp_input_file = "./relations_tmp.json"
+    with open(tmp_input_file, "w") as f:
+        json.dump(bags, f)
+    
+    print("Predicting Relations")
+    predictions = relation_model_predict(config, logger)
+    predictions = postprocess_relation_predictions(predictions)
+    
+    os.remove(tmp_input_file)
                 
-    filename = f"{out_dir}/{model_version}-relation-predictions.json"
+    input_filename = input_text.split("/")[-1][:-4]
+    filename = f"{out_dir}/{input_filename}_{model_version}_predicted_relations.json"
     with open(filename, "w") as f:
         json.dump(predictions, f, indent=4)
         
-    os.remove(tmp_input_file)
 
 
 if __name__ == '__main__':
@@ -105,8 +123,8 @@ if __name__ == '__main__':
     args.add_argument('-t', '--terms', default=None, type=str,
                       help='input file containing terms that will be used')
 
-    config = ConfigParser.from_args(args)
+    config = ConfigParser.from_args(args, test=True)
     args = args.parse_args()
-    model_version = "-".join(args.resume.split("/")[-3:])[:-4]
+    model_version = "-".join(args.resume.split("/")[-3:-1])
     
     main(config, args.input_text, args.terms, args.output_dir, model_version)

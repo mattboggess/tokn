@@ -35,7 +35,6 @@ class BertNER(BaseModel):
         self.bert = BertModel.from_pretrained("bert-base-cased")
         bert_config = self.bert.config.__dict__
         self.fc = nn.Linear(bert_config["hidden_size"], num_classes)
-        #nn.init.xavier_normal_(self.fc.weight) # TODO
         self.dropout = nn.Dropout(dropout_rate)
         self.softmax = nn.LogSoftmax(dim=-1)
         
@@ -47,7 +46,6 @@ class BertNER(BaseModel):
         return s
 
 class BertCRFNER(BaseModel):
-    # https://pytorch.org/tutorials/beginner/nlp/advanced_tutorial.html
     
     def __init__(self, num_classes, dropout_rate=0.3, tags=["O", "S", "B", "I", "E"]):
         super().__init__()
@@ -55,7 +53,6 @@ class BertCRFNER(BaseModel):
         bert_config = self.bert.config.__dict__
         
         self.fc = nn.Linear(bert_config["hidden_size"], num_classes)
-        #nn.init.xavier_normal_(self.fc.weight) # TODO
         self.dropout = nn.Dropout(dropout_rate)
         self.softmax = nn.LogSoftmax(dim=-1)
         
@@ -93,7 +90,6 @@ class BertCRFNER(BaseModel):
         s, _ = self.bert(batch_data["data"], attention_mask=batch_data["pad_mask"])
         s = self.dropout(s)
         emissions = self.fc(s)
-        #s = self.softmax(s)
         return emissions 
 
     def decode(self, emissions, mask):
