@@ -1,4 +1,6 @@
+##########
 # Splits relation extraction data into train and test splits for model evaluation 
+##########
 import json
 import numpy as np
 import re
@@ -91,6 +93,8 @@ if __name__ == "__main__":
                     # add no-relation flipped version of word pair so it learns directionality
                     rep = {"e1": "e2", "e2": "e1"}
                     pattern = re.compile("|".join(rep.keys()))
+                    
+                    # add negative flipped examples
                     #flip_wp = " -> ".join(pos_word_pair.split(" -> ")[::-1])
                     #flip_examples = [pattern.sub(lambda m: rep[re.escape(m.group(0))], pe) for pe in pos_examples] 
                     #db[relation].append({flip_wp: {"sentences": flip_examples, 

@@ -1,3 +1,7 @@
+##########
+# Processes openstax and life biology textbooks by tagging all key terms from glossaries/KB
+# in each sentence. Splits data into traing and test splits.
+##########
 from data_processing_utils import tag_terms, read_spacy_docs
 import stanfordnlp
 from spacy_stanfordnlp import StanfordNLPLanguage
