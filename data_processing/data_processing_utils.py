@@ -38,7 +38,10 @@ def tag_relations(text, terms, relations_db, nlp=None):
     if type(text) != spacy.tokens.doc.Doc:
         text = nlp(text)
 
-    tokenized_text, tagged_text, found_terms_info = tag_terms(text, terms, nlp)
+    result = tag_terms(text, terms, nlp)
+    tokenized_text = result["tokenized_text"]
+    tagged_text = result["tags"]
+    found_terms_info = result["found_terms"]
 
     found_terms = list(found_terms_info.keys())
     for i in range(len(found_terms) - 1):
@@ -208,9 +211,14 @@ def tag_terms(text, terms, nlp=None):
          'cell': {'text': ['cell'], 'indices': [(7, 8)], 'tag': ['NN'], 'type': ['Entity']}}}
     """
     from spacy.lang.en.stop_words import STOP_WORDS
-    spacy.tokens.token.Token.set_extension('workaround', default='')
+    spacy.tokens.token.Token.set_extension('workaround', default='', force=True)
     
     HEURISTIC_TOKENS = ["-", "plant", "substance", "atom"]
+    HEURISTIC_MAPPING = {
+        "alpha": "α",
+        "beta": "β",
+        "prime": "′"
+    }
     
     # default to Stanford NLP pipeline wrapped in Spacy
     if nlp is None:
@@ -248,7 +256,7 @@ def tag_terms(text, terms, nlp=None):
         match_uncommon_plural = lemma_term_list.copy()
         match_uncommon_plural[-1] = match_uncommon_plural[-1] + "s"
 
-        # additional check using heuristics on lemmatized version
+        # additional check using dropped heuristics on lemmatized version
         match_heuristic = []
         if lemma_term_list[0] not in HEURISTIC_TOKENS:
             for token in lemma_term_list:
@@ -259,18 +267,29 @@ def tag_terms(text, terms, nlp=None):
             heuristic_term = lemma_term_list
             heuristic_length = len(lemma_term_list)
         
+        # additional check replacing KB speak with appropriate text symbols
+        match_replace = []
+        for token in lemma_term_list:
+            if token in HEURISTIC_MAPPING:
+                match_replace.append(HEURISTIC_MAPPING[token])
+            else:
+                match_replace.append(token)
+        
         for ix in range(len(text) - term_length):
             
             heuristic_match = (lemmatized_text[ix:ix + heuristic_length] == match_heuristic)
             plural_match = (lemmatized_text[ix:ix + term_length] == match_uncommon_plural)
             lemma_match = (lemmatized_text[ix:ix + term_length] == lemma_term_list)
-            text_match = (tokenized_text[ix:ix + term_length] == text_term_list)
+            replace_match = (lemmatized_text[ix:ix + term_length] == match_replace)
             
-            # Only match on text if lemmatized version is a stop word (i.e. lower casing acronym)
-            if term_lemma in STOP_WORDS:
+            # Only check exact text for terms that become stop words 
+            if term_lemma in STOP_WORDS or term_lemma.lower() in STOP_WORDS:
+                text_match = (tokenized_text[ix:ix + term_length] == text_term_list)
                 valid_match = text_match
             else:
-                valid_match = heuristic_match or plural_match or text_match or lemma_match
+                text_match = ([t.lower() for t in tokenized_text[ix:ix + term_length]] == \
+                              [t.lower() for t in text_term_list])
+                valid_match = heuristic_match or plural_match or text_match or lemma_match or replace_match
             
             if valid_match:
                 

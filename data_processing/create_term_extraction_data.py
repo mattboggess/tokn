@@ -85,7 +85,10 @@ if __name__ == "__main__":
         for sentence in sentences:
             
             # tag key terms for the given sentence
-            tokenized_sentence, tagged_sentence, term_info = tag_terms(sentence, check_terms, nlp)
+            result = tag_terms(sentence, check_terms, nlp)
+            tokenized_sentence = result["tokenized_text"]
+            term_info = result["found_terms"]
+            tagged_sentence = result["tags"]
             
             # ignore sentences without any tagged terms
             if len(term_info.keys()) == 0:

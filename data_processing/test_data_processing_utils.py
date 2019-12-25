@@ -26,49 +26,92 @@ class TestDataProcessingUtils(unittest.TestCase):
         terms = ['cell', 'cell wall', 'biologist'] 
         text = 'A biologist will tell you that a cell contains a cell wall.'
 
-        found_terms = {"biologist": {"text": ["biologist"], "tag": ["NN"], "indices": [(1, 2)]},
-                       "cell": {"text": ["cell"], "tag": ["NN"], "indices": [(7, 8)]},
-                       "cell wall": {"text": ["cell wall"], "tag": ["NN NN"], "indices": [(10, 12)]}}
+        found_terms = {"biologist": {"text": ["biologist"], "pos": ["NN"], "indices": [(1, 2)], "type": ["entity"]},
+                       "cell": {"text": ["cell"], "pos": ["NN"], "indices": [(7, 8)], "type": ["entity"]},
+                       "cell wall": {"text": ["cell wall"], "pos": ["NN NN"], "indices": [(10, 12)], "type": ["entity"]}}
         tokenized_text = ["A", "biologist", "will", "tell", "you", "that", "a", "cell", "contains",
                           "a", "cell", "wall", "."]
         bioes_tags = ["O", "S", "O", "O", "O", "O", "O", "S", "O", "O", "B", "E", "O"]
         solution = (tokenized_text, bioes_tags, found_terms)
         output = tag_terms(text, terms)
-        print(output)
 
-        self.assertEqual(output, solution)
-        
-        terms = ['He', 'helium', 'gas'] 
-        text = 'He talks about helium (He), which is a gas or plural gases.'
-
-        found_terms = {"he": {"text": ["He"], "tag": ["PRP"], "indices": [(5, 6)]},
-                       "helium": {"text": ["helium"], "tag": ["NN"], "indices": [(3, 4)]},
-                       "gas": {"text": ["gas", "gases"], "tag": ["NN", "NNS"], 
-                               "indices": [(11, 12), (14, 15)]}}
-        tokenized_text = ["He", "talks", "about", "helium", "(", "He", ")", ",", "which", "is",
-                          "a", "gas", "or", "plural", "gases", "."]
-        bioes_tags = ["O", "O", "O", "S", "O", "S", "O", "O", "O", "O", "O", "S", "O", "O", "S", "O"]
-        solution = (tokenized_text, bioes_tags, found_terms)
-        output = tag_terms(text, terms)
-
-        self.assertEqual(output, solution)
+        self.assertEqual(output["tokenized_text"], solution[0])
+        self.assertEqual(output["tags"], solution[1])
+        self.assertDictEqual(output["found_terms"], solution[2])
         
         terms = ['pineapple plant', 'renal-disease', 'zinc atom'] 
         text = 'Here are some troublesome terms: pineapples, renal disease, zinc, and more.'
 
-        found_terms = {"pineapple plant": {"text": ["pineapples"], "tag": ["NNS"], "indices": [(6, 7)]},
-                       "renal-disease": {"text": ["renal disease"], "tag": ["JJ NN"], 
-                                         "indices": [(8, 10)]},
-                       "zinc atom": {"text": ["zinc"], "tag": ["NN"], "indices": [(11, 12)]}}
+        found_terms = {"pineapple plant": {"text": ["pineapples"], "pos": ["NNS"], "indices": [(6, 7)], "type": ["entity"]},
+                       "renal-disease": {"text": ["renal disease"], "pos": ["JJ NN"], 
+                                         "indices": [(8, 10)], "type": ["entity"]},
+                       "zinc atom": {"text": ["zinc"], "pos": ["NN"], "indices": [(11, 12)], "type": ["entity"]}}
         tokenized_text = ["Here", "are", "some", "troublesome", "terms", ":", "pineapples", ",",
                           "renal", "disease", ",", "zinc", ",", "and", "more", "."]
         bioes_tags = ["O", "O", "O", "O", "O", "O", "S", "O", "B", "E", "O", "S", "O", "O", "O", "O"]
         solution = (tokenized_text, bioes_tags, found_terms)
         output = tag_terms(text, terms)
 
-        self.assertEqual(output[0], solution[0])
-        self.assertEqual(output[1], solution[1])
-        self.assertDictEqual(output[2], solution[2])
+        self.assertEqual(output["tokenized_text"], solution[0])
+        self.assertEqual(output["tags"], solution[1])
+        self.assertDictEqual(output["found_terms"], solution[2])
+        
+        # test case insensitive matching
+        text = 'Acid reflux or heartburn occurs'
+        terms = ['acid reflux'] 
+        found_terms = {"acid reflux": {"text": ["Acid reflux"], "pos": ["NN NN"], 
+                                       "indices": [(0, 2)], "type": ["entity"]}}
+        tokenized_text = ["Acid", "reflux", "or", "heartburn", "occurs"]
+        bioes_tags = ["B", "E", "O", "O", "O"]
+        solution = (tokenized_text, bioes_tags, found_terms)
+        output = tag_terms(text, terms)
+
+        self.assertEqual(output["tokenized_text"], solution[0])
+        self.assertEqual(output["tags"], solution[1])
+        self.assertDictEqual(output["found_terms"], solution[2])
+        
+        text = "Figure 12.6 Alkaptonuria is a recessive genetic disorder"
+        terms = ['alkaptonuria'] 
+        found_terms = {"alkaptonuria": {"text": ["Alkaptonuria"], "pos": ["NNP"], 
+                                       "indices": [(2, 3)], "type": ["entity"]}}
+        tokenized_text = ["Figure", "12.6", "Alkaptonuria", "is", "a", "recessive", "genetic", "disorder"]
+        bioes_tags = ["O", "O", "S", "O", "O", "O", "O", "O"]
+        solution = (tokenized_text, bioes_tags, found_terms)
+        output = tag_terms(text, terms)
+
+        self.assertEqual(output["tokenized_text"], solution[0])
+        self.assertEqual(output["tags"], solution[1])
+        self.assertDictEqual(output["found_terms"], solution[2])
+        
+        text = "In anaphase II, the sister chromatids separate."
+        terms = ['anaphase ii'] 
+        found_terms = {"anaphase ii": {"text": ["anaphase II"], "pos": ["NN CD"], 
+                                       "indices": [(1, 3)], "type": ["entity"]}}
+        tokenized_text = ["In", "anaphase", "II", ",", "the", "sister", "chromatids", "separate", "."]
+        bioes_tags = ["O", "B", "E", "O", "O", "O", "O", "O", "O"]
+        solution = (tokenized_text, bioes_tags, found_terms)
+        output = tag_terms(text, terms)
+
+        self.assertEqual(output["tokenized_text"], solution[0])
+        self.assertEqual(output["tags"], solution[1])
+        self.assertDictEqual(output["found_terms"], solution[2])
+        
+        # test special character replacing
+        text = "the 3′ hydroxyl group and α tubulin exist"
+        terms = ['3 prime hydroxyl group', 'alpha tubulin'] 
+        found_terms = {"3 prime hydroxyl group": {"text": ["3 ′ hydroxyl group"], 
+                                                  "pos": ["CD NN NN NN"], 
+                                                  "indices": [(1, 5)], "type": ["entity"]},
+                       "alpha tubulin": {"text": ["α tubulin"], "pos": ["JJ NN"], 
+                                         "indices": [(6, 8)], "type": ["entity"]}}
+        tokenized_text = ["the", "3", "′", "hydroxyl", "group", "and", "α", "tubulin", "exist"] 
+        bioes_tags = ["O", "B", "I", "I", "E", "O", "B", "E", "O"]
+        solution = (tokenized_text, bioes_tags, found_terms)
+        output = tag_terms(text, terms)
+
+        self.assertEqual(output["tokenized_text"], solution[0])
+        self.assertEqual(output["tags"], solution[1])
+        self.assertDictEqual(output["found_terms"], solution[2])
         
         
     def test_insert_relation_tags(self):
