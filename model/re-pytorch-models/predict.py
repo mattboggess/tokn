@@ -36,7 +36,6 @@ def relation_model_predict(config, logger):
     model.load_state_dict(state_dict)
     
     # prepare model for testing
-    device = "cpu"
     model = model.to(device)
     model.eval()
     
@@ -46,15 +45,16 @@ def relation_model_predict(config, logger):
     with torch.no_grad():
         
         for i, batch_data in enumerate(tqdm(data_loader)):
-            for field in ["data", "pad_mask", "e1_mask", "e2_mask", "sentence_mask"]:
-                batch_data[field] = batch_data[field].to(device)
+            if batch_data is not None:
+                for field in ["data", "pad_mask", "e1_mask", "e2_mask", "sentence_mask"]:
+                    batch_data[field] = batch_data[field].to(device)
 
-            output, prob = model(batch_data, evaluate=True)
-            for i in range(batch_data["data"].shape[0]):
-                predictions[batch_data["word_pair"][i]] = {}
-                ix = np.argsort(np.array(output[i, :]))[::-1]
-                predictions[batch_data["word_pair"][i]]["relations"] = [relations[j] for j in ix] 
-                predictions[batch_data["word_pair"][i]]["confidence"] = [prob[i, j].item() for j in ix] 
+                output, prob = model(batch_data, evaluate=True)
+                for i in range(batch_data["data"].shape[0]):
+                    predictions[batch_data["word_pair"][i]] = {}
+                    ix = torch.argsort(torch.tensor(output[i, :]), descending=True) 
+                    predictions[batch_data["word_pair"][i]]["relations"] = [relations[j] for j in ix] 
+                    predictions[batch_data["word_pair"][i]]["confidence"] = [prob[i, j].item() for j in ix] 
     
     return predictions
 
