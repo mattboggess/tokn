@@ -6,6 +6,7 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 import sys
 import os
 import warnings
+import numpy as np
 
 def sentence_accuracy(true, pred):
     return accuracy_score(true, pred)
@@ -40,12 +41,13 @@ def term_f1(term_classifications):
         return 0
     return 2 * precision * recall / (precision + recall)
 
-def get_term_predictions(pred, target, bert_mask, sentences, tags):
+def get_term_predictions(pred, target, bert_mask, sentences, tags, pred_probs=None):
     """
     Extracts predicted terms and term phrases from a set of tags for a sentence. 
     """
     # flatten batch dimension
     pred = pred.view(pred.shape[0] * pred.shape[1])
+    pred_probs = pred_probs.view(pred_probs.shape[0] * pred_probs.shape[1]) if pred_probs is not None else pred_probs
     target = target.view(target.shape[0] * target.shape[1])
     bert_mask = bert_mask.view(bert_mask.shape[0] * bert_mask.shape[1])
     sentences = [s for sent in sentences for s in sent]
@@ -53,15 +55,19 @@ def get_term_predictions(pred, target, bert_mask, sentences, tags):
     # filter out extra bert tokens
     keep_ix = bert_mask == 1
     pred = pred[keep_ix]
+    if pred_probs is not None:
+        pred_probs = pred_probs[keep_ix]
     target = target[keep_ix]
     
     term_preds = []
     term_target = []
     terms = {}
+    terms_probs = {}
 
     i = 0
     while i < len(target):
         pred_tag = pred[i].item()
+        pred_prob = pred_probs[i].item() if pred_probs is not None else 0
         target_tag = target[i].item()
         token = sentences[i]
         
@@ -72,8 +78,11 @@ def get_term_predictions(pred, target, bert_mask, sentences, tags):
                 term_preds.append(1)
                 if token in terms:
                     terms[token] += 1
+                    terms_probs[token].append(pred_prob)
                 else:
                     terms[token] = 1
+                    terms_probs[token] = []
+                    terms_probs[token].append(pred_prob)
             else:
                 term_preds.append(0)
                 
@@ -86,8 +95,11 @@ def get_term_predictions(pred, target, bert_mask, sentences, tags):
                 term_preds.append(1)
                 if token in terms:
                     terms[token] += 1
+                    terms_probs[token].append(pred_prob)
                 else:
                     terms[token] = 1
+                    terms_probs[token] = []
+                    terms_probs[token].append(pred_prob)
         
         # key phrase
         elif tags[target_tag] == "B":
@@ -95,17 +107,23 @@ def get_term_predictions(pred, target, bert_mask, sentences, tags):
             label = [target_tag]
             predicted_label = [pred_tag]
             token = [token]
+            predicted_prob = [pred_prob]
             while tags[target[i]] != "E" and i < len(target) - 1:
                 i += 1
                 label.append(target[i].item())
                 predicted_label.append(pred[i].item())
+                if pred_probs is not None:
+                    predicted_prob.append(pred_probs[i].item())
                 token.append(sentences[i])
             if " ".join([str(l) for l in label]) == " ".join([str(l) for l in predicted_label]):
                 token = " ".join(token)
                 term_preds.append(1)
                 if token in terms:
                     terms[token] += 1
+                    terms_probs[token].append(np.mean(np.array(predicted_prob)))
                 else:
+                    terms_probs[token] = []
+                    terms_probs[token].append(np.mean(np.array(predicted_prob)))
                     terms[token] = 1
                 
             else:
@@ -114,8 +132,9 @@ def get_term_predictions(pred, target, bert_mask, sentences, tags):
             pass
         
         i += 1
-
-    return {"prediction": term_preds, "target": term_target, "predicted_terms": terms}
+    for token in terms_probs:
+        terms_probs[token] = np.amax(np.array(terms_probs[token]))
+    return {"prediction": term_preds, "target": term_target, "predicted_terms": terms, "probability_terms": terms_probs}
 
 
 def compute_term_categories(terms, predicted_terms):
