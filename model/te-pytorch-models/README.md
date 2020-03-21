@@ -10,6 +10,7 @@ the documentation provided at the link for more detailed information on the stru
   ├── train.py - main script to start training
   ├── test.py - evaluation of trained model
   ├── predict.py - predict set of terms from input text 
+  ├── create_term_finetune.py - creates the data based on human validation to retrain model
   │
   ├── config - folder that holds json configuration files 
   ├── parse_config.py - class to handle config file and cli options
@@ -103,7 +104,7 @@ For example:
      -i example_predictions/openstax_bio_ch3.txt
      -o example_predictions`
 
-This script outputs two files:
+This script outputs four files:
   - {input_filename}_{config_name}-{run_timestamp}_annotated_text.txt: This is a version of the
     input text with <entity> </entity> and <event> </event> tags surrounding terms predicted as entities and events specifically.
   - {input_filename}_{config_name}-{run_timestamp}_predicted_terms.json: This is a json file with an entry for each distinct term predicted by the model. Each key is the lemmatized version of a term so terms with the same lemmatized form get collapsed. Each term has four entries:
@@ -111,8 +112,23 @@ This script outputs two files:
     - text: This is the raw text form of the term at each occurrence. This may differ from the lemmatized form if it shows up as plural, etc.
     - indices: These are the locations of the terms in the input text in tokenized form.
     - pos: These are the Spacy part of speech tags for the term for each occurrence of the term.
+  - {input_filename}_{config_name}-{run_timestamp}_probabilites_term.json:  This json file has the key as the term and the value as the probabiity(or confidence). For each term, we take the max probability over all the sentences. In the postprocessing step to merge multiple words into a single term, the confidence of the single term will be outputted as the average of each of the words.
+  - {input_filename}_{config_name}-{run_timestamp}_probabilites_term_orig.json: This json file has the key as the term and the value as the probabiity(or confidence) directly from the model before the post processing step to merge multi-word terms.
 
 This script first preprocesses the input text to be compatible with the model, gets predictions from the model, and then postprocesses those predictions. The postprocessing includes merging of consecutive predicted singleton terms into a single term phrase where appropriate since the model has a bias towards predicting the words in phrases individually rather than as a full phrase. Additionally, it has a filter to exclude false positives that aren't nouns, adjectives, or verbs. These merged and filtered terms are then used to tag the input text resulting in the two files described above.
+
+## Active Learning
+
+The create_term_finetune.py takes in a text file of false positive terms and a pretrained model to output new training data. Here is the outline for call to the script.
+
+`python crate_term_finetune.py 
+     -r saved/models/BertSoftmax/1129_025337/model_best.pth 
+     -i example_predictions/openstax_bio_ch3.txt
+     -o example_predictions
+     -t example_predictions/false_terms.txt`
+
+This script outputs one file
+  - {input_filename}_{config_name}-{run_timestamp}_new_data.json: This new json file is in the same format of the training data. It includes sentences in which the false positive terms appear. It uses the pretrained model to make predictions on these sentences but removes the false positive terms in the predictions (inspired from the Learning Without Forgetting paper: https://arxiv.org/abs/1606.09282)
 
 ## Config file format
 
