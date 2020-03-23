@@ -4,6 +4,8 @@ from pathlib import Path
 from itertools import repeat
 from collections import OrderedDict, defaultdict
 import spacy
+import stanfordnlp
+from spacy_stanfordnlp import StanfordNLPLanguage
 
 def ensure_dir(dirname):
     dirname = Path(dirname)
@@ -25,7 +27,19 @@ def inf_loop(data_loader):
     for loader in repeat(data_loader):
         yield from loader
 
-def tag_terms(text, terms, nlp=None):
+def extract_terms(json_file, out_file=None):
+    """ extract terms into a list """ 
+    terms = []
+    with open(json_file) as f:
+       terms = json.load(f)
+       terms = list(terms.keys())
+    if out_file is not None:
+       with open(out_file, 'w') as f:
+           for term in terms:
+                f.write(term + "\n")
+    return terms
+
+def tag_terms(text, terms, nlp=None, term_probs=None):
     """ Identifies and tags any terms in a given input text.
 
     Searches through the input text and finds all terms (single words and phrases) that are present
@@ -49,7 +63,8 @@ def tag_terms(text, terms, nlp=None):
         List of input terms that will be/are preprocessed using spacy. 
     nlp: 
         Spacy nlp pipeline object that will tokenize, POS tag, lemmatize, etc. 
-
+    term_probs:
+        Dictionary of input terms to probability predicted by the model. If spacy term is provided, then the term in the list of terms must be the same spacy object as the key of the dictionary
     Returns
     -------
     dict with four entries: 
@@ -87,8 +102,18 @@ def tag_terms(text, terms, nlp=None):
         nlp = StanfordNLPLanguage(snlp)
         
     # preprocess with spacy if needed
+    term_probs_spacy = {} 
+    terms_spacy = []
     if type(terms[0]) != spacy.tokens.doc.Doc:
-        terms = [nlp(term) for term in terms]
+        for term in terms:
+            term_spacy = nlp(term)
+            if term_probs is not None:
+                term_probs_spacy[term_spacy] = term_probs[term]
+            terms_spacy.append(term_spacy)
+        terms = terms_spacy
+    else:
+        term_probs_spacy = term_probs
+
     if type(text) != spacy.tokens.doc.Doc:
         text = nlp(text)
     
@@ -100,7 +125,7 @@ def tag_terms(text, terms, nlp=None):
     tokenized_text = [token.text for token in text]
     tags = ['O'] * len(text)
     found_terms = defaultdict(lambda: {"text": [], "indices": [], "pos": [], "type": []})
-    
+    found_term_probs = {}
     # iterate through terms from longest to shortest
     terms = sorted(terms, key=len)[::-1]
     for spacy_term in terms:
@@ -108,7 +133,7 @@ def tag_terms(text, terms, nlp=None):
         lemma_term_list = [token.lemma_ for token in spacy_term]
         text_term_list = [token.text for token in spacy_term]
         term_lemma = " ".join(lemma_term_list)
-        
+        # here figure out how to convert nlp to lemma 
         # skip short acronyms that can cause problems
         if len(term_lemma) <= 2:
             continue
@@ -144,7 +169,13 @@ def tag_terms(text, terms, nlp=None):
                 valid_match = heuristic_match or plural_match or text_match or lemma_match or lower_match
             
             if valid_match:
-                
+                # update term probability earlier to get the max probability 
+                if term_probs is not None:
+                    if term_lemma in found_term_probs:
+                        found_term_probs[term_lemma] = max(found_term_probs[term_lemma], term_probs_spacy[spacy_term])
+                    else:    
+                        found_term_probs[term_lemma] = term_probs_spacy[spacy_term]
+                                    
                 if heuristic_match and not lemma_match:
                     match_length = heuristic_length
                 else:
@@ -155,7 +186,6 @@ def tag_terms(text, terms, nlp=None):
                 
                 # only tag term if not part of larger term
                 if tags[ix:ix + match_length] == ["O"] * match_length:
-                    
                     # classify term type
                     term_type = determine_term_type(spacy_term)
                     
@@ -164,7 +194,6 @@ def tag_terms(text, terms, nlp=None):
                     found_terms[term_lemma]["indices"].append((ix, ix + match_length))
                     found_terms[term_lemma]["pos"].append(term_tag)
                     found_terms[term_lemma]["type"].append(term_type)
-                    
                     # update sentence tags
                     tags = tag_bioes(tags, ix, match_length)
                     
@@ -181,12 +210,20 @@ def tag_terms(text, terms, nlp=None):
     for token in text:
         annotated_text += token._.workaround
     
-    return {
+    tagged_res = {
         "tokenized_text": tokenized_text, 
         "tags": tags, 
         "annotated_text": annotated_text,
         "found_terms": dict(found_terms)
     }
+    
+    if term_probs is not None:
+        # filter out terms that are only found and also not part of larger term
+        tagged_res["found_terms_probability"]  = {}
+        for term in found_terms:
+            tagged_res["found_terms_probability"][term] = found_term_probs[term]
+    
+    return tagged_res
 
 def merge_term_results(results1, results2, offset=0):
     for term in results2:
@@ -216,6 +253,12 @@ def postprocess_tagged_terms(tag_results, offset=0):
     
     found_terms = tag_results["found_terms"]
     annotated_text = tag_results["annotated_text"]
+    found_term_probs = {}
+    process_probability = "found_terms_probability" in tag_results
+    if process_probability:
+        found_term_probs = tag_results["found_terms_probability"]
+    all_term_probs = found_term_probs.copy()
+    new_term_probs = {}
     for term in found_terms:
         
         # flatten the dictionary
@@ -238,14 +281,21 @@ def postprocess_tagged_terms(tag_results, offset=0):
         pos = term_pos[ix]
         typ = term_types[ix]
         replace_text = f"<{typ}>{text}</{typ}>"
-        
+        lemma_prob = 0.0 if not process_probability else found_term_probs[lemma]
+        num_tokens = 1        
+
         while i + 1 < len(sort_ix):
             next_ix = sort_ix[i + 1]
             if term_indices[next_ix][0] == term_ix[1]:
                 if "V" not in pos and "V" not in term_pos[next_ix]:
                     pos = f"{pos} {term_pos[next_ix]}"
                     text = f"{text} {term_texts[next_ix]}"
+                    num_tokens += 1
+                    if process_probability:
+                        lemma_prob = all_term_probs[lemma] + all_term_probs[term_lemmas[next_ix]]
                     lemma = f"{lemma} {term_lemmas[next_ix]}"
+                    if process_probability:
+                        all_term_probs[lemma] = lemma_prob/num_tokens
                     typ = term_types[next_ix]
                     replace_text = f"{replace_text} <{typ}>{term_texts[next_ix]}</{typ}>"
                     term_ix = term_indices[next_ix]
@@ -261,7 +311,12 @@ def postprocess_tagged_terms(tag_results, offset=0):
                 if "V" not in pos and "V" not in term_pos[next_ix]:
                     pos = f"{pos} {term_pos[next_ix]}"
                     text = f"{text}-{term_texts[next_ix]}"
+                    num_tokens += 1
+                    if process_probability:
+                        lemma_prob = all_term_probs[lemma] + all_term_probs[term_lemmas[next_ix]]
                     lemma = f"{lemma}-{term_lemmas[next_ix]}"
+                    if process_probability:
+                        all_term_probs[lemma] = lemma_prob/num_tokens
                     typ = term_types[next_ix]
                     replace_text = f"{replace_text}-<{typ}>{term_texts[next_ix]}</{typ}>"
                     term_ix = term_indices[next_ix]
@@ -289,9 +344,10 @@ def postprocess_tagged_terms(tag_results, offset=0):
         annotated_text = annotated_text.replace(replace_text, 
                                                 f"<{typ}>{text}</{typ}>")
                     
+        new_term_probs[lemma] = lemma_prob/num_tokens
         i += 1
     
-    return {"found_terms": new_results, "annotated_text": annotated_text}
+    return {"found_terms": new_results, "annotated_text": annotated_text, "found_terms_probability" : new_term_probs}
         
 def determine_term_type(term):
     """ Categorizes a term as either entity or event based on several derived rules.

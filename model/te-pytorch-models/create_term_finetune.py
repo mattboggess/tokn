@@ -1,7 +1,7 @@
 import argparse
 import torch
 import json
-from utils import tag_terms, postprocess_tagged_terms, merge_term_results 
+from utils import tag_terms, postprocess_tagged_terms, merge_term_results
 from tqdm import tqdm
 import model.data_loaders as module_data
 import model.loss as module_loss
@@ -15,6 +15,64 @@ import warnings
 import stanfordnlp
 from spacy_stanfordnlp import StanfordNLPLanguage
 import os
+
+"""
+Creates new training data based on human validation input
+Expects a file which contains terms that are false positives.
+Each line in the file should be a false positive term
+"""
+
+def extract_false_term_sentences(input_file, false_terms_set, nlp):
+    valid_POS = ["ADJ", "NOUN", "PROPN", "VERB"]
+    false_terms = []
+ 
+    for term in false_terms_set:
+        spacy_term = nlp(term, disable=["ner", "parser"])
+        if all([t.pos_ in valid_POS for t in spacy_term]):
+            false_terms.append(spacy_term)
+    
+    print("Num false terms:", len(false_terms))
+    with open(input_file, "r") as f:
+        lines = f.readlines()
+    spacy_text = []
+    result = {}
+
+   
+    print("Run spacy tokenizer on text")
+    for line in tqdm(lines):
+        if line == "\n":
+            spacy_text.append("\n")
+            continue
+
+        doc = nlp(line, disable=["ner", "parser"])
+        spacy_text.append(doc)
+    
+    filtered_lines = []
+    offset = 0
+    index = 0
+    print("Filtering")
+    for text in tqdm(spacy_text):
+        if text == "\n":
+            filtered_lines.append(lines[index])
+            index += 1
+            continue
+            
+        tmp_false = tag_terms(text, false_terms, nlp)
+        if len(tmp_false) == 0:
+            index += 1
+            continue
+      
+        num_tokens = len(tmp_false["tokenized_text"])
+        result = merge_term_results(result, tmp_false["found_terms"], offset)
+        offset += num_tokens
+        
+        filtered_lines.append(lines[index])
+        index += 1
+
+    for term in result:
+        term_text_set = set(result[term]["text"])
+        false_terms_set.update(term_text_set)
+    return filtered_lines
 
 def term_model_predict(config, logger):
     """ Uses the specified TermNER model in config to make term predictions for input text
@@ -44,7 +102,6 @@ def term_model_predict(config, logger):
     epoch_target = []
     epoch_pred = []
     epoch_terms = Counter() 
-    epoch_pred_probs = {}
 
     with torch.no_grad():
         for i, batch_data in enumerate(tqdm(data_loader)):
@@ -57,27 +114,23 @@ def term_model_predict(config, logger):
                 batch_data["target"] = batch_data["target"].unsqueeze(0)
 
             output = model(batch_data)
-            pred_probs = None
             if config["arch"]["type"] == "BertCRFNER": 
                 pred = model.decode(output, batch_data["bert_mask"])
             else:
                 pred = torch.argmax(output, dim=-1)
-                output_softmax = torch.nn.functional.softmax(output, dim=-1)
-                pred_probs, pred_args = torch.max(output_softmax, dim=-1)
             term_predictions = get_term_predictions(pred, batch_data["target"], 
                                                     batch_data["bert_mask"], 
-                                                    batch_data["sentences"], data_loader.tags, pred_probs)
+                                                    batch_data["sentences"], data_loader.tags)
             epoch_target += term_predictions["target"]
             epoch_pred += term_predictions["prediction"]
             epoch_terms.update(term_predictions["predicted_terms"])
-            for term in term_predictions["probability_terms"]:
-                if term in epoch_pred_probs:
-                    epoch_pred_probs[term] = max(epoch_pred_probs[term], term_predictions["probability_terms"][term])
-                else:
-                    epoch_pred_probs[term] = term_predictions["probability_terms"][term]
-    return epoch_terms, epoch_pred_probs
 
-def main(config, input_file, out_dir, term_file, model_version):
+    return epoch_terms
+
+def main(config, input_file, out_dir, false_term_file, model_version):
+    if not false_term_file:
+        print("Term file not provided")
+        return 
     logger = config.get_logger('test')
     
     # set up spacy nlp engine
@@ -87,21 +140,28 @@ def main(config, input_file, out_dir, term_file, model_version):
     nlp = StanfordNLPLanguage(snlp)
     sys.stdout = sys.__stdout__
     
-    # read in text data
-    with open(input_file, "r") as f:
-        lines = f.readlines()
-        text = "\n".join(lines)
         
+    print("Filtered out sentences only false terms appear")
+
+    false_terms_set = set()
+    with open(false_term_file) as f:
+        false_terms = f.readlines()
+        false_terms = [term.strip() for term in false_terms]
+        false_terms_set = set([term for term in false_terms if term != ''])
+
+    # Extracts sentences with only false terms. Also update false_terms set to include non-lemmatized forms 
+    lines = extract_false_term_sentences(input_file, false_terms_set, nlp)
+
     print("Preprocessing Input Text")
-    input_data = {"sentences": [], "tags": [], "textbook": [], "terms": {}}
     spacy_text = []
+    input_data = {"sentences": [], "tags": [], "textbook": [], "terms": {}}
     for line in tqdm(lines):
         if line == "\n":
             spacy_text.append("\n")
             continue
-
         doc = nlp(line, disable=["ner", "parser"])
         spacy_text.append(doc)
+    
         for s in doc.sents:
             tokens = [t.text for t in s]
             input_data["sentences"].append(" ".join(tokens))
@@ -109,83 +169,52 @@ def main(config, input_file, out_dir, term_file, model_version):
             # add in fake data for other entries
             input_data["tags"].append(" ".join(["O"] * len(tokens)))
             input_data["textbook"].append("n/a")
-            
-    predicted_probs = None    
-    # load pre-specified terms if provided
-    if term_file:
-        print("Using Pre-Specified Terms")
-        with open(term_file, "r") as f:
-            predicted_terms = json.load(f)
-    # get terms via model predictions
-    else:
-        print("Predicting terms using model")
-        # write out to tmp file compatible with model for loading
-        tmp_input_file = "./term_extraction_tmp.json"
-        with open(tmp_input_file, "w") as f:
-            json.dump(input_data, f)
-            
-        predicted_terms, predicted_probs = term_model_predict(config, logger)
+
+    tmp_input_file = "./term_extraction_tmp.json"
+    with open(tmp_input_file, "w") as f:
+        json.dump(input_data, f)
+    predicted_terms = term_model_predict(config, logger)
+    os.remove(tmp_input_file)
         
-        os.remove(tmp_input_file)
-            
-    # tag/annotate the text with our predicted terms
-    print("Annotating Input Text")
     predicted_terms = list(predicted_terms.keys())
-    predicted_terms_spacy = []
-    predicted_probs_spacy = {}
+    predicted_terms = [term for term in predicted_terms if term not in false_terms_set]
+    predicted_terms = [nlp(term, disable=["ner", "parser"]) for term in predicted_terms]
     
     # filter out invalid POS
     valid_POS = ["ADJ", "NOUN", "PROPN", "VERB"]
-   
-    for term in predicted_terms:
-        spacy_term = nlp(term, disable=["ner", "parser"])
-        if all([t.pos_ in valid_POS for t in spacy_term]):
-            predicted_terms_spacy.append(spacy_term)
-        if predicted_probs is not None:
-            predicted_probs_spacy[spacy_term] = predicted_probs[term]            
+    predicted_terms = [term for term in predicted_terms if all([t.pos_ in valid_POS for t in term])]
     
-    predicted_terms = predicted_terms_spacy
-    result = {"found_terms": {}, "annotated_text": "", "found_terms_probability": {}}
-    offset = 0
+    term_extraction_data = {"terms" : {}, "sentences": [], "tags" : [], "textbook": []}
+    textbook = "n/a"
+    print("Retrieving term data for finetuning")
     for text in tqdm(spacy_text):
         if text == "\n":
-            result["annotated_text"] += "\n" 
             continue
             
-        # Tag and postproces terms by joining single terms
-        tmp = tag_terms(text, predicted_terms, nlp, predicted_probs_spacy)
+        tmp = tag_terms(text, predicted_terms, nlp)
         num_tokens = len(tmp["tokenized_text"])
-        tmp = postprocess_tagged_terms(tmp)
-       
-        # Merge results with tmp 
-        result["annotated_text"] = "\n".join([result["annotated_text"], tmp["annotated_text"]])
-        result["found_terms"] = merge_term_results(result["found_terms"], tmp["found_terms"], offset)
-        if predicted_probs is not None:
-            for term in tmp["found_terms_probability"]:
-                if term in result["found_terms_probability"]:
-                    result["found_terms_probability"][term] = max(tmp["found_terms_probability"][term], result["found_terms_probability"][term])
-                else:
-                    result["found_terms_probability"][term] = tmp["found_terms_probability"][term]
-        offset += num_tokens 
-    
-    # write out predicted terms and annotated text and predicted probabilities for postprocessed and original outputs directly from model
-    input_filename = input_file.split("/")[-1][:-4]
-    filename = f"{out_dir}/{input_filename}_{model_version}_predicted_terms.json"
-    with open(filename, "w") as f:
-        json.dump(result["found_terms"], f, indent=4)
-      
-    filename = f"{out_dir}/{input_filename}_{model_version}_annotated_text.txt"
-    with open(filename, "w") as f:
-        f.write(result["annotated_text"].strip("\n"))
+        tmp_terms = list(tmp["found_terms"].keys())
+        if len(tmp_terms) == 0:
+            continue
+        tokenized_sentence = tmp["tokenized_text"]
+        term_info = tmp["found_terms"]
+        tagged_sentence = tmp["tags"]
+        for term in term_info:
+            if term in term_extraction_data["terms"]:
+                term_extraction_data["terms"][term] += len(term_info[term]["indices"])
+            else:
+                term_extraction_data["terms"][term] = len(term_info[term]["indices"])
+        term_extraction_data["sentences"].append(" ".join(tokenized_sentence))
+        term_extraction_data["tags"].append(" ".join(tagged_sentence))
+        term_extraction_data["textbook"].append(textbook)
 
-    term_probs_file_name = f"{out_dir}/{input_filename}_{model_version}_probability_terms.json"
-    term_pred_orig_file_name = f"{out_dir}/{input_filename}_{model_version}_probability_terms_orig.json"
     
-    with open(term_probs_file_name, "w") as f:
-        json.dump(result["found_terms_probability"], f, indent=4)
-    
-    with open(term_pred_orig_file_name, "w") as f:
-        json.dump(predicted_probs, f, indent=4)
+    input_filename = input_file.split("/")[-1][:-4]
+    # write out predicted terms and annotated text
+    filename = f"{out_dir}/{input_filename}_{model_version}_new_data.json"
+    with open(filename, "w") as f:
+        json.dump(term_extraction_data, f, indent=4)
+     
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser(description='PyTorch Template')
@@ -200,8 +229,7 @@ if __name__ == '__main__':
     args.add_argument('-i', '--input_file', default=None, type=str,
                       help='input file containing text to make predictions on')
     args.add_argument('-t', '--term_file', default=None, type=str,
-                      help='optional term file containing terms to use instead of model predictions')
-
+                      help='term file containing false positive terms to use')
     config = ConfigParser.from_args(args, test=True)
     args = args.parse_args()
     model_version = "-".join(args.resume.split("/")[-3:-1])
