@@ -1,10 +1,10 @@
-# Extracts individual sentences and key terms from each chapter of provided Openstax textbooks
-# and preprocesses them using Stanford NLP pipeline and saves the results for future use
+# Extracts individual sentences and key terms from each chapter of provided Openstax textbooks,
+# preprocesses them using Stanford NLP pipeline, and saves the results for future use
 
 # Author: Matthew Boggess
 # Version: 4/1/20
 
-# Data Source: Partially parsed textbook files of the openstax textbooks were provided by openstax
+# Data Source: Parsed textbook files of the openstax textbooks provided by openstax
 
 # Description: 
 #   For each specified openstax textbook: 
@@ -13,9 +13,9 @@
 #     - extracts out key terms from the key terms sections of each chapter and runs these
 #       terms through the same Stanford NLP preprocessing pipeline
 
-# Running Note: This is a time intensive script. Processing each individual textbook can take up to 
-# an hour. It is best to subset the OPENSTAX_TEXTBOOKS parameter to only textbooks that need to be
-# run if trying to add new ones or re-run particular textbooks.
+# Running Note: This is a time intensive script. Processing each individual textbook takes 30-40 
+# minutes on average. It is best to subset the openstax_textbooks parameter to only textbooks that 
+# need to be run if trying to add new ones or re-run particular textbooks.
 
 #===================================================================================
 
@@ -24,7 +24,6 @@
 import stanfordnlp
 from spacy_stanfordnlp import StanfordNLPLanguage
 from data_processing_utils import write_spacy_docs
-import warnings
 import pandas as pd
 import re
 import os
@@ -38,15 +37,18 @@ import json
 ## Filepaths
 
 # data directories
-raw_data_dir = "../data/raw_data/openstax"
+raw_data_dir = "../data/raw_data/openstax/openstax_provided_book_import/sentence_files"
 preprocessed_data_dir = "../data/preprocessed_data"
 if not os.path.exists(preprocessed_data_dir):
     os.makedirs(preprocessed_data_dir)
 
+# special case: web scrape parse of microbiology key terms 
+microbio_key_terms_file = f"../data/raw_data/openstax/openstax_webscrape/data/microbiology_glossary.json"
+
 ## Important Enumerations 
 
 # Openstax textbooks to be processed
-OPENSTAX_TEXTBOOKS = [
+openstax_textbooks = [
     'Anatomy_and_Physiology', 
     'Astronomy', 
     'Biology_2e', 
@@ -59,7 +61,7 @@ OPENSTAX_TEXTBOOKS = [
 ]
 
 # textbook sections to exclude from consideration when extracting chapter sentences 
-EXCLUDE_SECTIONS = [
+exclude_sections = [
     'Preface',
     'Chapter Outline',
     'Index',
@@ -126,16 +128,15 @@ if __name__ == "__main__":
     # initialize Stanford NLP Spacy pipeline
     snlp = stanfordnlp.Pipeline(lang="en")
     nlp = StanfordNLPLanguage(snlp)
-    warnings.filterwarnings('ignore')
     
-    for i, textbook in enumerate(OPENSTAX_TEXTBOOKS):
-        print(f"Processing {textbook} textbook: Textbook {i + 1}/{len(OPENSTAX_TEXTBOOKS)}")
+    for i, textbook in enumerate(openstax_textbooks):
+        print(f"Processing {textbook} textbook: Textbook {i + 1}/{len(openstax_textbooks)}")
         textbook_data = pd.read_csv(f"{raw_data_dir}/sentences_{textbook}_parsed.csv")
         
         # spacy preprocess sentences
         print("Running chapter sentences through Stanford NLP pipeline")
         output_file = f"{preprocessed_data_dir}/{textbook}_sentences_spacy"
-        sentences = textbook_data[~textbook_data.section_name.isin(EXCLUDE_SECTIONS)].sentence
+        sentences = textbook_data[~textbook_data.section_name.isin(exclude_sections)].sentence
         sentences_spacy = []
         for sent in tqdm(sentences):
             if not len(sent):
@@ -147,9 +148,9 @@ if __name__ == "__main__":
         print("Running chapter key terms through Stanford NLP pipeline")
         output_file = f"{preprocessed_data_dir}/{textbook}_key_terms_spacy"
         key_terms_spacy = []
-        # use special extracted glossary for microbiology since key term format is different
+        # use special extracted key terms file for microbiology since key term format is different
         if textbook == "Microbiology":
-            with open(f"{raw_data_dir}/microbiology_glossary.json", "r") as f:
+            with open(microbio_key_terms_file, "r") as f:
                 key_terms = json.load(f)
             for key_term in tqdm(key_terms):
                 key_terms_spacy.append(nlp(key_term))
