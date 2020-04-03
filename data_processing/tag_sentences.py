@@ -101,22 +101,17 @@ if __name__ == '__main__':
         else:
             terms = agg_terms
     
-        tokenized_sentences = []
-        sentence_tags = []
-        term_counts = Counter() 
+        tagged_sentences = []
         spacy_sentences = read_spacy_docs(f"{input_data_dir}/{textbook}_sentences_spacy", nlp)
+        i = 0
         for sentence in tqdm(spacy_sentences):
+            i += 1
             
             result = tag_terms(sentence, terms, nlp)
-            tokenized_sentences.append(' '.join(result['tokenized_text']))
-            sentence_tags.append(' '.join(result['tags']))
-            for term in result['found_terms']:
-                term_counts[term] += len(result['found_terms'][term]['indices'])
+            result['original_text'] = sentence.text_with_ws
+            if i == 15:
+                break
             
-        with open(f"{output_data_dir}/{textbook}_tokenized_sentences.txt", 'w') as fid:
-            fid.write('\n'.join(tokenized_sentences))
-        with open(f"{output_data_dir}/{textbook}_sentence_tags.txt", 'w') as fid:
-            fid.write('\n'.join(sentence_tags))
-        with open(f"{output_data_dir}/{textbook}_term_counts.json", 'w') as fid:
-            json.dump(term_counts, fid, indent=4)
+        with open(f"{output_data_dir}/{textbook}_tagged_sentences.json", 'w') as fid:
+            json.dump(tagged_sentences, fid, indent=4)
        
