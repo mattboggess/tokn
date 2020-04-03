@@ -205,19 +205,19 @@ def tag_terms(text, terms, nlp=None):
                         contains a <entity>cell wall</entity>.', 
      'found_terms': {
          'cell wall': {'text': ['cell wall'], 'indices': [(10, 12)], 'pos': ['NN NN'], 
-                       'type': ['Entity']}, 
+                       'type': ['entity']}, 
          'biologist': {'text': ['biologist'], 'indices': [(1, 2)], 'pos': ['NN'], 
-                       'type': ['Entity']}, 
-         'cell': {'text': ['cell'], 'indices': [(7, 8)], 'tag': ['NN'], 'type': ['Entity']}}}
+                       'type': ['entity']}, 
+         'cell': {'text': ['cell'], 'indices': [(7, 8)], 'pos': ['NN'], 'type': ['entity']}}}
     """
     from spacy.lang.en.stop_words import STOP_WORDS
     spacy.tokens.token.Token.set_extension('workaround', default='', force=True)
     
-    HEURISTIC_TOKENS = ["-", "plant", "substance", "atom"]
+    HEURISTIC_TOKENS = ['-', 'plant', 'substance', 'atom']
     HEURISTIC_MAPPING = {
-        "alpha": "α",
-        "beta": "β",
-        "prime": "′"
+        'alpha': 'α',
+        'beta': 'β',
+        'prime': '′'
     }
     
     # default to Stanford NLP pipeline wrapped in Spacy
@@ -238,15 +238,15 @@ def tag_terms(text, terms, nlp=None):
     lemmatized_text = [token.lemma_ for token in text]
     tokenized_text = [token.text for token in text]
     tags = ['O'] * len(text)
-    found_terms = defaultdict(lambda: {"text": [], "indices": [], "pos": [], "type": []})
+    found_terms = defaultdict(lambda: {'text': [], 'indices': [], 'pos': [], 'type': []})
     
-    # iterate through terms from longest to shortest
+    # iterate through terms from longest to shortest to ensure we tag the largest possible phrase
     terms = sorted(terms, key=len)[::-1]
     for spacy_term in terms:
         term_length = len(spacy_term)
         lemma_term_list = [token.lemma_ for token in spacy_term]
         text_term_list = [token.text for token in spacy_term]
-        term_lemma = " ".join(lemma_term_list)
+        term_lemma = ' '.join(lemma_term_list)
         
         # skip short acronyms that can cause problems
         if len(term_lemma) <= 2:
@@ -254,14 +254,14 @@ def tag_terms(text, terms, nlp=None):
         
         # additional check to check for simple plural of uncommon biology terms
         match_uncommon_plural = lemma_term_list.copy()
-        match_uncommon_plural[-1] = match_uncommon_plural[-1] + "s"
+        match_uncommon_plural[-1] = match_uncommon_plural[-1] + 's'
 
         # additional check using dropped heuristics on lemmatized version
         match_heuristic = []
         if lemma_term_list[0] not in HEURISTIC_TOKENS:
             for token in lemma_term_list:
                 if token not in HEURISTIC_TOKENS:
-                    match_heuristic += token.split("-")
+                    match_heuristic += token.split('-')
             heuristic_length = len(match_heuristic)
         else:
             heuristic_term = lemma_term_list
@@ -298,46 +298,46 @@ def tag_terms(text, terms, nlp=None):
                 else:
                     match_length = term_length
                 
-                term_text = " ".join([t.text for t in text[ix:ix + match_length]])
-                term_tag = " ".join([t.tag_ for t in text[ix:ix + match_length]])
+                term_text = ' '.join([t.text for t in text[ix:ix + match_length]])
+                term_tag = ' '.join([t.tag_ for t in text[ix:ix + match_length]])
                 
                 # only tag term if not part of larger term
-                if tags[ix:ix + match_length] == ["O"] * match_length:
+                if tags[ix:ix + match_length] == ['O'] * match_length:
                     
                     # classify term type
                     term_type = determine_term_type(spacy_term)
                     
                     # collect term information
-                    found_terms[term_lemma]["text"].append(term_text)
-                    found_terms[term_lemma]["indices"].append((ix, ix + match_length))
-                    found_terms[term_lemma]["pos"].append(term_tag)
-                    found_terms[term_lemma]["type"].append(term_type)
+                    found_terms[term_lemma]['text'].append(term_text)
+                    found_terms[term_lemma]['indices'].append((ix, ix + match_length))
+                    found_terms[term_lemma]['pos'].append(term_tag)
+                    found_terms[term_lemma]['type'].append(term_type)
                     
                     # update sentence tags
                     tags = tag_bioes(tags, ix, match_length)
                     
                     # annotate token representations with term type
-                    text[ix]._.workaround = f"<{term_type}>" + text[ix]._.workaround
+                    text[ix]._.workaround = f'<{term_type}>' + text[ix]._.workaround
                     end_ix = ix + match_length - 1
-                    if text[end_ix]._.workaround.endswith(" "):
-                        text[end_ix]._.workaround = text[end_ix]._.workaround[:-1] + f"</{term_type}> "
+                    if text[end_ix]._.workaround.endswith(' '):
+                        text[end_ix]._.workaround = text[end_ix]._.workaround[:-1] + f'</{term_type}> '
                     else:
-                        text[end_ix]._.workaround += f"</{term_type}>"
+                        text[end_ix]._.workaround += f'</{term_type}>'
                     
     # reconstruct fully annotated input text
-    annotated_text = ""
+    annotated_text = ''
     for token in text:
         annotated_text += token._.workaround
     
     return {
-        "tokenized_text": tokenized_text, 
-        "tags": tags, 
-        "annotated_text": annotated_text,
-        "found_terms": dict(found_terms)
+        'tokenized_text': tokenized_text, 
+        'tags': tags, 
+        'annotated_text': annotated_text,
+        'found_terms': dict(found_terms)
     }
 
 def determine_term_type(term):
-    """ Categorizes a term as either entity or event based on several derived rules.
+    """ Categorizes a term as either entity or event based on several heuristics.
 
     Parameters
     ----------
@@ -350,14 +350,14 @@ def determine_term_type(term):
         The class of the term
     """
     
-    NOMINALS = ["ation", "ition", "ption", "ing", "sis", "lism", "ment", "sion"]
-    EVENT_KEYWORDS = ["process", "cycle"]
+    nominals = ["ation", "ition", "ption", "ing", "sis", "lism", "ment", "sion"]
+    event_keywords = ["process", "cycle"]
     
     # key words that indicate events despite being nouns 
-    if any([ek in term.text.lower() for ek in EVENT_KEYWORDS]):
+    if any([ek in term.text.lower() for ek in event_keywords]):
         term_type = "event"
     # key endings indicating a nominalized form of an event 
-    elif any([term[i].text.endswith(ne) for ne in NOMINALS for i in range(len(term))]):
+    elif any([term[i].text.endswith(ne) for ne in nominals for i in range(len(term))]):
         term_type = "event"
     # POS = Verb implies event 
     elif any([t.pos_ == "VERB" for t in term]):
@@ -469,7 +469,7 @@ def write_spacy_docs(docs, filepath):
     for doc in docs:
         doc_bin.add(doc)
         
-    with open(filepath, "wb") as f:
+    with open(filepath, 'wb') as f:
         f.write(doc_bin.to_bytes())
     
 def read_spacy_docs(filepath, nlp=None):
@@ -487,10 +487,10 @@ def read_spacy_docs(filepath, nlp=None):
     """
     
     if nlp is None:
-        snlp = stanfordnlp.Pipeline(lang="en")
+        snlp = stanfordnlp.Pipeline(lang='en')
         nlp = StanfordNLPLanguage(snlp)
         
-    with open(filepath, "rb") as f:
+    with open(filepath, 'rb') as f:
         data = f.read()
         
     doc_bin = DocBin().from_bytes(data)
