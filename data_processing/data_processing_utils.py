@@ -455,7 +455,7 @@ def get_closest_match(indices1, indices2):
     
     return closest_match
 
-def write_spacy_docs(docs, filepath):
+def write_spacy_docs(docs, vocab, filepath, vocab_filepath):
     """ Writes serialized spacy docs to file.  
     
     Parameters
@@ -475,8 +475,10 @@ def write_spacy_docs(docs, filepath):
         
     with open(filepath, 'wb') as f:
         f.write(doc_bin.to_bytes())
+    with open(vocab_filepath, 'wb') as f:
+        f.write(vocab.to_bytes())
     
-def read_spacy_docs(filepath, nlp=None):
+def read_spacy_docs(filepath, vocab_filepath):
     """ Reads serialized spacy docs from a file into memory.
     
     Parameters
@@ -489,14 +491,13 @@ def read_spacy_docs(filepath, nlp=None):
     list of spacy.tokens.doc.Doc
         List of spacy Docs loaded from file
     """
-    
-    if nlp is None:
-        snlp = stanfordnlp.Pipeline(lang='en')
-        nlp = StanfordNLPLanguage(snlp)
+    from spacy.vocab import Vocab
+    with open(vocab_filepath, 'rb') as f:
+        vocab = Vocab().from_bytes(f.read())
         
     with open(filepath, 'rb') as f:
         data = f.read()
         
     doc_bin = DocBin().from_bytes(data)
-    docs = list(doc_bin.get_docs(nlp.vocab))
+    docs = list(doc_bin.get_docs(vocab))
     return docs

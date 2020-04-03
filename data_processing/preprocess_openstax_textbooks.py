@@ -2,7 +2,7 @@
 # preprocesses them using Stanford NLP pipeline, and saves the results for future use
 
 # Author: Matthew Boggess
-# Version: 4/1/20
+# Version: 4/3/20
 
 # Data Source: Parsed textbook files of the openstax textbooks provided by openstax
 
@@ -126,33 +126,32 @@ def parse_openstax_terms(key_term_text):
 
 if __name__ == "__main__":
     
-    # initialize Stanford NLP Spacy pipeline
-    snlp = stanfordnlp.Pipeline(lang="en")
-    nlp = StanfordNLPLanguage(snlp)
     warnings.filterwarnings('ignore')
     
     for i, textbook in enumerate(openstax_textbooks):
+        
+        snlp = stanfordnlp.Pipeline(lang="en")
+        nlp = StanfordNLPLanguage(snlp)
+
         print(f"Processing {textbook} textbook: Textbook {i + 1}/{len(openstax_textbooks)}")
         textbook_data = pd.read_csv(f"{raw_data_dir}/sentences_{textbook}_parsed.csv")
         
         # spacy preprocess sentences
         print("Running chapter sentences through Stanford NLP pipeline")
         output_file = f"{preprocessed_data_dir}/{textbook}_sentences_spacy"
+        output_vocab_file = f"{preprocessed_data_dir}/{textbook}_sentences_spacy_vocab"
         sentences = textbook_data[~textbook_data.section_name.isin(exclude_sections)].sentence
         sentences_spacy = []
-        i = 0
         for sent in tqdm(sentences):
-            i += 1
-            if i == 10:
-                break
             if not len(sent):
                 continue
             sentences_spacy.append(nlp(sent))
-        write_spacy_docs(sentences_spacy, output_file)
+        write_spacy_docs(sentences_spacy, nlp.vocab, output_file, output_vocab_file)
         
         # spacy preprocess key terms
         print("Running chapter key terms through Stanford NLP pipeline")
         output_file = f"{preprocessed_data_dir}/{textbook}_key_terms_spacy"
+        output_vocab_file = f"{preprocessed_data_dir}/{textbook}_key_terms_spacy_vocab"
         key_terms_spacy = []
         # use special extracted key terms file for microbiology since key term format is different
         if textbook == "Microbiology":
@@ -169,6 +168,5 @@ if __name__ == "__main__":
                 kts = parse_openstax_terms(key_term)
                 if len(kts):
                     key_terms_spacy += [nlp(kt) for kt in kts]
-        break
-        write_spacy_docs(key_terms_spacy, output_file)
+        write_spacy_docs(key_terms_spacy, nlp.vocab, output_file, output_vocab_file)
         
