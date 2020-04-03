@@ -28,6 +28,7 @@ import pandas as pd
 import re
 import os
 from tqdm import tqdm
+import warnings
 import json
 
 #===================================================================================
@@ -128,6 +129,7 @@ if __name__ == "__main__":
     # initialize Stanford NLP Spacy pipeline
     snlp = stanfordnlp.Pipeline(lang="en")
     nlp = StanfordNLPLanguage(snlp)
+    warnings.filterwarnings('ignore')
     
     for i, textbook in enumerate(openstax_textbooks):
         print(f"Processing {textbook} textbook: Textbook {i + 1}/{len(openstax_textbooks)}")
@@ -138,7 +140,11 @@ if __name__ == "__main__":
         output_file = f"{preprocessed_data_dir}/{textbook}_sentences_spacy"
         sentences = textbook_data[~textbook_data.section_name.isin(exclude_sections)].sentence
         sentences_spacy = []
+        i = 0
         for sent in tqdm(sentences):
+            i += 1
+            if i == 10:
+                break
             if not len(sent):
                 continue
             sentences_spacy.append(nlp(sent))
@@ -163,5 +169,6 @@ if __name__ == "__main__":
                 kts = parse_openstax_terms(key_term)
                 if len(kts):
                     key_terms_spacy += [nlp(kt) for kt in kts]
+        break
         write_spacy_docs(key_terms_spacy, output_file)
         

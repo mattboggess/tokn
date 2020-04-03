@@ -465,7 +465,11 @@ def write_spacy_docs(docs, filepath):
     filepath: str
         File path to serialized spacy docs
     """
-    doc_bin = DocBin()
+    from spacy.attrs import IDS
+    attr_exclude = ['SENT_START']
+    attrs = [attr for attr in IDS.keys() if attr not in attr_exclude]
+    
+    doc_bin = DocBin(attrs=attrs)
     for doc in docs:
         doc_bin.add(doc)
         
