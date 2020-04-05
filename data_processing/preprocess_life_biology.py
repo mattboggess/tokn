@@ -58,6 +58,7 @@ input_sentences_file = f"{raw_data_dir}/life_bio_selected_sentences.txt"
 kb_output_sentences_file = f"{preprocessed_data_dir}/Life_Biology_kb_sentences_spacy"
 output_sentences_file = f"{preprocessed_data_dir}/Life_Biology_sentences_spacy"
 output_sentences_vocab_file = f"{preprocessed_data_dir}/Life_Biology_sentences_spacy_vocab"
+output_sentences_kb_vocab_file = f"{preprocessed_data_dir}/Life_Biology_kb_sentences_spacy_vocab"
 
 ## Important Enumerations 
 
@@ -163,5 +164,5 @@ if __name__ == "__main__":
         sentences_spacy.append(spacy_sent)
         
     write_spacy_docs(sentences_spacy, nlp.vocab, output_sentences_file, output_sentences_vocab_file)	
-    write_spacy_docs(sentences_kb_spacy, nlp.vocab, kb_output_sentences_file, output_sentences_vocab_file)	
+    write_spacy_docs(sentences_kb_spacy, nlp.vocab, kb_output_sentences_file, output_sentences_kb_vocab_file)	
     

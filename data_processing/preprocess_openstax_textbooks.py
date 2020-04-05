@@ -44,7 +44,7 @@ if not os.path.exists(preprocessed_data_dir):
     os.makedirs(preprocessed_data_dir)
 
 # special case: web scrape parse of microbiology key terms 
-microbio_key_terms_file = f"../data/raw_data/openstax/openstax_webscrape/data/microbiology_glossary.json"
+microbio_key_terms_file = f"../data/raw_data/openstax/openstax_web_scrape/data/microbiology_glossary.json"
 
 ## Important Enumerations 
 

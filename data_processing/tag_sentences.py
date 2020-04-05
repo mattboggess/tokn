@@ -1,7 +1,7 @@
 # Tags sentences with key terms from textbooks in preparation for term extraction modeling. 
 
 # Author: Matthew Boggess
-# Version: 4/2/20
+# Version: 4/3/20
 
 # Data Source: Output of preprocess_openstax_textbooks.py and preprocess_life_biology.py
 # scripts.
@@ -27,9 +27,9 @@
 
 # Libraries 
 
-from data_processing_utils import tag_terms, read_spacy_docs
 import stanfordnlp
 from spacy_stanfordnlp import StanfordNLPLanguage
+from data_processing_utils import tag_terms, read_spacy_docs
 from collections import Counter
 import warnings
 from tqdm import tqdm
@@ -80,15 +80,17 @@ term_sources = [
 
 if __name__ == '__main__':
     
-    # initialize Stanford NLP Spacy pipeline
-    snlp = stanfordnlp.Pipeline(lang='en')
-    nlp = StanfordNLPLanguage(snlp)
     warnings.filterwarnings('ignore')
+    snlp = stanfordnlp.Pipeline(lang="en")
+    nlp = StanfordNLPLanguage(snlp)
     
     # aggregate key terms into single list
     agg_terms = []
     for term_source in term_sources:
-        agg_terms += read_spacy_docs(f"{input_data_dir}/{term_source}_key_terms_spacy", nlp)
+        agg_terms += read_spacy_docs(
+            f"{input_data_dir}/{term_source}_key_terms_spacy",
+            f"{input_data_dir}/{term_source}_key_terms_spacy_vocab"
+        )
     
     for i, textbook in enumerate(textbooks):
         print(f"Tagging {textbook} textbook sentences: Textbook {i + 1}/{len(textbooks)}")
@@ -97,20 +99,23 @@ if __name__ == '__main__':
         # evaluation, but don't include its terms generally since there are many too general
         # word representations for bio concepts in the knowledge base
         if textbook == 'Life_Biology_kb':
-            terms = read_spacy_docs(f"{input_data_dir}/Life_Biology_kb_key_terms_spacy", nlp)
+            terms = read_spacy_docs(
+                f"{input_data_dir}/Life_Biology_kb_key_terms_spacy",
+                f"{input_data_dir}/Life_Biology_kb_key_terms_spacy_vocab"
+            )
         else:
             terms = agg_terms
     
         tagged_sentences = []
-        spacy_sentences = read_spacy_docs(f"{input_data_dir}/{textbook}_sentences_spacy", nlp)
-        i = 0
+        spacy_sentences = read_spacy_docs(
+            f"{input_data_dir}/{textbook}_sentences_spacy",
+            f"{input_data_dir}/{textbook}_sentences_spacy_vocab"
+        )
         for sentence in tqdm(spacy_sentences):
-            i += 1
             
             result = tag_terms(sentence, terms, nlp)
             result['original_text'] = sentence.text_with_ws
-            if i == 15:
-                break
+            tagged_sentences.append(result)
             
         with open(f"{output_data_dir}/{textbook}_tagged_sentences.json", 'w') as fid:
             json.dump(tagged_sentences, fid, indent=4)
