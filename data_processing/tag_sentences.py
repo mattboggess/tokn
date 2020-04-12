@@ -64,13 +64,17 @@ pooled_terms = [
     'University_Physics_Volume_1',
     'University_Physics_Volume_2',
     'University_Physics_Volume_3',
-    'openstax_bio2e_section10-2'
+    'openstax_bio2e_section10-2',
+    'openstax_bio2e_section10-4',
+    'openstax_bio2e_section4-2'
 ]
 
 # mapping from textbooks/textbook sections whose sentences we would like to tag to the
 # sources of terms we should use for tagging them
 textbooks = {
-    'openstax_bio2e_section10-2': ['openstax_bio2e_section10-2']
+    'openstax_bio2e_section10-2': ['openstax_bio2e_section10-2'],
+    'openstax_bio2e_section10-4': ['openstax_bio2e_section10-4'],
+    'openstax_bio2e_section4-2': ['openstax_bio2e_section4-2']
     'Anatomy_and_Physiology': pooled_terms, 
     'Astronomy': pooled_terms, 
     'Biology_2e': pooled_terms,
