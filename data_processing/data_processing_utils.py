@@ -249,8 +249,8 @@ def tag_terms(text, terms, nlp=None):
         term_lemma = ' '.join(lemma_term_list)
         
         # skip short acronyms that can cause problems
-        if len(term_lemma) <= 2:
-            continue
+        #if len(term_lemma) <= 2:
+        #    continue
         
         # additional check to check for simple plural of uncommon biology terms
         match_uncommon_plural = lemma_term_list.copy()
