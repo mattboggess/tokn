@@ -1,35 +1,33 @@
-# Preprocesses Life Biology Chs. 1-10, 39-52 sentences using Stanford NLP pipeline.
+# Preprocesses Life Biology Chs. 1-10, 39-52 sentences using Spacy NLP pipeline.
 # Takes a dump of the Inquire knowledge base's lexicon and processes it to get text representations
 # and entity/event labels for each biology concept in the knowledge base.
 
 # Author: Matthew Boggess
-# Version: 4/3/20
+# Version: 4/11/20
 
 # Data Source: 
 #   - Dump of individual sentences of Life Biology chapters provided by Dr. Chaudhri
 #   - Outputs from Inquire knowledge base provided by Dr. Chaudhri
 
 # Description: 
-#   - Runs individual sentences from chapters 1-10 and 39-52 of life biology through Stanford
+#   - Runs individual sentences from chapters 1-10 and 39-52 of life biology through Spacy
 #     NLP pipeline including tokenization, pos tagging, lemmatization, etc. Saves ch. 1-10 on its
 #     own in order to restrict to knowledge base chapters as well as saves all together.
 #   - Processes a dump from the Inquire knowledge base to produce the following two outputs:
 #       1. A 'lexicon' in json format mapping each biology concept in the kb to a list of text,
 #          representations, the lemmatized form of those representations, and event/entity label
-#       2. A Stanford NLP preprocessed set of biology terms that can be used to tag the life
+#       2. A Spacy NLP preprocessed set of biology terms that can be used to tag the life
 #          biology sentences for term extraction
 
 #===================================================================================
 
 # Libraries
 
-import stanfordnlp
-from spacy_stanfordnlp import StanfordNLPLanguage
+import spacy
 from data_processing_utils import write_spacy_docs
 from io import StringIO
 import pandas as pd
 import os
-import warnings
 import re
 from tqdm import tqdm
 import json
@@ -75,10 +73,10 @@ def process_lexicon(lexicon, bio_concepts):
     about how each biology concept in the knowledge base is represented in actual text. Specifically
     it produces a json file mapping each concept to a list of text representations, their lemma
     forms, and a entity/event label. Additionally, this function aggregates all text representations
-    across all terms into a single list after running each through the Stanford NLP pipeline.
+    across all terms into a single list after running each through the Spacy NLP pipeline.
     """
     
-    lexicon = pd.read_csv(StringIO(lexicon), sep="\s*\|\s*", header=None, 
+    lexicon = pd.read_csv(StringIO(lexicon), sep="\s*\|\s*", header=None, engine='python',
                           names=['concept', 'relation', 'text', 'pos'])
     
     concept_types = lexicon.query("text in ['Entity', 'Event']")
@@ -99,7 +97,7 @@ def process_lexicon(lexicon, bio_concepts):
     # spacy process terms to get lemmas
     spacy_terms = []
     lexicon_output = {}
-    print("Running text representations for each concept through Stanford NLP pipeline")
+    print("Running text representations for each concept through Spacy NLP pipeline")
     for concept in tqdm(lexicon.concept):
         
         # extract text representations for the concept
@@ -131,10 +129,8 @@ def process_lexicon(lexicon, bio_concepts):
 
 if __name__ == "__main__":
     
-    # initialize Stanford NLP Spacy pipeline
-    snlp = stanfordnlp.Pipeline(lang="en")
-    nlp = StanfordNLPLanguage(snlp)
-    warnings.filterwarnings("ignore")
+    # initialize Spacy NLP pipeline
+    nlp = spacy.load("en_core_web_sm")
     
     print("Processing Life Biology Lexicon")
     with open(lexicon_input_file, "r") as f:
@@ -154,7 +150,7 @@ if __name__ == "__main__":
         
     sentences_kb_spacy = []
     sentences_spacy = []
-    print("Running chapter sentences through Stanford NLP pipeline")
+    print("Running chapter sentences through Spacy NLP pipeline")
     for sent in tqdm(life_bio_sentences):
             
         # only add chapters 1-10 to output restricted to knowledge base sentences

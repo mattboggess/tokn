@@ -1,34 +1,32 @@
 # Extracts individual sentences and key terms from each chapter of provided Openstax textbooks,
-# preprocesses them using Stanford NLP pipeline, and saves the results for future use
+# preprocesses them using Spacy NLP pipeline, and saves the results for future use.
 
 # Author: Matthew Boggess
-# Version: 4/3/20
+# Version: 4/11/20
 
 # Data Source: Parsed textbook files of the openstax textbooks provided by openstax
 
 # Description: 
 #   For each specified openstax textbook: 
 #     - extracts out individual sentences from the text of all chapters and runs them through
-#       Stanford's NLP preprocessing pipeline including tokenization, pos tagging, lemmatization
+#       Spacy's NLP preprocessing pipeline including tokenization, pos tagging, lemmatization
 #     - extracts out key terms from the key terms sections of each chapter and runs these
-#       terms through the same Stanford NLP preprocessing pipeline
+#       terms through the same Spacy NLP preprocessing pipeline
 
-# Running Note: This is a time intensive script. Processing each individual textbook takes 30-40 
-# minutes on average. It is best to subset the openstax_textbooks parameter to only textbooks that 
-# need to be run if trying to add new ones or re-run particular textbooks.
+# Running Note: Processing each individual textbook takes about 5 minutes on average. 
+# It is best to subset the openstax_textbooks parameter to only textbooks that need to be run if 
+# trying to add new ones or re-run particular textbooks.
 
 #===================================================================================
 
 # Libraries
 
-import stanfordnlp
-from spacy_stanfordnlp import StanfordNLPLanguage
+import spacy
 from data_processing_utils import write_spacy_docs
 import pandas as pd
 import re
 import os
 from tqdm import tqdm
-import warnings
 import json
 
 #===================================================================================
@@ -126,18 +124,15 @@ def parse_openstax_terms(key_term_text):
 
 if __name__ == "__main__":
     
-    warnings.filterwarnings('ignore')
-    
     for i, textbook in enumerate(openstax_textbooks):
         
-        snlp = stanfordnlp.Pipeline(lang="en")
-        nlp = StanfordNLPLanguage(snlp)
+        nlp = spacy.load("en_core_web_sm")
 
         print(f"Processing {textbook} textbook: Textbook {i + 1}/{len(openstax_textbooks)}")
         textbook_data = pd.read_csv(f"{raw_data_dir}/sentences_{textbook}_parsed.csv")
         
         # spacy preprocess sentences
-        print("Running chapter sentences through Stanford NLP pipeline")
+        print("Running chapter sentences through Spacy NLP pipeline")
         output_file = f"{preprocessed_data_dir}/{textbook}_sentences_spacy"
         output_vocab_file = f"{preprocessed_data_dir}/{textbook}_sentences_spacy_vocab"
         sentences = textbook_data[~textbook_data.section_name.isin(exclude_sections)].sentence
@@ -149,7 +144,7 @@ if __name__ == "__main__":
         write_spacy_docs(sentences_spacy, nlp.vocab, output_file, output_vocab_file)
         
         # spacy preprocess key terms
-        print("Running chapter key terms through Stanford NLP pipeline")
+        print("Running chapter key terms through Spacy NLP pipeline")
         output_file = f"{preprocessed_data_dir}/{textbook}_key_terms_spacy"
         output_vocab_file = f"{preprocessed_data_dir}/{textbook}_key_terms_spacy_vocab"
         key_terms_spacy = []
