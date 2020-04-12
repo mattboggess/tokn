@@ -74,7 +74,7 @@ pooled_terms = [
 textbooks = {
     'openstax_bio2e_section10-2': ['openstax_bio2e_section10-2'],
     'openstax_bio2e_section10-4': ['openstax_bio2e_section10-4'],
-    'openstax_bio2e_section4-2': ['openstax_bio2e_section4-2']
+    'openstax_bio2e_section4-2': ['openstax_bio2e_section4-2'],
     'Anatomy_and_Physiology': pooled_terms, 
     'Astronomy': pooled_terms, 
     'Biology_2e': pooled_terms,
