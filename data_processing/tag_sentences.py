@@ -33,7 +33,6 @@
 import spacy
 from data_processing_utils import tag_terms, read_spacy_docs
 from collections import Counter
-import warnings
 from tqdm import tqdm
 import os
 import json
@@ -91,7 +90,6 @@ textbooks = {
 
 if __name__ == '__main__':
     
-    #warnings.filterwarnings('ignore')
     nlp = spacy.load("en_core_web_sm")
     
     for i, (textbook, term_sources) in enumerate(textbooks.items()):
