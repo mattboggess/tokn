@@ -18,6 +18,7 @@
 # Libraries
 
 import spacy
+from nltk.tokenize import sent_tokenize
 from data_processing_utils import write_spacy_docs
 import pandas as pd
 import re
@@ -41,9 +42,9 @@ if not os.path.exists(preprocessed_data_dir):
 
 # textbook sections/chapters to be processed
 textbook_sections = [
-    'openstax_bio2e_section10-2'
-    #'openstax_bio2e_section10-4', 
-    #'openstax_bio2e_section4-2'
+    'openstax_bio2e_section10-2',
+    'openstax_bio2e_section10-4',
+    'openstax_bio2e_section4-2'
 ]
 
 #===================================================================================
@@ -62,15 +63,10 @@ if __name__ == "__main__":
         print("Running section sentences through Spacy NLP pipeline")
         output_file = f"{preprocessed_data_dir}/{section}_sentences_spacy"
         output_vocab_file = f"{preprocessed_data_dir}/{section}_sentences_spacy_vocab"
-        # we first run entire text through to segment sentences and then re-process individual 
-        # sentences to be consistent with the other preprocessing scripts that processes each 
-        # sentence as a separate spacy doc
-        section_text = nlp(section_text)
+        section_sentences = sent_tokenize(section_text)
         sentences_spacy = []
-        for sent in tqdm(section_text.sents):
-            sent = sent.string.strip()
+        for sent in tqdm(section_sentences):
             if not len(sent):
-                print('hi')
                 continue
             sentences_spacy.append(nlp(sent))
         write_spacy_docs(sentences_spacy, nlp.vocab, output_file, output_vocab_file)
