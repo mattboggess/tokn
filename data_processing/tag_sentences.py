@@ -8,16 +8,19 @@
 
 # Description: 
 #   For each provided textbook/textbook section: 
-#     - Reads in spacy preprocessed terms from all specified term sources and aggregates them
-#       all into a single list of terms to tag the textbooks with (special exception is that
-#       the life biology kb is tagged on its own)
-#     - Produces three output files for each textbook:
-#         1. text file with tokenized sentences from the textbook where each token is separated
-#            by a space (one sentence per line)
-#         2. text file with NER BIOES tags for each token in the tokenized sentences separated
-#            by a space (one sentence per line)
-#         3. json file with term counts denoting how many times each term was tagged across all
-#            sentences in the textbook
+#     - Reads in spacy preprocessed terms from all specified term sources that are indicated to use
+#       for tagging and aggregates them into a term lis to tag the textbook/section sentences 
+#     - Produces a single json output file for each textbook/section containing an entry with
+#       the following for each sentence:
+#       - found_terms: structure indicating what terms were found and some information about
+#         their matche(s) in the sentence
+#       - tokenized_text: list of individual tokens from the tokenization of the sentence. This is 
+#         the input to the term extraction models.
+#       - tags: list of BIOES tags for each individual token in the tokenized sentence. This is
+#         the label for training the model and is the same form as the output.
+#       - annotated_text: This is the string representation of the sentence with special indicators
+#         denoting where the found terms are located.
+#       - original_text: Original string representation of the sentence for reference.
 
 # Running Note: This is a very time intensive script. Processing each individual textbook takes 
 # on average 3 hours. It is best to subset the textbooks parameter to only textbooks that 
