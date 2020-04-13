@@ -76,11 +76,11 @@ textbooks = {
     'openstax_bio2e_section4-2': ['openstax_bio2e_section4-2'],
     'Anatomy_and_Physiology': pooled_terms, 
     'Astronomy': pooled_terms, 
-    'Biology_2e': pooled_terms,
+    'Biology_2e': ['Biology_2e'],
     'Chemistry_2e': pooled_terms,
     'Life_Biology_kb': ['Life_Biology_kb'],
     'Microbiology': pooled_terms,
-    'Psychology': pooled_terms,
+    'Psychology': ['Psychology'],
     'University_Physics_Volume_1': pooled_terms,
     'University_Physics_Volume_2': pooled_terms,
     'University_Physics_Volume_3': pooled_terms
