@@ -21,6 +21,7 @@
 
 import spacy
 from data_processing_utils import tag_terms, read_spacy_docs
+from collections import Counter
 from tqdm import tqdm
 import os
 import json
@@ -82,13 +83,16 @@ if __name__ == '__main__':
         'data_split': [],
         'total_sentences': [],
         'sentences_with_term': [],
-        'total_terms': [],
         'sentences_wo_overlap': [],
+        'total_terms': [],
         'terms_wo_overlap': []
     }
     
     splits_data = {}
     for split, sources in splits.items():
+        
+        # count up terms for each split
+        term_counts = Counter()
         
         # build up data for each split from all of its sources 
         sentences = []
@@ -115,6 +119,10 @@ if __name__ == '__main__':
                 if ignore_empty_sentences:
                     if len(set(tokenized_tags)) == 1:
                         continue
+                
+                # count up occurrences of each term
+                for term in terms:
+                    term_counts[term] += len(terms[term]['indices'])
                         
                 sentences.append(' '.join(tokenized_sentence))
                 tags.append(' '.join(tokenized_tags))
@@ -122,6 +130,7 @@ if __name__ == '__main__':
                 term_infos.append(terms)
                 tmp_terms += list(terms.keys())
             
+            # accumulate total sentences and term counts per source
             summary_df['sentences_with_term'].append(len(sentences) - prev_length)
             summary_df['total_terms'].append(len(set(tmp_terms)))
             prev_length = len(sentences)
@@ -131,21 +140,23 @@ if __name__ == '__main__':
             'sentences': sentences,
             'tags': tags,
             'terms': term_infos,
-            'sources': term_sources
+            'sources': term_sources,
+            'term_counts': term_counts
         }
         
-    # prevent overlap between evaluation sets and training sets
+    # create set of terms to exclude from the training split 
     exclude_terms = []
     for split in train_exclude:
-        for terms in splits_data[split]['terms']:
-            exclude_terms += list(terms.keys())
+        exclude_terms += list(term_counts.keys())
     exclude_terms = set(exclude_terms)
         
+    # remove sentences from the training set containing a term in an evaluation set
     filtered_train = {
         'sentences': [],
         'tags': [],
         'terms': [],
-        'sources': []
+        'sources': [],
+        'term_counts': Counter() 
     }
     for sentence, tag, term_info, source in zip(splits_data['train']['sentences'], 
                                                 splits_data['train']['tags'], 
@@ -158,6 +169,9 @@ if __name__ == '__main__':
             filtered_train['tags'].append(tag)
             filtered_train['terms'].append(term_info)
             filtered_train['sources'].append(source)
+            for term in term_info:
+                filtered_train['term_counts'][term] += len(term_info[term]['indices'])
+                
     splits_data['train'] = filtered_train
     
     # accumulate new sentence and term counts after adjusting for overlap
@@ -165,9 +179,9 @@ if __name__ == '__main__':
         summary_df['sentences_wo_overlap'].append( \
             len([s for s in splits_data[split]['sources'] if s == source]))
         summary_df['terms_wo_overlap'].append( \
-            len(set([t for source, terms in zip(splits_data[split]['sources'], 
-                                                splits_data[split]['terms']) for t in terms])))
-    
+            len(set([t for s, terms in zip(splits_data[split]['sources'],
+                                           splits_data[split]['terms']) for t in terms
+                     if s == source])))
     
     # create small debug set
     debug = {
@@ -182,9 +196,18 @@ if __name__ == '__main__':
     # write out data splits
     for split in splits_data:
         with open(f"{output_data_dir}/term_extraction_{split}.json", 'w') as f:
-            json.dump(splits_data[split], f)
+            json.dump(splits_data[split], f, indent=4)
         
-    # write out summary dataframe with data counts
+    # write out summary dataframe with source data counts
     summary_df = pd.DataFrame(summary_df)
-    summary_df.to_csv(f"{summary_data_dir}/term_extraction_data_counts.csv", index=False)
+    summary_df.to_csv(f"{summary_data_dir}/term_extraction_source_data_counts.csv", index=False)
+    
+    # write out aggregated data by split
+    split_summary = {'split': [], 'sentences': [], 'terms': []}
+    for split in splits:
+        split_summary['split'].append(split)
+        split_summary['sentences'].append(len(splits_data[split]['sentences']))
+        split_summary['terms'].append(len(splits_data[split]['term_counts'].keys()))
+    split_summary = pd.DataFrame(split_summary)
+    split_summary.to_csv(f"{summary_data_dir}/term_extraction_split_data_counts.csv", index=False)
         
