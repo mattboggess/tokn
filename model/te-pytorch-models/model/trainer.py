@@ -12,6 +12,11 @@ from collections import Counter
 class Trainer:
     """
     Implements training and validation logic
+    
+    Implementation copied from:
+    
+    _train_epoch and _valid_epoch have been adapted to work for the unique modeling constraints
+    of our problem.
     """
     def __init__(self, model, criterion, sentence_metric_ftns, term_metric_ftns, optimizer, config, 
                  data_loader, valid_data_loader=None, lr_scheduler=None, len_epoch=None):
@@ -71,9 +76,17 @@ class Trainer:
     def _train_epoch(self, epoch):
         """
         Training logic for an epoch
+        
+        Parameters
+        ----------
+        epoch: int 
+            Current training epoch 
 
-        :param epoch: Integer, current training epoch.
-        :return: A log that contains average loss and metric in this epoch.
+        Returns
+        -------
+        dict
+            A log that contains loss and sentence and term level metrics for the entire epoch
+            on the training data
         """
         self.model.train()
         
@@ -84,43 +97,47 @@ class Trainer:
         
         for batch_idx, batch_data in enumerate(self.data_loader):
             
-            batch_data["data"] = batch_data["data"].to(self.device)
-            batch_data["target"] = batch_data["target"].to(self.device)
-            batch_data["pad_mask"] = batch_data["pad_mask"].to(self.device)
-            batch_data["bert_mask"] = batch_data["bert_mask"].to(self.device)
+            batch_data['data'] = batch_data['data'].to(self.device)
+            batch_data['target'] = batch_data['target'].to(self.device)
+            batch_data['pad_mask'] = batch_data['pad_mask'].to(self.device)
+            batch_data['bert_mask'] = batch_data['bert_mask'].to(self.device)
             
-            if len(batch_data["target"].shape) < 2:
-                batch_data["target"] = batch_data["target"].unsqueeze(0)
+            if len(batch_data['target'].shape) < 2:
+                batch_data['target'] = batch_data['target'].unsqueeze(0)
             
             self.optimizer.zero_grad()
-            output = self.model(batch_data)
             
+            # CRF layer needs decoding while softmax layer just takes highest probability tag
+            output = self.model(batch_data)
             with torch.no_grad():
-                if self.config["arch"]["type"] == "BertCRFNER": 
-                    pred = self.model.decode(output, batch_data["bert_mask"])
+                if self.config['arch']['type'] == 'BertCRFNER': 
+                    pred = self.model.decode(output, batch_data['bert_mask'])
                 else:
                     pred = torch.argmax(output, dim=-1)
-            loss = self.criterion(output, batch_data["target"], batch_data["bert_mask"],
+                    
+            loss = self.criterion(output, batch_data['target'], batch_data['bert_mask'],
                                   self.data_loader.dataset.class_weights.to(self.device),
                                   self.model)
             loss.backward()
             self.optimizer.step()
 
-            # compute term sentence level metrics
-            term_predictions = get_term_predictions(pred, batch_data["target"], 
-                                                    batch_data["bert_mask"], 
-                                                    batch_data["sentences"], self.data_loader.tags)
+            # compute the predicted terms for this batch 
+            term_predictions = get_term_predictions(pred, batch_data['target'], 
+                                                    batch_data['bert_mask'], 
+                                                    batch_data['sentences'], self.data_loader.tags)
+            
+            # add loss and sentence metrics to tensorboard display for this batch
             self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
             self.writer.add_scalar("loss", loss.item())
             for met in self.sentence_metric_ftns:
-                self.writer.add_scalar(met.__name__, met(term_predictions["target"], 
-                                                         term_predictions["prediction"]))
+                self.writer.add_scalar(met.__name__, met(term_predictions['target'], 
+                                                         term_predictions['prediction']))
                 
             # update full epoch trackers
-            epoch_target += term_predictions["target"]
-            epoch_pred += term_predictions["prediction"]
+            epoch_target += term_predictions['target']
+            epoch_pred += term_predictions['prediction']
             epoch_loss += loss.item()
-            epoch_terms.update(term_predictions["predicted_terms"])
+            epoch_terms.update(term_predictions['predicted_terms'])
             
             if batch_idx % self.log_step == 0:
                 self.logger.debug('Train Epoch: {} {} Loss: {:.6f}'.format(
@@ -156,8 +173,16 @@ class Trainer:
         """
         Validate after training an epoch
 
-        :param epoch: Integer, current training epoch.
-        :return: A log that contains information about validation
+        Parameters
+        ----------
+        epoch: int 
+            Current training epoch 
+
+        Returns
+        -------
+        dict
+            A log that contains loss and sentence and term level metrics for the entire epoch
+            on the validation data
         """
         self.model.eval()
         with torch.no_grad():
@@ -169,28 +194,32 @@ class Trainer:
             
             for batch_idx, batch_data in enumerate(self.valid_data_loader):
 
-                batch_data["data"] = batch_data["data"].to(self.device)
-                batch_data["target"] = batch_data["target"].to(self.device)
-                batch_data["pad_mask"] = batch_data["pad_mask"].to(self.device)
-                batch_data["bert_mask"] = batch_data["bert_mask"].to(self.device)
+                batch_data['data'] = batch_data['data'].to(self.device)
+                batch_data['target'] = batch_data['target'].to(self.device)
+                batch_data['pad_mask'] = batch_data['pad_mask'].to(self.device)
+                batch_data['bert_mask'] = batch_data['bert_mask'].to(self.device)
                 
-                if len(batch_data["target"].shape) < 2:
-                    batch_data["target"] = batch_data["target"].unsqueeze(0)
+                if len(batch_data['target'].shape) < 2:
+                    batch_data['target'] = batch_data['target'].unsqueeze(0)
                     
+                # CRF layer needs decoding while softmax layer just takes highest probability tag
                 output = self.model(batch_data)
-                if self.config["arch"]["type"] == "BertCRFNER": 
-                    pred = self.model.decode(output, batch_data["bert_mask"])
+                if self.config['arch']['type'] == 'BertCRFNER': 
+                    pred = self.model.decode(output, batch_data['bert_mask'])
                 else:
                     pred = torch.argmax(output, dim=-1)
-                loss = self.criterion(output, batch_data["target"], batch_data["bert_mask"],
+                    
+                loss = self.criterion(output, batch_data['target'], batch_data['bert_mask'],
                                       self.data_loader.dataset.class_weights.to(self.device),
                                       self.model)
 
-                # compute term sentence level metrics
-                term_predictions = get_term_predictions(pred, batch_data["target"], 
-                                                        batch_data["bert_mask"], 
-                                                        batch_data["sentences"], 
+                # compute the predicted terms for this batch 
+                term_predictions = get_term_predictions(pred, batch_data['target'], 
+                                                        batch_data['bert_mask'], 
+                                                        batch_data['sentences'], 
                                                         self.valid_data_loader.tags)
+                
+                # add loss and sentence metrics to tensorboard display for this batch
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.writer.add_scalar("loss", loss.item())
                 for met in self.sentence_metric_ftns:
@@ -202,10 +231,6 @@ class Trainer:
                 epoch_pred += term_predictions["prediction"]
                 epoch_loss += loss.item()
                 epoch_terms.update(term_predictions["predicted_terms"])
-                
-#                 if batch_idx == 5:
-#                     print(self.model.crf.transitions.data)
-#                     break
                 
         # add histogram of model parameters to the tensorboard
         for name, p in self.model.named_parameters():

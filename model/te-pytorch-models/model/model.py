@@ -33,16 +33,16 @@ class BertNER(BaseModel):
     Fine-tuned Bert model for key term NER sequence tagging with softmax output.
     """
     
-    def __init__(self, num_classes, dropout_rate=0.3, tags=["O", "S", "B", "I", "E"]):
+    def __init__(self, num_classes, dropout_rate=0.3, tags=['O', 'S', 'B', 'I', 'E']):
         super().__init__()
-        self.bert = BertModel.from_pretrained("bert-base-cased")
+        self.bert = BertModel.from_pretrained('bert-base-cased')
         bert_config = self.bert.config.__dict__
-        self.fc = nn.Linear(bert_config["hidden_size"], num_classes)
+        self.fc = nn.Linear(bert_config['hidden_size'], num_classes)
         self.dropout = nn.Dropout(dropout_rate)
         self.softmax = nn.LogSoftmax(dim=-1)
         
     def forward(self, batch_data):
-        s, _ = self.bert(batch_data["data"], attention_mask=batch_data["pad_mask"])
+        s, _ = self.bert(batch_data['data'], attention_mask=batch_data['pad_mask'])
         s = self.dropout(s)
         s = self.fc(s)
         s = self.softmax(s)
@@ -51,50 +51,56 @@ class BertNER(BaseModel):
 class BertCRFNER(BaseModel):
     """
     Fine-tuned Bert model for key term NER sequence tagging with conditional random field output
-    to constrain reasonable tagging sequences (i.e. can't start a new phrase before ending previous one).
+    layer to constrain reasonable tagging sequences. 
+    
+    Example of unreasonable sequences that would be penalized:
+    
+       - B I O (must end a phrase)
+       - S S (sequential terms should be a phrase)
+       - O E I (any wrong ordering of a phrase tagging) 
     """
     
-    def __init__(self, num_classes, dropout_rate=0.3, tags=["O", "S", "B", "I", "E"]):
+    def __init__(self, num_classes, dropout_rate=0.3, tags=['O', 'S', 'B', 'I', 'E']):
         super().__init__()
-        self.bert = BertModel.from_pretrained("bert-base-cased")
+        self.bert = BertModel.from_pretrained('bert-base-cased')
         bert_config = self.bert.config.__dict__
         
-        self.fc = nn.Linear(bert_config["hidden_size"], num_classes)
+        self.fc = nn.Linear(bert_config['hidden_size'], num_classes)
         self.dropout = nn.Dropout(dropout_rate)
         self.softmax = nn.LogSoftmax(dim=-1)
         
         self.crf = CRF(len(tags), batch_first=True)
         
         # Can't start with interior/end of term phrase
-        self.crf.start_transitions.data[tags.index("I")] = -1e5
-        self.crf.start_transitions.data[tags.index("E")] = -1e5
+        self.crf.start_transitions.data[tags.index('I')] = -1e5
+        self.crf.start_transitions.data[tags.index('E')] = -1e5
         
         # Can't end with interior/beginning of term phrase
-        self.crf.end_transitions.data[tags.index("I")] = -1e5
-        self.crf.end_transitions.data[tags.index("B")] = -1e5
+        self.crf.end_transitions.data[tags.index('I')] = -1e5
+        self.crf.end_transitions.data[tags.index('B')] = -1e5
         
         # Unlikely to immediately transition to another term 
-        self.crf.transitions.data[tags.index("E"), tags.index("B")] = -1e5
-        self.crf.transitions.data[tags.index("E"), tags.index("S")] = -1e5
-        self.crf.transitions.data[tags.index("S"), tags.index("B")] = -1e5
-        self.crf.transitions.data[tags.index("S"), tags.index("S")] = -1e5
+        self.crf.transitions.data[tags.index('E'), tags.index('B')] = -1e5
+        self.crf.transitions.data[tags.index('E'), tags.index('S')] = -1e5
+        self.crf.transitions.data[tags.index('S'), tags.index('B')] = -1e5
+        self.crf.transitions.data[tags.index('S'), tags.index('S')] = -1e5
         
         # Must form valid term phrase 
-        self.crf.transitions.data[tags.index("B"), tags.index("O")] = -1e5
-        self.crf.transitions.data[tags.index("B"), tags.index("S")] = -1e5
-        self.crf.transitions.data[tags.index("B"), tags.index("B")] = -1e5
-        self.crf.transitions.data[tags.index("I"), tags.index("O")] = -1e5
-        self.crf.transitions.data[tags.index("I"), tags.index("S")] = -1e5
-        self.crf.transitions.data[tags.index("I"), tags.index("B")] = -1e5
-        self.crf.transitions.data[tags.index("E"), tags.index("I")] = -1e5
-        self.crf.transitions.data[tags.index("E"), tags.index("E")] = -1e5
-        self.crf.transitions.data[tags.index("O"), tags.index("I")] = -1e5
-        self.crf.transitions.data[tags.index("O"), tags.index("E")] = -1e5
-        self.crf.transitions.data[tags.index("S"), tags.index("I")] = -1e5
-        self.crf.transitions.data[tags.index("S"), tags.index("E")] = -1e5
+        self.crf.transitions.data[tags.index('B'), tags.index('O')] = -1e5
+        self.crf.transitions.data[tags.index('B'), tags.index('S')] = -1e5
+        self.crf.transitions.data[tags.index('B'), tags.index('B')] = -1e5
+        self.crf.transitions.data[tags.index('I'), tags.index('O')] = -1e5
+        self.crf.transitions.data[tags.index('I'), tags.index('S')] = -1e5
+        self.crf.transitions.data[tags.index('I'), tags.index('B')] = -1e5
+        self.crf.transitions.data[tags.index('E'), tags.index('I')] = -1e5
+        self.crf.transitions.data[tags.index('E'), tags.index('E')] = -1e5
+        self.crf.transitions.data[tags.index('O'), tags.index('I')] = -1e5
+        self.crf.transitions.data[tags.index('O'), tags.index('E')] = -1e5
+        self.crf.transitions.data[tags.index('S'), tags.index('I')] = -1e5
+        self.crf.transitions.data[tags.index('S'), tags.index('E')] = -1e5
         
     def forward(self, batch_data):
-        s, _ = self.bert(batch_data["data"], attention_mask=batch_data["pad_mask"])
+        s, _ = self.bert(batch_data['data'], attention_mask=batch_data['pad_mask'])
         s = self.dropout(s)
         emissions = self.fc(s)
         return emissions 

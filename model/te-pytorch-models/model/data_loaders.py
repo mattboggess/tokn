@@ -9,81 +9,111 @@ from transformers import BertTokenizer
 
 
 class TermNERDataset(Dataset):
-    """Dataset for term named entity recognition."""
+    """Pytorch Dataset for term named entity recognition."""
 
-    def __init__(self, data_dir, split="train", embedding_type="Bert", max_sent_length=10,
-                 tags=["O", "S", "B", "I", "E"]):
+    def __init__(self, data_dir, split='train', embedding_type='Bert', max_sent_length=10,
+                 tags=['O', 'S', 'B', 'I', 'E'], balance_loss=True):
         """
         Parameters
         ----------
         data_dir: str 
-            Path to where the relations data is stored 
-        split: str, ['train', 'validation', life_test', 'psych_test', 'debug'] 
-            The data split to load. debug is a small debugging dataset 
-        relations: list of str 
-            List of relations to include to classify between 
-        embedding_type: str, ['Bert', 'custom'] 
+            Path to where the input data is stored 
+        split: str 
+            The data split to load. Must match the name of a data file in the data_dir 
+        embedding_type: str, ['Bert'] 
             Type of embedding to use for the data loader. 
         max_sent_length: int 
             Maximum number of tokens for each sentence. Longer sentences will be truncated. 
             Shorter sentences will be padded.
         tags: list of str
-            List of NER tags to be used for classification:
+            List of NER tags to be used for classification. Default is BIOES tags:
               - 'B': Beggining of term phrase
               - 'I': Interior of term phrase
+              - 'O': Not a term
               - 'E': End of term phrase
               - 'S': Singleton term
-              - 'O': Not a term
+        balance_loss: bool
+            Whether to provide weights to the loss function to adjust for class imbalance.
         """
         data = json.load(open(os.path.join(data_dir, f"term_extraction_{split}.json")))
-        self.term_counts = data["terms"]
+        self.term_counts = data['terms']
                                   
-        df = {"sentence": [], "tag": [], "textbook": []}
+        df = {'sentence': [], 'tag': [], 'source': []}
         tag_classes = []
-        for sentence, tag, textbook in zip(data["sentences"], data["tags"], data["textbook"]):
-            df["sentence"].append(sentence)
-            df["tag"].append(tag)
-            df["textbook"].append(textbook)
-            tag_classes += tag.split(" ")
+        for sentence, tag, source in zip(data['sentences'], data['tags'], data['sources']):
+            df['sentence'].append(sentence)
+            df['tag'].append(tag)
+            df['source'].append(source)
+            tag_classes += tag.split(' ')
         self.term_df = pd.DataFrame(df)
         
         # compute class weights to handle class imbalance
         tags = [t for t in tags if t in tag_classes]
-        self.class_weights = torch.Tensor(compute_class_weight("balanced", tags, tag_classes))
+        if balance_loss:
+            self.class_weights = torch.Tensor(compute_class_weight('balanced', tags, tag_classes))
+        else:
+            self.class_weights = torch.Tensor([1] * len(tags))
                 
         self.max_sent_length = max_sent_length
         self.embedding_type = embedding_type
         self.tags = tags
         
-        if self.embedding_type == "custom":
-            self.vocab2id = json.load(open(os.path.join(data_dir, 'word2id.json')))
-        elif self.embedding_type == "Bert":
-            self.tokenizer = BertTokenizer.from_pretrained(
-                "bert-base-cased", cls_token="<cls>", pad_token="<pad>", sep_token="<end>")
+        self.tokenizer = BertTokenizer.from_pretrained(
+            'bert-base-cased', cls_token='<cls>', pad_token='<pad>', sep_token='<sep>')
 
     def __len__(self):
         return self.term_df.shape[0]
 
     def __getitem__(self, idx):
+        """
+        Retrieves a single data instance that includes the following:
+          - sentence: BERT-compatible tokenized sentence (input data)
+          - tags: list of BIOES tags for sentence (data label)
+          - pad_mask: mask denoting which tokens in sentence are padding tokens
+          - bert_mask: mask denoting which tokens correspond to valid, originally tagged tokens
+          - source: textbook/section source of the sentence
+          - sentence_text: Original text of the sentence
+        """
         sample = self.term_df.iloc[idx, :]
         
-        textbook = sample["textbook"] 
-        sentence, tags, pad_mask, bert_mask = self.preprocess(sample["sentence"], sample["tag"])
+        source = sample['source'] 
+        sentence, tags, pad_mask, bert_mask = self.preprocess(sample['sentence'], sample['tag'])
         sentence = torch.Tensor(sentence).to(torch.int64)
         tags = torch.Tensor(tags).to(torch.int64)
         pad_mask = torch.Tensor(pad_mask).to(torch.int64)
         bert_mask = torch.Tensor(bert_mask).to(torch.int64)
-        sentence_text = sample["sentence"].split()
+        sentence_text = sample['sentence'].split()
         
-        return (sentence, tags, pad_mask, bert_mask, textbook, sentence_text)
+        return (sentence, tags, pad_mask, bert_mask, source, sentence_text)
 
     def preprocess(self, sentence, tags):
+        """
+        Converts input to Bert-compatible tokenized sentence that are padded/truncated to a
+        pre-specified length. Additionally computes masks excluding padding and 
+        
+        Parameters
+        ----------
+        sentence: str 
+            Input tokenized sentence with tokens separated by spaces 
+        tags: str 
+            Input list of tags for each token in the tokenized sentence
+            The data split to load. Must match the name of a data file in the data_dir 
+            
+        Returns
+        -------
+        4-tuple of lists
+          sequence: list of converted BERT token ids for the sentence to be fed into BERT model
+          tags: list of converted tag ids to act as data labels for the BERT model
+          pad_mask: mask that is 1 if token is not a padding token and 0 otherwise
+          bert_mask: mask that is 1 if token corresponds to an original valid token that had a 
+                     BIOES tag and 0 if it as an additional added BERT token
+        """
         
         # tokenize sentence 
         tags = tags.split()
         sentence_tokenized = sentence.split()
         bert_mask = []
-        if self.embedding_type == "Bert":
+        if self.embedding_type == 'Bert':
             tmp_tokenized = []
             tmp_tags = []
             for token, tag in zip(sentence_tokenized, tags):
@@ -98,7 +128,7 @@ class TermNERDataset(Dataset):
                 
                 # pad tags with empty tags to make all same length
                 tmp_tags += [tag]
-                tmp_tags += ["O"] * (len(bert_token) - 1)
+                tmp_tags += ['O'] * (len(bert_token) - 1)
                 
             sentence_tokenized = tmp_tokenized
             tags = tmp_tags
@@ -109,66 +139,62 @@ class TermNERDataset(Dataset):
             bert_mask = bert_mask[:self.max_sent_length - 2]
             tags = tags[:self.max_sent_length - 2]
             
-        # add beginning and end of sentence tokens
-        if self.embedding_type == "Bert":
-            sentence_tokenized = ["<cls>"] + sentence_tokenized + ["<end>"]
-            bert_mask = [0] + bert_mask + [0] 
-            tags = ["O"] + tags + ["O"] 
-        else:
-            sentence_tokenized += ["<end>"]
+        # add BERT special cls and end of sentence sep tokens
+        sentence_tokenized = ['<cls>'] + sentence_tokenized + ['<sep>']
+        bert_mask = [0] + bert_mask + [0] 
+        tags = ['O'] + tags + ['O'] 
             
         # pad sentences & tags
         sentence_tokenized, pad_mask = self.pad_sentence(sentence_tokenized)
         tags, _ = self.pad_sentence(tags)
-        tags = ["O" if tag == "<pad>" else tag for tag in tags]
+        tags = ['O' if tag == '<pad>' else tag for tag in tags]
         bert_mask, _ = self.pad_sentence(bert_mask)
-        bert_mask = [0 if tag == "<pad>" else tag for tag in bert_mask]
+        bert_mask = [0 if tag == '<pad' else tag for tag in bert_mask]
         
         # convert to embedding ids
-        if self.embedding_type == "Bert":
-            sequence = self.tokenizer.convert_tokens_to_ids(sentence_tokenized)
-        elif self.embedding_type == "custom":
-            sequence = [self.vocab2id[token.lower()] 
-                        if token.lower() in self.vocab2id else self.vocab2id['<unk>'] 
-                        for token in sentence_tokenized]
+        sequence = self.tokenizer.convert_tokens_to_ids(sentence_tokenized)
         
         # convert labels to numerical values
         tags = [self.tags.index(tag) for tag in tags]
             
         return sequence, tags, pad_mask, bert_mask
     
-    def pad_sentence(self, sentence_tokenized, pad_token="<pad>"):
-        """pad end of sentences to match same length"""
+    def pad_sentence(self, sentence_tokenized, pad_token='<pad>'):
+        """Pad end of tokenized sentence with special padding token to reach pre-specified length"""
+        
         for _ in range(self.max_sent_length - len(sentence_tokenized)):
-            sentence_tokenized.append("<pad>")
-        pad_mask = [0 if tok == "<pad>" else 1 for tok in sentence_tokenized]
+            sentence_tokenized.append('<pad>')
+        pad_mask = [0 if tok == '<pad>' else 1 for tok in sentence_tokenized]
         return sentence_tokenized, pad_mask
             
 class TermNERDataLoader(DataLoader):
     """
-    Data loader for term extraction 
+    Pytorch data loader for term extraction Dataset
     """
     def __init__(self, data_dir, batch_size, shuffle=True, num_workers=0,
-                 split="train", tags=["O", "S", "B", "I", "E"], embedding_type="Bert", 
+                 split='train', tags=['O', 'S', 'B', 'I', 'E'], embedding_type='Bert', 
                  max_sent_length=10):
         """
         Parameters
         ----------
         data_dir: str 
-            Path to where the relations data is stored 
+            Path to where the term extraction input data is stored 
         batch_size: int
-            Number of word-pairs in each batch 
-        sampler: torch.utils.data.Sampler
-            Pytorch sampler object used to sample the data
-        relations: list of str 
-            List of relations to include to classify between 
+            Number of sentences in each batch 
         shuffle: bool
             Whether to shuffle the order of the data being loaded in
         num_workers: int 
             Number of workers to use to read in data in parallel 
-        split: str, ['train', 'validation', life_test', 'psych_test', 'debug'] 
-            The data split to load. debug is a small debugging dataset 
-        embedding_type: str, ['Bert', 'custom'] 
+        split: str
+            The data split to load. Must match the name of a data file in the data_dir 
+        tags: list of str
+            List of NER tags to be used for classification. Default is BIOES tags:
+              - 'B': Beggining of term phrase
+              - 'I': Interior of term phrase
+              - 'O': Not a term
+              - 'E': End of term phrase
+              - 'S': Singleton term
+        embedding_type: str, ['Bert'] 
             Type of embedding to use for the data. 
         max_sent_length: int 
             Maximum number of tokens for each sentence. Longer sentences will be truncated. 
@@ -182,14 +208,19 @@ class TermNERDataLoader(DataLoader):
                          num_workers=num_workers, collate_fn=self.collate_fn)
         
     def collate_fn(self, batch_data):
+        """
+        Function used to collect individual sentences into a batch. Each batch is
+        a dictionary that contains stacked tensors for the input data, data labels, and data masks.
+        Additionally, it includes the original text and source for each sentence in the batch.
+        """
         
         batch_data = {
-            "data": torch.stack([bd[0] for bd in batch_data]),
-            "target": torch.stack([bd[1] for bd in batch_data]).squeeze(0),
-            "pad_mask": torch.stack([bd[2] for bd in batch_data]),
-            "bert_mask": torch.stack([bd[3] for bd in batch_data]),
-            "textbooks": [bd[4] for bd in batch_data],
-            "sentences": [bd[5] for bd in batch_data]
+            'data': torch.stack([bd[0] for bd in batch_data]),
+            'target': torch.stack([bd[1] for bd in batch_data]).squeeze(0),
+            'pad_mask': torch.stack([bd[2] for bd in batch_data]),
+            'bert_mask': torch.stack([bd[3] for bd in batch_data]),
+            'sources': [bd[4] for bd in batch_data],
+            'sentences': [bd[5] for bd in batch_data]
         }
         
         return batch_data 
