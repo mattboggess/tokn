@@ -60,21 +60,25 @@ class RelationDataset(Dataset):
             all_relations = tmp
                                   
         # add no-relation and convert into dataframe
-        self.relations = ["no-relation"] + relations
-        self.relation_df = None 
-        for relation in all_relations:
-            for i in range(len(all_relations[relation])):
-                df = pd.DataFrame.from_dict(all_relations[relation][i], orient='index')
-                df.loc[df.relation != "no-relation", "relation"] = relation
-                if self.relation_df is None:
-                    self.relation_df = df
-                else:
-                    self.relation_df = pd.concat([self.relation_df, df], sort=False)
+        self.relations_db = [wp for rel in all_relations for wp in all_relations[rel]]
+        self.relations = ["no-relation", 'subclass-of']# + relations
+        #self.relation_df = None 
+        #for relation in all_relations:
+        #    for i in range(len(all_relations[relation])):
+        #        df = pd.DataFrame.from_dict(all_relations[relation][i], orient='index')
+        #        df.loc[df.relation != "no-relation", "relation"] = relation
+        #        if self.relation_df is None:
+        #            self.relation_df = df
+        #        else:
+        #            self.relation_df = pd.concat([self.relation_df, df], sort=False)
         
         # compute weights to adjust for class imbalance
+        #print(self.relations_db)
+        relation_list = [tmp[list(tmp.keys())[0]]['relation'] for tmp in self.relations_db]
+        print(set(relation_list))
         if not predict:
             self.class_weights = torch.Tensor(compute_class_weight("balanced", self.relations, 
-                                                                   self.relation_df.relation))
+                                                                   relation_list))
         else:
             self.class_weights = torch.Tensor([1.0] * len(self.relations))
                 
@@ -88,22 +92,23 @@ class RelationDataset(Dataset):
                 additional_special_tokens=["<e1>", "</e1>", "<e2>", "</e2>"])
 
     def __len__(self):
-        return self.relation_df.shape[0]
+        return len(self.relations_db)
 
     def __getitem__(self, idx):
         """
         Retrieves an entire bag of sentences for the idx'th word pair.
         """
-        sample = self.relation_df.iloc[idx, :]
-        y_label = self.relations.index(sample["relation"]) 
+        sample = self.relations_db[idx]
+        word_pair = list(sample.keys())[0]
+        y_label = self.relations.index(sample[word_pair]['relation'])
         y_label = torch.Tensor([y_label]).to(torch.int64)
-        word_pair = self.relation_df.index[idx]
+        sentences = sample[word_pair]['sentences']
         
         bag_of_words = []
         pad_mask = []
         e1_mask = []
         e2_mask = []
-        for sentence in sample['sentences']:
+        for sentence in sentences:
             preprocess_result = self.preprocess(sentence)
             if preprocess_result is None:
                 continue 
