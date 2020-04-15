@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from utils import inf_loop, MetricTracker
+from utils import inf_loop
 from torchvision.utils import make_grid
 from numpy import inf
 from logger import TensorboardWriter
