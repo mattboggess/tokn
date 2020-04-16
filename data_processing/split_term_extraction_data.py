@@ -190,6 +190,13 @@ if __name__ == '__main__':
         'terms': splits_data['train']['terms'][:debug_length],
         'sources': splits_data['train']['sources'][:debug_length]
     }
+    debug_term_counts = Counter() 
+    for term_info in debug['terms']:
+        for term in term_info: 
+            debug_term_counts[term] += len(term_info[term]['indices'])
+    debug['term_counts'] = debug_term_counts
+    # little hack to make all tag types present
+    debug['tags'][3] = 'I'
     splits_data['debug'] = debug
     
         
