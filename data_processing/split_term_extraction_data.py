@@ -33,6 +33,7 @@ import pandas as pd
 
 ## Filepaths
 
+term_data_dir = "../data/preprocessed_data"
 input_data_dir = "../data/term_extraction/tagged_sentences"
 summary_data_dir = "../data/term_extraction/summary_data"
 if not os.path.exists(summary_data_dir):
@@ -52,7 +53,7 @@ splits = {
         'University_Physics_Volume_2',
         'University_Physics_Volume_3',
     ],
-    'validation': [
+    'openstax_sections_gt': [
         'openstax_bio2e_section10-2',
         'openstax_bio2e_section10-4',
         'openstax_bio2e_section4-2'
@@ -63,7 +64,7 @@ splits = {
 }
 
 # splits for which we want to ensure there are no terms in the train set that overlap
-train_exclude = ['validation', 'openstax_bio2e', 'openstax_psych', 'life_kb']
+train_exclude = ['openstax_sections_gt', 'openstax_bio2e', 'openstax_psych', 'life_kb']
 
 # flag on whether sentences without any key terms tagged should be excluded
 ignore_empty_sentences = True
@@ -147,7 +148,13 @@ if __name__ == '__main__':
     # create set of terms to exclude from the training split 
     exclude_terms = []
     for split in train_exclude:
-        exclude_terms += list(term_counts.keys())
+        for source in splits[split]:
+            input_terms = read_spacy_docs(
+                f"{term_data_dir}/{source}_key_terms_spacy",
+                f"{term_data_dir}/{source}_key_terms_spacy_vocab"
+            )
+            lemmas = [' '.join(t.lemma_ for t in term) for term in input_terms]
+            exclude_terms += lemmas
     exclude_terms = set(exclude_terms)
         
     # remove sentences from the training set containing a term in an evaluation set
@@ -190,6 +197,11 @@ if __name__ == '__main__':
         'terms': splits_data['train']['terms'][:debug_length],
         'sources': splits_data['train']['sources'][:debug_length]
     }
+    debug_term_counts = Counter() 
+    for term_info in debug['terms']:
+        for term in term_info: 
+            debug_term_counts[term] += len(term_info[term]['indices'])
+    debug['term_counts'] = debug_term_counts
     splits_data['debug'] = debug
     
         
