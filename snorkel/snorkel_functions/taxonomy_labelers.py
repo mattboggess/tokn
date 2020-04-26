@@ -4,8 +4,8 @@ from snorkel.preprocess import preprocessor
 import pickle
 
 # Relation Classes
-HYPONYM = 2 # subclass-of
-HYPERNYM = 1 # superclass-of
+HYPONYM = 1 # subclass-of
+HYPERNYM = 0 # superclass-of
 NON_TAXONOMIC = 0
 ABSTAIN = -1
 
@@ -245,6 +245,7 @@ def knownas_pattern(cand):
     end = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     
     also_flag = False
+    known_flag = False
     while start != end:
         if start.dep_ == 'pobj' and start.head.text == 'as':
             start = start.head
@@ -252,11 +253,13 @@ def knownas_pattern(cand):
             start = start.head
         elif start.text == 'known':
             also_flag == start.nbor(-1).text == 'also'
+            known_flag = True
             start = start.head
+            break
         else:
             break
             
-    if start.text == end.text:
+    if start.text == end.text and known_flag:
         if also_flag:
             return NON_TAXONOMIC
         elif cand.term1_location[0] < cand.term2_location[0]:
