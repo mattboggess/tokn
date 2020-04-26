@@ -1,0 +1,53 @@
+{
+    "name": "BertEM",
+    "n_gpu": 1,
+
+    "arch": {
+        "type": "BertEM",
+        "args":{}
+    },
+    "data_loader": {
+        "type": "RelationDataLoader",
+        "args":{
+            "data_dir": "../data/model_data",
+            "batch_size": 8,
+            "label_column": "majority_vote",
+            "shuffle": true,
+            "num_workers": 0,
+            "balance_loss": false,
+            "max_sent_length": 256
+        }
+    },
+    "optimizer": {
+        "type": "AdamW",
+        "args":{
+            "lr": 3e-5,
+            "eps": 1e-8,
+            "correct_bias": false,
+            "weight_decay": 0.00
+        }
+    },
+    "loss": "hard_label_cross_entropy",
+    "metrics": [
+        "accuracy", "binary_f1", "binary_precision", "binary_recall" 
+    ],
+    "lr_scheduler": {
+        "type": "StepLR",
+        "args": {
+            "step_size": 50,
+            "gamma": 0.0
+        }
+    },
+    "trainer": {
+        "epochs": 20,
+
+        "save_dir": "saved/",
+        "save_period": 1,
+        "verbosity": 2,
+        
+        "monitor": "max binary_f1",
+        "early_stop": 3,
+
+        "tensorboard": true
+    }
+}
