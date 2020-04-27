@@ -180,7 +180,7 @@ if __name__ == '__main__':
     
     openstax_bio_df = []
     prev_section = None
-    for _, row in tqdm(openstax_data.iterrows()):
+    for _, row in tqdm(list(openstax_data.iterrows())):
         
         # parse chapter and section
         chapter = row.chapter
