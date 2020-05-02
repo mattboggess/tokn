@@ -6,168 +6,45 @@ import numpy as np
 import itertools
 from collections import defaultdict
 
-
-def tag_relations(text, terms, relations_db, nlp=None):
-    """ Tags all terms in a given text and then extracts all relations between pairs of these terms.
-    
-    Parameters
-    ----------
-    text: str 
-        Input text that we want to add relations for 
-    terms: list of str | spacy.tokens.doc.Doc
-        List of terms which we will tag the sentence and look for relations between 
-    relations_db: dict
-        Dictionary mapping relations to word pairs and sentences we will update
-    nlp: Spacy nlp pipeline
-        Optional Spacy nlp pipeline object used for processing text
-    
-    Returns
-    -------
-    dict
-        Updated relations dictionary database
+def match_heuristic(text_span, term_span):
     """
-    
-    # default to Stanford NLP pipeline wrapped in Spacy
-    if nlp is None:
-        snlp = stanfordnlp.Pipeline(lang="en")
-        nlp = StanfordNLPLanguage(snlp)
-        
-    # preprocess with spacy if needed
-    if type(terms[0]) != spacy.tokens.doc.Doc:
-        terms = [nlp(term) for term in terms]
-    if type(text) != spacy.tokens.doc.Doc:
-        text = nlp(text)
-
-    result = tag_terms(text, terms, nlp)
-    tokenized_text = result["tokenized_text"]
-    tagged_text = result["tags"]
-    found_terms_info = result["found_terms"]
-
-    found_terms = list(found_terms_info.keys())
-    for i in range(len(found_terms) - 1):
-        for j in range(i + 1, len(found_terms)):
-            term_pair = (found_terms[i], found_terms[j])
-            relations_db = add_relation(term_pair, found_terms_info, tokenized_text, 
-                                        relations_db)
-            term_pair_reverse = (found_terms[j], found_terms[i])
-            relations_db = add_relation(term_pair_reverse, found_terms_info, tokenized_text, 
-                                        relations_db)
-    
-    return relations_db
-
-def add_relation(term_pair, term_info, tokenized_text, relations_db):
-    """ For a given term pair, found at specific indices in a text, add the text to the
-    relations database if it matches a relation(s) in the database, otherwise add it as a 
-    no-relation instance.
-    
-    Parameters
-    ----------
-    term_pair: tuple of str
-        Pair of terms for which we want to add relations for
-    term_info: dict
-        Maps lemmatized form of terms to indices and term info that were found in tokenized text
-    tokenized_text: list of str
-        List of tokenized text for the given sentence we want to tag relations
-    relations_db: dict
-        Dictionary mapping relations to word pairs and sentences we will update
-    
-    Returns
-    -------
-    dict
-        Updated relations dictionary database
+    Given a span of lemmatized text and a lemmatized term, match the two spans with several 
+    heuristics to account for slight mismatches. This includes mapping special characters.
     """
-    tokenized_text = tokenized_text.copy()
+    HEURISTIC_MAPPING = {
+        'alpha': 'α',
+        'beta': 'β',
+        'prime': '′'
+    }
     
-    found_relation = False
-    term_pair_key = " -> ".join(term_pair)
+    # remap alternate representations
+    text_span = [HEURISTIC_MAPPING[tok] if tok in HEURISTIC_MAPPING else tok for tok in text_span]
+    term_span = [HEURISTIC_MAPPING[tok] if tok in HEURISTIC_MAPPING else tok for tok in term_span]
     
-    # restrict to closest occurence of the two terms in the sentence
-    indices = get_closest_match(term_info[term_pair[0]]["indices"], 
-                                term_info[term_pair[1]]["indices"])
-    
-    term1_text = " ".join(tokenized_text[indices[0][0]:indices[0][1]])
-    term2_text = " ".join(tokenized_text[indices[1][0]:indices[1][1]])
-    
-    # tag term pair in the sentence
-    tokenized_text = " ".join(insert_relation_tags(tokenized_text, indices))
-    
-    for relation in relations_db:
-        if term_pair_key in relations_db[relation]: 
-            
-            # add sentence to relations database 
-            found_relation = True
-            relations_db[relation][term_pair_key]["sentences"].append(tokenized_text)
-            if term1_text not in relations_db[relation][term_pair_key]["e1_representations"]:
-                relations_db[relation][term_pair_key]["e1_representations"].append(term1_text)
-            if term2_text not in relations_db[relation][term_pair_key]["e2_representations"]:
-                relations_db[relation][term_pair_key]["e2_representations"].append(term2_text)
-            
-    if not found_relation:
+    return term_span == text_span
 
-        if term_pair_key in relations_db["no-relation"]:
-            relations_db["no-relation"][term_pair_key]["sentences"].append(tokenized_text)
-            if term1_text not in relations_db["no-relation"][term_pair_key]["e1_representations"]:
-                relations_db["no-relation"][term_pair_key]["e1_representations"].append(term1_text)
-            if term2_text not in relations_db["no-relation"][term_pair_key]["e2_representations"]:
-                relations_db["no-relation"][term_pair_key]["e2_representations"].append(term2_text)
-        else:
-            relations_db["no-relation"][term_pair_key] = {
-                "sentences": [tokenized_text], 
-                "e1_representations": [term1_text],
-                "e2_representations": [term2_text]}
-      
-    return relations_db
-
-
-def insert_relation_tags(tokenized_text, indices):
-    """ Inserts entity tags in a sentence denoting members of a relation. 
-    
-    The first entity in the relation is tagged with <e1> </e1> and second with <e2> </e2>
-    
-    Parameters
-    ----------
-    tokenized_text: list of str
-        Spacy tokenized text list
-    indices: ((int, int), (int, int))
-        Pairs of indices denoting where the two entities in the sentences are to be tagged
-    
-    Returns
-    -------
-    list of str
-        Modified tokenized text list with entity tags added
-    
-    Examples
-    --------
-    
-    >>> insert_relation_tags(["A", "biologist", "will", "tell", "you", "that", "a", "cell", 
-                              "contains", "a", "cell", "wall", "."], ((1, 2), (10, 12)))
-    ["A", "<e1>", "biologist", "</e1>", "will", "tell", "you", "that", "a", "cell", 
-     "contains", "a", "<e2>", "cell", "wall", "</e2>", "."]
+def match_uncommon_plurals(text_span, term_span):
     """
+    Tries some simple modifications on the lemmatized term to match plurals that aren't handled
+    correctly.
+    """
+    s_plural = term_span.copy()
+    s_plural[-1] = s_plural[-1] + 's'
+    s_plural_match = s_plural == text_span
     
-    # order tags by actual index in sentence
-    indices = [i for ind in indices for i in ind]
-    tags = ["<e1>", "</e1>", "<e2>", "</e2>"]
-    order = np.argsort(indices)
-    indices = [indices[i] for i in order]
-    tags = [tags[i] for i in order]
+    es_plural = term_span.copy()
+    es_plural[-1] = es_plural[-1] + 'es'
+    es_plural_match = es_plural == text_span
     
-    adjust = 0
-    for ix, tag in zip(indices, tags):
-        tokenized_text.insert(ix + adjust, tag)
-        adjust += 1
-    
-    return tokenized_text
+    return s_plural_match or es_plural_match
 
-def tag_terms(text, terms, nlp=None):
+def tag_terms(text, terms, nlp=None, invalid_pos=[], invalid_dep=[]):
     """ Identifies and tags any terms in a given input text.
 
     Searches through the input text and finds all terms (single words and phrases) that are present
-    in the list of provided terms. Returns a list of found terms with indices and POS tagging as 
-    well as a BIOES tagged version of the sentence denoting where the terms are in the sentences. 
-    
-    Additionally classifies terms as either entities or events and annotates the presence of the
-    terms in the original sentence with these labels.
+    in the list of provided terms. Returns a list of found terms with indices and POS/Dependency 
+    parse tags from Spacy as well as a BIOES tagged version of the sentence denoting where the terms 
+    are in the sentences. 
   
     Uses spacy functionality to tokenize and lemmatize for matching text (it is recommended to 
     preprocess by Spacy before inputting to prevent repeated work if calling multiple times).
@@ -213,117 +90,92 @@ def tag_terms(text, terms, nlp=None):
     from spacy.lang.en.stop_words import STOP_WORDS
     spacy.tokens.token.Token.set_extension('workaround', default='', force=True)
     
-    HEURISTIC_TOKENS = ['-', 'plant', 'substance', 'atom']
-    HEURISTIC_MAPPING = {
-        'alpha': 'α',
-        'beta': 'β',
-        'prime': '′'
-    }
-    
-    # default to Stanford NLP pipeline wrapped in Spacy
-    if nlp is None:
-        snlp = stanfordnlp.Pipeline(lang="en")
-        nlp = StanfordNLPLanguage(snlp)
-        
     # preprocess with spacy if needed
+    if nlp is None:
+        nlp = spacy.load('en_core_web_sm')
     if type(terms[0]) != spacy.tokens.doc.Doc:
         terms = [nlp(term) for term in terms]
     if type(text) != spacy.tokens.doc.Doc:
         text = nlp(text)
-    
-    # set up a custom representation of the text where we can add term type annotations
+        
+    # set up a custom representation of the text in spacy where we can add term type annotations
     for token in text:
         token._.workaround = token.text_with_ws
-
-    lemmatized_text = [token.lemma_ for token in text]
+    
+    lemmatized_text = [token.lemma_.lower() for token in text]
     tokenized_text = [token.text for token in text]
     tags = ['O'] * len(text)
-    found_terms = defaultdict(lambda: {'text': [], 'indices': [], 'pos': [], 'type': []})
+    found_terms = defaultdict(lambda: {'text': [], 'tokens': [], 'indices': [], 'pos': [], 'dep': []})
     
     # iterate through terms from longest to shortest to ensure we tag the largest possible phrase
     terms = sorted(terms, key=len)[::-1]
     for spacy_term in terms:
-        term_length = len(spacy_term)
-        lemma_term_list = [token.lemma_ for token in spacy_term]
-        text_term_list = [token.text for token in spacy_term]
-        term_lemma = ' '.join(lemma_term_list)
-        term_text = ' '.join(text_term_list).lower()
         
-        # skip stop words
+        # lemma representation of term (ignoring hyphens and case)
+        lemma_term_span = [token.lemma_.lower() for token in spacy_term if token.lemma_ != '-']
+        term_length = len(lemma_term_span)
+        term_lemma = ' '.join(lemma_term_span)
+        
+        # exact text representation of term
+        text_term_span = [token.text for token in spacy_term]
+        term_text = ''.join([token.text_with_ws for token in spacy_term])
+        
+        # skip terms with stop word equivalent representation
         if term_text in STOP_WORDS or term_lemma in STOP_WORDS:
             continue
         
-        # additional check to check for simple plural of uncommon biology terms
-        match_uncommon_plural = lemma_term_list.copy()
-        match_uncommon_plural[-1] = match_uncommon_plural[-1] + 's'
-
-        # additional check using dropped heuristics on lemmatized version
-        match_heuristic = []
-        if lemma_term_list[0] not in HEURISTIC_TOKENS:
-            for token in lemma_term_list:
-                if token not in HEURISTIC_TOKENS:
-                    match_heuristic += token.split('-')
-            heuristic_length = len(match_heuristic)
-        else:
-            heuristic_term = lemma_term_list
-            heuristic_length = len(lemma_term_list)
-        
-        # additional check replacing KB speak with appropriate text symbols
-        match_replace = []
-        for token in lemma_term_list:
-            if token in HEURISTIC_MAPPING:
-                match_replace.append(HEURISTIC_MAPPING[token])
-            else:
-                match_replace.append(token)
-        
+        # check all subsequences of the same length as the term for a match
         for ix in range(len(text) - term_length):
             
-            heuristic_match = (lemmatized_text[ix:ix + heuristic_length] == match_heuristic)
-            plural_match = (lemmatized_text[ix:ix + term_length] == match_uncommon_plural)
-            lemma_match = (lemmatized_text[ix:ix + term_length] == lemma_term_list)
-            replace_match = (lemmatized_text[ix:ix + term_length] == match_replace)
+            text_span = lemmatized_text[ix:ix + term_length]
             
-            if len(term_lemma) <= 2:
-                text_match = ([t for t in tokenized_text[ix:ix + term_length]] == \
-                              [t for t in text_term_list])
-            else:
-                text_match = ([t.lower() for t in tokenized_text[ix:ix + term_length]] == \
-                              [t.lower() for t in text_term_list])
-                
-            valid_match = heuristic_match or plural_match or text_match or lemma_match or replace_match
+            # handle hyphens by extending terms beyond them so we can ignore them
+            num_hyphens = len([tok for tok in text_span if tok == '-'])
+            text_span += lemmatized_text[ix + term_length:min(len(text), 
+                                                              ix + term_length + num_hyphens)] 
+            match_length = len(text_span)
+            text_span = [tok for tok in text_span if tok != '-']
             
-            if valid_match:
+            # match directly on lemma
+            lemma_match = text_span == lemma_term_span
+            # match directly on text 
+            text_match = text_span == text_term_span
+            # match with a few heuristic rules/term substitutions (sort of a catch all)
+            heuristic_match = match_heuristic(text_span, lemma_term_span)
+            # try to match some uncommon plurals that Spacy doesn't lemmatize correctly
+            plural_match = match_uncommon_plurals(text_span, lemma_term_span) 
+            # good to go if any match
+            valid_match = heuristic_match or plural_match or text_match or lemma_match 
+            
+            # only tag term if not part of larger term
+            if valid_match and tags[ix:ix + match_length] == ['O'] * match_length:
+                    
+                # collect term information
+                term_text = ''.join([token.text_with_ws for token in text[ix:ix + match_length]]).strip()
+                term_tokens = [t.text for t in text[ix:ix + match_length]]
+                term_tag = [t.tag_ for t in text[ix:ix + match_length]]
+                term_dep = [t.dep_ for t in text[ix:ix + match_length]]
                 
-                if heuristic_match and not lemma_match:
-                    match_length = heuristic_length
+                # screen for invalid dependencies and pos tags
+                if term_tag[-1] in invalid_pos or term_dep[-1] in invalid_dep:
+                    continue
+                
+                found_terms[term_lemma]['text'].append(term_text)
+                found_terms[term_lemma]['tokens'].append(term_tokens)
+                found_terms[term_lemma]['indices'].append((ix, ix + match_length))
+                found_terms[term_lemma]['pos'].append(term_tag)
+                found_terms[term_lemma]['dep'].append(term_dep)
+                    
+                # update sentence tags
+                tags = tag_bioes(tags, ix, match_length)
+
+                # annotate input text with term markings
+                text[ix]._.workaround = '<term>' + text[ix]._.workaround
+                end_ix = ix + match_length - 1
+                if text[end_ix]._.workaround.endswith(' '):
+                    text[end_ix]._.workaround = text[end_ix]._.workaround[:-1] + '</term>'
                 else:
-                    match_length = term_length
-                
-                term_text = ' '.join([t.text for t in text[ix:ix + match_length]])
-                term_tag = ' '.join([t.tag_ for t in text[ix:ix + match_length]])
-                
-                # only tag term if not part of larger term
-                if tags[ix:ix + match_length] == ['O'] * match_length:
-                    
-                    # classify term type
-                    term_type = determine_term_type(spacy_term)
-                    
-                    # collect term information
-                    found_terms[term_lemma]['text'].append(term_text)
-                    found_terms[term_lemma]['indices'].append((ix, ix + match_length))
-                    found_terms[term_lemma]['pos'].append(term_tag)
-                    found_terms[term_lemma]['type'].append(term_type)
-                    
-                    # update sentence tags
-                    tags = tag_bioes(tags, ix, match_length)
-                    
-                    # annotate token representations with term type
-                    text[ix]._.workaround = f'<{term_type}>' + text[ix]._.workaround
-                    end_ix = ix + match_length - 1
-                    if text[end_ix]._.workaround.endswith(' '):
-                        text[end_ix]._.workaround = text[end_ix]._.workaround[:-1] + f'</{term_type}> '
-                    else:
-                        text[end_ix]._.workaround += f'</{term_type}>'
+                    text[end_ix]._.workaround += '</term>'
                     
     # reconstruct fully annotated input text
     annotated_text = ''
@@ -337,37 +189,6 @@ def tag_terms(text, terms, nlp=None):
         'found_terms': dict(found_terms)
     }
 
-def determine_term_type(term):
-    """ Categorizes a term as either entity or event based on several heuristics.
-
-    Parameters
-    ----------
-    term: spacy.tokens.doc.Doc
-        Spacy preprocessed representation of the term 
-
-    Returns
-    -------
-    str ('entity' | 'event')
-        The class of the term
-    """
-    
-    nominals = ["ation", "ition", "ption", "ing", "sis", "lism", "ment", "sion"]
-    event_keywords = ["process", "cycle"]
-    
-    # key words that indicate events despite being nouns 
-    if any([ek in term.text.lower() for ek in event_keywords]):
-        term_type = "event"
-    # key endings indicating a nominalized form of an event 
-    elif any([term[i].text.endswith(ne) for ne in nominals for i in range(len(term))]):
-        term_type = "event"
-    # POS = Verb implies event 
-    elif any([t.pos_ == "VERB" for t in term]):
-        term_type = "event"
-    # default is otherwise entity 
-    else:
-        term_type = "entity"
-    
-    return term_type
 
 def tag_bioes(tags, match_index, term_length):
     """ Updates tags for a text using the BIOES tagging scheme.
