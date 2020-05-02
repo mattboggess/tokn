@@ -46,15 +46,12 @@ terms_file = "../data/biology_terms_spacy"
 terms_vocab_file = "../data/biology_terms_spacy_vocab"
 
 life_bio_input_sentences_file = "../../data/raw_data/life_bio/life_bio_selected_sentences.txt"
-life_bio_output_file = "../data/life_bio_tagged_sentences.csv"
+life_bio_output_file = "../data/life_bio_tagged_sentences.pkl"
 openstax_bio_input_sentences_file = "../../data/raw_data/openstax/openstax_provided_book_import/sentence_files/sentences_Biology_2e_parsed.csv"
-openstax_bio_output_file = "../data/openstax_bio_tagged_sentences.csv"
+openstax_bio_output_file = "../data/openstax_bio_tagged_sentences.pkl"
     
 # Life Biology Section Regex
 life_bio_regex = '^7\.(\d+)\.(.+?)\s+'
-
-# Valid part of speech tags to be considered for tagging terms
-valid_pos = ['NOUN', 'PROPN', 'ADJ']
 
 # textbook sections to exclude from consideration when extracting chapter sentences 
 exclude_sections = [
@@ -100,6 +97,12 @@ exclude_sections = [
     'Measurements and the Metric System'
 ]
 
+# invalid parts of speech that shouldn't be tagged
+invalid_pos = ['JJ', 'JJR', 'JJS', 'MD', 'RB', 'RBR', 'RBS', 'RP', 'VB', 'VBD', 'VBG', 'VBN', 'VBZ', 
+               'VBP', 'WRB']
+
+# invalid dependency parse tags that shouldn't be tagged
+invalid_dep = ['npadvmod', 'compound', 'poss']
 
 #===================================================================================
 
@@ -111,20 +114,16 @@ if __name__ == '__main__':
     terms = read_spacy_docs(terms_file, terms_vocab_file)
     print(f"Found {len(terms)} candidate biology terms to use for tagging")
     
-    # filter out invalid terms with wrong POS
-    terms = [term for term in terms if term[-1].pos_ in valid_pos]
-    print(f"{len(terms)} biology terms remaining for tagging after POS filtering")
-    
     life_bio_df = []
     
     print("Processing Life Biology Sentences")
     with open(life_bio_input_sentences_file, "r") as f:
         life_bio_sentences = f.readlines()
         
-    prev_section = None
     for sent in tqdm(life_bio_sentences):
         
         # parse chapter and section
+        # TODO: FIX DUPLICATE SPECIFIERS
         sections = re.match(life_bio_regex, sent)
         chapter = sections.group(1)
         sent_id = sections.group(2)
@@ -167,12 +166,12 @@ if __name__ == '__main__':
                  'term1_location': found_pair[1][0],
                  'term2': found_pair[0][1],
                  'term2_location': found_pair[1][1],
-                 'term_pair': (found_pair[0][0], found_pair[1][0])
+                 'term_pair': (found_pair[0][0], found_pair[0][1])
                 }
             )
             
     life_bio_df = pd.DataFrame(life_bio_df)
-    life_bio_df.to_csv(life_bio_output_file, index=False)
+    life_bio_df.to_pickle(life_bio_output_file)
 
     print("Processing OpenStax Biology Sentences")
     openstax_data = pd.read_csv(openstax_bio_input_sentences_file)
@@ -184,12 +183,12 @@ if __name__ == '__main__':
         
         # parse chapter and section
         chapter = row.chapter
-        sent_id = f'{row.section}.{row.sentence_number}'
+        sent_id = f'{str(row.section)}.{str(row.sentence_number)}'
         sent = row.sentence.strip()
         
         # Spacy process and tag sentence with terms
         spacy_sent = nlp(sent)
-        result = tag_terms(spacy_sent, terms, nlp)
+        result = tag_terms(spacy_sent, terms, nlp, invalid_pos=invalid_pos, invalid_dep=invalid_dep)
         found_terms_info = result['found_terms']
         tokenized_sent = result['tokenized_text']
         
@@ -224,9 +223,9 @@ if __name__ == '__main__':
                  'term1_location': found_pair[1][0],
                  'term2': found_pair[0][1],
                  'term2_location': found_pair[1][1],
-                 'term_pair': (found_pair[0][0], found_pair[1][0])
+                 'term_pair': (found_pair[0][0], found_pair[0][1])
                 }
             )
             
     openstax_bio_df = pd.DataFrame(openstax_bio_df)
-    openstax_bio_df.to_csv(openstax_bio_output_file, index=False)
+    openstax_bio_df.to_pickle(openstax_bio_output_file)
