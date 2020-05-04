@@ -32,7 +32,10 @@ class RelationDataset(Dataset):
         with open(input_file, 'rb') as fid:
             self.data = pickle.load(fid)
                                   
-        self.relations = sorted(np.unique(self.data.majority_vote))
+        if label_column == 'label_model_labels':
+            self.relations = np.arange(len(self.data.label_model_labels.iloc[0]))
+        else:
+            self.relations = sorted(np.unique(self.data.majority_vote))
         self.num_classes = len(self.relations)
         relation_list = list(self.data.majority_vote)
         
@@ -43,7 +46,10 @@ class RelationDataset(Dataset):
             self.class_weights = torch.Tensor([1.0] * len(self.relations))
                 
         self.max_sent_length = max_sent_length
-        self.label_column = label_column
+        if split == 'dev':
+            self.label_column = 'gold_label'
+        else:
+            self.label_column = label_column
         
         # set up BERT representations
         self.term1_start_token = '[E1start]'
@@ -70,10 +76,14 @@ class RelationDataset(Dataset):
           - label: y-label for this data point (relation type)
         """
         sample = self.data.iloc[idx, :]
-        label = sample[self.label_column]
+        target = list(sample[self.label_column])
+     
         term_pair = sample.term_pair
-        if type(label) != list:
-            label = [label]
+        if type(target) != list:
+            target = [target]
+            label = target
+        else:
+            label = [np.argmax(target)]
         
         # add term start and end tokens 
         tokens = sample.tokens
@@ -99,10 +109,18 @@ class RelationDataset(Dataset):
         bert_attention_mask = bert_ids['attention_mask']
         
         # create term start location masks
-        t1_start_idx = bert_input_ids.index(self.tokenizer.convert_tokens_to_ids(self.term1_start_token))
-        term1_mask = [1 if idx == t1_start_idx else 0 for idx in range(len(bert_input_ids))] 
-        t2_start_idx = bert_input_ids.index(self.tokenizer.convert_tokens_to_ids(self.term2_start_token))
-        term2_mask = [1 if idx == t2_start_idx else 0 for idx in range(len(bert_input_ids))] 
+        term1_id = self.tokenizer.convert_tokens_to_ids(self.term1_start_token)
+        term2_id = self.tokenizer.convert_tokens_to_ids(self.term2_start_token)
+        if term1_id in bert_input_ids:
+            term1_mask = [1 if tok == term1_id else 0 for tok in bert_input_ids] 
+        else:
+            print('Missing Term 1')
+            term1_mask = [0] * len(bert_input_ids)
+        if term2_id in bert_input_ids:
+            term2_mask = [1 if tok == term2_id else 0 for tok in bert_input_ids] 
+        else:
+            print('Missing Term 2')
+            term2_mask = [0] * len(bert_input_ids)
         
         output = {
             'input_ids': torch.LongTensor(bert_input_ids),
@@ -110,9 +128,10 @@ class RelationDataset(Dataset):
             'bert_representation': bert_representation,
             'text': text,
             'term_pair': term_pair,
-            'term1_mask': torch.LongTensor(term1_mask),
-            'term2_mask': torch.LongTensor(term2_mask),
-            'label': torch.LongTensor(label)
+            'term1_mask': torch.FloatTensor(term1_mask),
+            'term2_mask': torch.FloatTensor(term2_mask),
+            'label': torch.LongTensor(label),
+            'target': torch.FloatTensor(target)
         }
         
         return output
@@ -165,7 +184,7 @@ class RelationDataLoader(DataLoader):
             for k in bd.keys():
                 output[k].append(bd[k])
             
-        tensor_fields = ['input_ids', 'attention_mask', 'label', 'term1_mask', 'term2_mask'] 
+        tensor_fields = ['input_ids', 'attention_mask', 'target', 'label', 'term1_mask', 'term2_mask'] 
         for tf in tensor_fields:
             output[tf] = torch.stack(output[tf])
             

@@ -40,29 +40,31 @@ def main(config, split, out_dir, model_version):
     with torch.no_grad():
         
         epoch_target = []
+        epoch_scores = []
         epoch_pred = []
         epoch_word_pairs = []
         epoch_loss = [] 
         
         for i, batch_data in enumerate(tqdm(data_loader)):
             
-            for field in ['input_ids', 'label', 'attention_mask', 'term1_mask', 'term2_mask']:
+            for field in ['input_ids', 'label', 'target', 'attention_mask', 'term1_mask', 'term2_mask']:
                 batch_data[field] = batch_data[field].to(device)
 
             output = model(batch_data)
             pred = torch.argmax(output, dim=-1)
-            loss = loss_fn(output, batch_data['label'].squeeze(-1),
+            loss = loss_fn(output, batch_data['target'].squeeze(-1),
                            data_loader.dataset.class_weights.to(device))
 
             # accumulate epoch quantities 
             epoch_target += [t.item() for t in batch_data['label']]
-            epoch_pred += [p.item() for p in pred] 
+            epoch_scores += [output.cpu().detach().numpy()]
+            epoch_pred += [p.item() for p in pred]
             epoch_word_pairs += batch_data['term_pair']
             epoch_loss += [loss.item()]
 
     log = {'loss': np.sum(epoch_loss) / len(data_loader)}
     log.update({
-        m.__name__: m(epoch_target, epoch_pred) for m in metric_fns
+        m.__name__: m(epoch_target, epoch_scores) for m in metric_fns
     })
     logger.info(log)
     
