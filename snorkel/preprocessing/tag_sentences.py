@@ -1,30 +1,27 @@
-# Tags sentences with key terms from textbooks in preparation for term extraction modeling. 
+# Tags sentences with all pairs of key terms from textbooks in preparation for 
+# relation extraction modeling. 
 
 # Author: Matthew Boggess
-# Version: 4/11/20
+# Version: 4/26/20
 
-# Data Source: Output of preprocess_openstax_textbooks.py, preprocess_life_biology.py, and
-# preprocess_hand-labeled_sections.py scripts.
+# Data Source: Terms list output from collect_terms.py. Raw sentence parses of OpenStax Biology
+# (provided by OpenStax) and Life Biology (provided by Dr. Chaudhri)
 
 # Description: 
 #   For each provided textbook/textbook section: 
 #     - Reads in spacy preprocessed terms from all specified term sources that are indicated to use
-#       for tagging and aggregates them into a term lis to tag the textbook/section sentences 
-#     - Produces a single json output file for each textbook/section containing an entry with
-#       the following for each sentence:
-#       - found_terms: structure indicating what terms were found and some information about
-#         their matche(s) in the sentence
-#       - tokenized_text: list of individual tokens from the tokenization of the sentence. This is 
-#         the input to the term extraction models.
-#       - tags: list of BIOES tags for each individual token in the tokenized sentence. This is
-#         the label for training the model and is the same form as the output.
-#       - annotated_text: This is the string representation of the sentence with special indicators
-#         denoting where the found terms are located.
-#       - original_text: Original string representation of the sentence for reference.
-
-# Running Note: This is a very time intensive script. Processing each individual textbook takes 
-# on average 3 hours. It is best to subset the textbooks parameter to only textbooks that 
-# need to be run if trying to add new ones or re-run particular textbooks.
+#       for tagging and aggregates them into a term list to tag the textbook/section sentences. This
+#       includes optional filtering on part of speech.
+#     - Creates a pandas dataframe for each textbook that takes every tagged pair of terms in that
+#       sentence and creates two rows for each (one for each direction of the term pair). Each row
+#       includes the following information:
+#          - sentence textbook source, chapter, and section identifier (together these uniquely
+#            identify each sentence)
+#          - original sentence text and a list of Spacy tokens
+#          - term1/2 Spacy lemma representation and their indices in the token list
+#
+# Running Note: This is a time intensive script. Processing each individual textbook takes 
+# on average 2-3 hours. 
 
 #===================================================================================
 
@@ -49,12 +46,12 @@ terms_file = "../data/biology_terms_spacy"
 terms_vocab_file = "../data/biology_terms_spacy_vocab"
 
 life_bio_input_sentences_file = "../../data/raw_data/life_bio/life_bio_selected_sentences.txt"
-life_bio_output_file = "../data/life_bio_tagged_sentences.csv"
+life_bio_output_file = "../data/life_bio_tagged_sentences.pkl"
 openstax_bio_input_sentences_file = "../../data/raw_data/openstax/openstax_provided_book_import/sentence_files/sentences_Biology_2e_parsed.csv"
-openstax_bio_output_file = "../data/openstax_bio_tagged_sentences.csv"
+openstax_bio_output_file = "../data/openstax_bio_tagged_sentences.pkl"
     
 # Life Biology Section Regex
-life_bio_regex = '^7\.(\d+)\.([\d*|summary])*\.*.+\..+?\s*'
+life_bio_regex = '^7\.(\d+)\.(.+?)\s+'
 
 # textbook sections to exclude from consideration when extracting chapter sentences 
 exclude_sections = [
@@ -100,6 +97,12 @@ exclude_sections = [
     'Measurements and the Metric System'
 ]
 
+# invalid parts of speech that shouldn't be tagged
+invalid_pos = ['JJ', 'JJR', 'JJS', 'MD', 'RB', 'RBR', 'RBS', 'RP', 'VB', 'VBD', 'VBG', 'VBN', 'VBZ', 
+               'VBP', 'WRB']
+
+# invalid dependency parse tags that shouldn't be tagged
+invalid_dep = ['npadvmod', 'compound', 'poss', 'amod']
 
 #===================================================================================
 
@@ -109,6 +112,7 @@ if __name__ == '__main__':
     
     # load in biology terms to use for tagging
     terms = read_spacy_docs(terms_file, terms_vocab_file)
+    print(f"Found {len(terms)} candidate biology terms to use for tagging")
     
     life_bio_df = []
     
@@ -116,28 +120,23 @@ if __name__ == '__main__':
     with open(life_bio_input_sentences_file, "r") as f:
         life_bio_sentences = f.readlines()
         
-    prev_section = None
     for sent in tqdm(life_bio_sentences):
         
         # parse chapter and section
+        # TODO: FIX DUPLICATE SPECIFIERS
         sections = re.match(life_bio_regex, sent)
         chapter = sections.group(1)
-        section = sections.group(2)
-        if not section:
-            section = 'intro'
-        if not prev_section or prev_section != section:
-            prev_section = section
-            sent_num = 1
-        else:
-            sent_num += 1
+        sent_id = sections.group(2)
         sent = re.sub(life_bio_regex, '', sent.strip())
         
-        # nlp process and tag sentence
+        # Spacy process and tag sentence with terms
         spacy_sent = nlp(sent)
         result = tag_terms(spacy_sent, terms, nlp)
         found_terms_info = result['found_terms']
         tokenized_sent = result['tokenized_text']
         
+        # generate all term pairs tagged in the sentence, for multiple mentions take pair of
+        # terms that are closest together
         found_terms = list(found_terms_info.keys())
         found_term_pairs = [] 
         for i in range(len(found_terms) - 1):
@@ -160,19 +159,19 @@ if __name__ == '__main__':
             life_bio_df.append(
                 {'textbook': 'Life Biology',
                  'chapter': chapter,
-                 'section': section,
-                 'sentence': sent_num,
+                 'sentence_id': sent_id,
                  'text': sent,
                  'tokens': tokenized_sent,
                  'term1': found_pair[0][0],
                  'term1_location': found_pair[1][0],
                  'term2': found_pair[0][1],
-                 'term2_location': found_pair[1][1]
+                 'term2_location': found_pair[1][1],
+                 'term_pair': (found_pair[0][0], found_pair[0][1])
                 }
             )
             
     life_bio_df = pd.DataFrame(life_bio_df)
-    life_bio_df.to_csv(life_bio_output_file, index=False)
+    life_bio_df.to_pickle(life_bio_output_file)
 
     print("Processing OpenStax Biology Sentences")
     openstax_data = pd.read_csv(openstax_bio_input_sentences_file)
@@ -180,24 +179,21 @@ if __name__ == '__main__':
     
     openstax_bio_df = []
     prev_section = None
-    for _, row in tqdm(openstax_data.iterrows()):
+    for _, row in tqdm(list(openstax_data.iterrows())):
         
         # parse chapter and section
         chapter = row.chapter
-        section = row.section
+        sent_id = f'{str(row.section)}.{str(row.sentence_number)}'
         sent = row.sentence.strip()
-        if not prev_section or prev_section != section:
-            prev_section = section
-            sent_num = 1
-        else:
-            sent_num += 1
         
-        # nlp process and tag sentence
+        # Spacy process and tag sentence with terms
         spacy_sent = nlp(sent)
-        result = tag_terms(spacy_sent, terms, nlp)
+        result = tag_terms(spacy_sent, terms, nlp, invalid_pos=invalid_pos, invalid_dep=invalid_dep)
         found_terms_info = result['found_terms']
         tokenized_sent = result['tokenized_text']
         
+        # generate all term pairs tagged in the sentence, for multiple mentions take pair of
+        # terms that are closest together
         found_terms = list(found_terms_info.keys())
         found_term_pairs = [] 
         for i in range(len(found_terms) - 1):
@@ -220,16 +216,16 @@ if __name__ == '__main__':
             openstax_bio_df.append(
                 {'textbook': 'OpenStax Biology 2e',
                  'chapter': chapter,
-                 'section': section,
-                 'sentence': sent_num,
+                 'sentence_id': sent_id,
                  'text': sent,
                  'tokens': tokenized_sent,
                  'term1': found_pair[0][0],
                  'term1_location': found_pair[1][0],
                  'term2': found_pair[0][1],
-                 'term2_location': found_pair[1][1]
+                 'term2_location': found_pair[1][1],
+                 'term_pair': (found_pair[0][0], found_pair[0][1])
                 }
             )
             
     openstax_bio_df = pd.DataFrame(openstax_bio_df)
-    openstax_bio_df.to_csv(openstax_bio_output_file, index=False)
+    openstax_bio_df.to_pickle(openstax_bio_output_file)

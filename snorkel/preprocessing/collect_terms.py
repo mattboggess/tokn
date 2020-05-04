@@ -44,10 +44,9 @@ lexicon_input_file = f"{life_bio_data_dir}/kb_lexicon.txt"
 terms_output_file = f"{preprocessed_data_dir}/biology_terms_spacy"
 terms_vocab_output_file = f"{preprocessed_data_dir}/biology_terms_spacy_vocab"
 
-## Important Enumerations 
-
 # text representations of concepts that are too general and thus problematic for text matching
-exclude_representations = ['object', 'aggregate', 'group', 'thing', 'region']
+exclude_terms = ['object', 'aggregate', 'group', 'thing', 'region', 'center', 'response',
+                 'series', 'unit', 'result', 'normal', 'divide', 'whole', 'someone', 'somebody']
 
 #===================================================================================
 
@@ -72,7 +71,7 @@ def process_lexicon(lexicon, bio_concepts):
     # representations are too general (i.e. 'object')
     lexicon = lexicon[~lexicon.text.str.contains('Concept-Word-Frame')]
     lexicon = lexicon.groupby('concept')['text'].apply(
-        lambda x: list(set([t for t in x if t not in exclude_representations]))).reset_index()
+        lambda x: list(set([t for t in x if t not in exclude_terms]))).reset_index()
     
     # filter out too general upper ontology words, relation concepts, and 
     # concepts that only have representations that are too general 
@@ -88,7 +87,7 @@ def process_lexicon(lexicon, bio_concepts):
         
         # extract text representations for the concept
         terms = list(lexicon.loc[lexicon.concept == concept, 'text'])[0]
-        terms = [t.replace('"', '').strip() for t in terms]
+        terms = [t.replace('"', '').strip().replace('-', ' ') for t in terms]
         
         # add text of concept itself
         concept_text = concept.lower().replace('-', ' ')
@@ -113,6 +112,8 @@ def process_lexicon(lexicon, bio_concepts):
 
 def parse_openstax_terms(key_term_text):
     """Parse openstax key term entries to extract key term itself (including acronyms)."""
+    key_term_text = re.sub('<.+?>', '', key_term_text)
+    key_term_text = key_term_text.replace('-', ' ').replace('\n', '').replace('\s+', ' ')
     if ":" not in key_term_text:
         return []
     term = key_term_text.split(':')[0]
@@ -164,7 +165,18 @@ if __name__ == '__main__':
             continue
         seen_lemmas.add(term_lemma)
         terms.append(term)
-    
+        
     print(f"Extracted {len(terms)} biology terms")
+        
+    # remove too common/problematic 
+    exclude_lemmas = [' '.join([x.lemma_ for x in nlp(term)]) for term in exclude_terms]
+    filtered_terms = []
+    for term in terms:
+        term_lemma = ' '.join(x.lemma_ for x in term)
+        if term_lemma in exclude_lemmas:
+            continue
+        filtered_terms.append(term)
+    terms = filtered_terms
+    print(f"{len(terms)} biology terms remaining for tagging after removing too common terms")
     
-    write_spacy_docs(terms, nlp.vocab, terms_output_file, terms_vocab_output_file)	
+    write_spacy_docs(filtered_terms, nlp.vocab, terms_output_file, terms_vocab_output_file)	
