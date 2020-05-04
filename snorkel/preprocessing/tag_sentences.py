@@ -102,7 +102,7 @@ invalid_pos = ['JJ', 'JJR', 'JJS', 'MD', 'RB', 'RBR', 'RBS', 'RP', 'VB', 'VBD', 
                'VBP', 'WRB']
 
 # invalid dependency parse tags that shouldn't be tagged
-invalid_dep = ['npadvmod', 'compound', 'poss']
+invalid_dep = ['npadvmod', 'compound', 'poss', 'amod']
 
 #===================================================================================
 
