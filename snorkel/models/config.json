@@ -11,7 +11,7 @@
         "args":{
             "data_dir": "../data/model_data",
             "batch_size": 16,
-            "label_column": "label_model_labels",
+            "label_type": "soft_label",
             "shuffle": true,
             "num_workers": 0,
             "balance_loss": false,
@@ -45,7 +45,7 @@
         "save_period": 1,
         "verbosity": 2,
         
-        "monitor": "min val_loss",
+        "monitor": "max val_micro_f1",
         "early_stop": 3,
 
         "tensorboard": true
