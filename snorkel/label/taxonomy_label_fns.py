@@ -9,7 +9,7 @@ OTHER = 0
 ABSTAIN = -1
 
 #===================================================================================
-# Sentence Dependency Pattern-Based Labelers
+# Sentence Dependency Pattern-Based Positive Labelers
 
 # Hearst 1992 Patterns
 
@@ -52,22 +52,27 @@ def including_pattern(cand):
       
     One of original Hearst patterns (Hearst, 1992)
     """
-    start = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
-    end = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     
     # follow the chain of conjunctions back to the as
-    while start.text != 'including':
-        if start.dep_ == 'conj' or start.dep_ == 'pobj':
-            start = start.head
+    while second.text != 'including':
+        if second.dep_ == 'conj' or second.dep_ == 'pobj':
+            second = second.head
         else:
             break
+            
+    second_valid = second.text == 'including'
+    if second_valid:
+        first_valid = first.nbor(2) == second 
+    else:
+        first_valid = False
     
-    if start.text == 'including':
-        if start.head.idx == end.idx:
-            if cand.term1_location[0] < cand.term2_location[0]:
-                return HYPERNYM
-            else:
-                return HYPONYM 
+    if first_valid and second_valid:
+        if cand.term1_location[0] < cand.term2_location[0]:
+            return HYPERNYM
+        else:
+            return HYPONYM 
     return ABSTAIN
 
 @labeling_function()
@@ -80,22 +85,23 @@ def especially_pattern(cand):
       
     One of original Hearst patterns (Hearst, 1992)
     """
-    start = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
-    end = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     
-    # follow the chain of conjunctions back to the as
-    found_especially = False
-    while start != end:
-        if start.dep_ == 'conj':
-            start = start.head
-        elif start.dep_ == 'appos':
-            if start.idx > 0:
-                found_especially = start.nbor(-1).text == 'especially'
-            start = start.head
+    # follow the chain of conjunctions back to the esepcially
+    while second.idx > 1 and second.nbor(-1).text != 'especially':
+        if second.dep_ == 'conj' or second.dep_ == 'appos':
+            second = second.head
         else:
             break
+        
+    second_valid = second.idx > 1 and second.nbor(-1).text == 'especially'
+    if second_valid:
+        first_valid = first.nbor(2) == second.nbor(-1)
+    else:
+        first_valid = False 
     
-    if start.text == end.text and found_especially:
+    if first_valid and second_valid: 
         if cand.term1_location[0] < cand.term2_location[0]:
             return HYPERNYM 
         else:
@@ -166,34 +172,51 @@ def isa_pattern(cand):
       
     One of highlighted patterns from Snow et al. 2004
     """
-    if cand.doc[cand.term1_location[1] - 1].head.text == 'is' and \
-       cand.doc[cand.term2_location[1] - 1].head.text == 'is':
-        if cand.doc[cand.term2_location[1] - 1].head.nbor().text in ['a', 'an', 'the']:
-            if cand.term1_location[0] < cand.term2_location[0]:
-                return HYPONYM 
-            else:
-                return HYPERNYM 
+    second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    
+    # second term is directly linked to an is 
+    valid_second = second.dep_ == 'attr' and second.head.text == 'is'
+    
+    # first term is linked to an are either directly or via conjunction 
+    while first.text != 'is':
+        if first.dep_ == 'conj' or first.dep_ == 'nsubj':
+            first = first.head
+        else:
+            break
+    valid_first = first == second.head 
+    
+    if valid_second and valid_first:
+        if cand.term1_location[0] < cand.term2_location[0]:
+            return HYPONYM
+        else:
+            return HYPERNYM
+        
     return ABSTAIN
 
 @labeling_function()
 def appo_pattern(cand):
     """
     Matches sentence structure pattern using Spacy dependency parse:
-      - Pattern: X, a/an/the/ Y (appos)
+      - Pattern: X, a/an Y (appos)
       - X -> HYPONYM -> Y
       
     One of highlighted patterns from Snow et al. 2004
     """
-    start = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
-    end = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    second_conj = len([ch for ch in second.children if ch.dep_ == 'conj']) > 0
+    valid_second = second.head == first and second.dep_ == 'appos' and not second_conj
     
-    if start.head.text == end.text and start.dep_ == 'appos':
-        # acronyms are not valid
-        if 'X' in start.shape_:
-            return OTHER
-        elif end.nbor(1).text != ',':
-            return ABSTAIN
-        elif cand.term1_location[0] < cand.term2_location[0]:
+    if valid_second:
+        valid_first = first.nbor(1).text == ',' and \
+                      first.nbor(2).text in ['a', 'an'] and \
+                      first.nbor(2) in [ch for ch in second.children]
+    else:
+        valid_first = False
+    
+    if valid_second and valid_first:
+        if cand.term1_location[0] < cand.term2_location[0]:
             return HYPONYM
         else:
             return HYPERNYM 
@@ -202,8 +225,74 @@ def appo_pattern(cand):
 # Custom Patterns
 
 @labeling_function()
+def are_pattern(cand):
+    """
+    Matches sentence structure pattern using Spacy dependency parse:
+      - Pattern1: X1, ..., Xk are Y (X -> HYPONYM -> Y)
+      - Pattern2: The X are Y (X -> HYPERNYM -> Y)
+      
+    Custom added pattern from scanning textbook sentences for patterns 
+    """
+    second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    first_children = [tok.text.lower() for tok in first.children]
+    
+    # second term is directly linked to an are
+    valid_second = second.dep_ == 'attr' and second.head.text == 'are'
+    
+    # first term is linked to an are either directly or via conjunction 
+    while first.text != 'are':
+        if first.dep_ == 'conj' or first.dep_ == 'nsubj':
+            first = first.head
+        else:
+            break
+    valid_first = first == second.head
+    
+    if valid_second and valid_first and second.head.nbor(-1).text != 'not':
+        if 'the' in first_children:
+            if cand.term1_location[0] < cand.term2_location[0]:
+                return HYPERNYM
+            else:
+                return HYPONYM
+        else:
+            if cand.term1_location[0] < cand.term2_location[0]:
+                return HYPONYM
+            else:
+                return HYPERNYM
+        
+    return ABSTAIN
+
+@labeling_function()
+def whichis_pattern(cand):
+    """
+    TODO: FIX/ADD (Not many matches)
+    Matches sentence structure pattern using Spacy dependency parse:
+      - Pattern: X which is a/an/the Y 
+      - X -> HYPONYM -> Y
+      
+    Custom added pattern from scanning textbook sentences for patterns 
+    """
+    second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    
+    valid_second = second.head.text == 'is' and second.dep_ == 'attr' 
+    if valid_second:
+        valid_first = second.head.head.text == first.text and second.head.nbor(-1).text == 'which'
+    else:
+        valid_first = False
+    
+    if valid_second and valid_first:
+        if cand.term1_location[0] < cand.term2_location[0]:
+            return HYPONYM
+        else:
+            return HYPERNYM
+    
+    return ABSTAIN
+
+@labeling_function()
 def knownas_pattern(cand):
     """
+    TODO: FIX/ADD (Not many matches)
     Matches sentence structure pattern using Spacy dependency parse:
       - Pattern: X [!also] known as Y 
       - X -> HYPONYM -> Y
@@ -241,6 +330,9 @@ def knownas_pattern(cand):
     
     return ABSTAIN
 
+#===================================================================================
+# Sentence Dependency Pattern-Based Negative Labelers
+
 @labeling_function()
 def list_pattern(cand):
     """
@@ -260,23 +352,47 @@ def list_pattern(cand):
         return OTHER
 
     return ABSTAIN
+
+@labeling_function()
+def nsubj_pattern(cand):
+    second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    if first.dep_ == 'nsubj' and second.dep_ == 'nsubj':
+        return OTHER
+    return ABSTAIN
     
 #===================================================================================
 # Term-Based Labelers
 
 @labeling_function()
-def term_pos(cand):
+def term_part_of_speech(cand):
     """
-    Entities in our taxonomy must be nouns/noun phrases. Check the part of speech of each of the
+    Entities must be nouns/noun phrases. Check the part of speech of each of the
     terms to filter out verbs and other terms that aren't valid.
     """
-    # should adjective be allowed?
-    valid_pos = ['NOUN', 'PROPN']
+    invalid_pos = ['JJ', 'JJR', 'JJS', 'MD', 'RB', 'RBR', 'RBS', 'RP', 'VB', 'VBD', 'VBG', 
+                   'VBN', 'VBZ', 'VBP', 'WRB']
     
-    term1_pos = [tok.pos_ for tok in cand.doc[cand.term1_location[0]:cand.term1_location[1]]]
-    term2_pos = [tok.pos_ for tok in cand.doc[cand.term1_location[0]:cand.term1_location[1]]]
+    term1_pos = [tok.tag_ for tok in cand.doc[cand.term1_location[0]:cand.term1_location[1]]]
+    term2_pos = [tok.tag_ for tok in cand.doc[cand.term2_location[0]:cand.term2_location[1]]]
     
-    if term1_pos[-1] not in valid_pos or term2_pos[-1] not in valid_pos:
+    if term1_pos[-1] in invalid_pos or term2_pos[-1] in invalid_pos:
+        return OTHER
+    else:
+        return ABSTAIN
+    
+@labeling_function()
+def term_dep_role(cand):
+    """
+    Entities must be the root of noun phrases, not compound nouns or other noun
+    modifiers (i.e. don't match 'cell' if 'cell membrane' not in term list)
+    """
+    invalid_dep = ['npadvmod', 'compound', 'poss', 'amod']
+    
+    term1_dep = [tok.dep_ for tok in cand.doc[cand.term1_location[0]:cand.term1_location[1]]]
+    term2_dep = [tok.dep_ for tok in cand.doc[cand.term2_location[0]:cand.term2_location[1]]]
+    
+    if term1_dep[-1] in invalid_dep or term2_dep[-1] in invalid_dep:
         return OTHER
     else:
         return ABSTAIN
@@ -341,7 +457,7 @@ with open("../data/kb_bio101_terms.pkl", 'rb') as fid:
     terms = pickle.load(fid)
 
 @labeling_function(resources=dict(relations=relations, terms=terms))
-def kb_bio101_ds_pos(cand, terms, relations):
+def kb_bio101_ds_taxonomy(cand, terms, relations):
     """
     Looks up term pair KB Bio101 knowledge base manually built on the first 10 chapters of Life
     Biology. If it finds a subclass relation there it provides a HYPONYM/HYPERNYM label depending
@@ -380,7 +496,7 @@ def _kb_neg(cand, terms, relations):
     return ABSTAIN
 
 @labeling_function(resources=dict(relations=relations, terms=terms))
-def kb_bio101_ds_neg(cand, terms, relations):
+def kb_bio101_ds_negative(cand, terms, relations):
     """
     Looks up term pair KB Bio101 knowledge base manually built on the first 10 chapters of Life
     Biology. If it finds a subclass relation there it provides a HYPONYM/HYPERNYM label depending
@@ -406,10 +522,13 @@ label_fns = [
     especially_pattern,
     appo_pattern, 
     other_pattern, 
-    knownas_pattern, 
-    term_pos,
+    are_pattern,
+    whichis_pattern,
+    term_part_of_speech,
+    term_dep_role,
     term_modifier,
     term_subset,
-    kb_bio101_ds_pos,
-    kb_bio101_ds_neg
+    kb_bio101_ds_taxonomy,
+    kb_bio101_ds_negative,
+    nsubj_pattern
 ]
