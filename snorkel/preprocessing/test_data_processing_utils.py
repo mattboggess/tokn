@@ -150,6 +150,28 @@ tag_terms_test_data = [
             }
         },
         'bioes_tags': ['S', 'O', 'O', 'O', 'O', 'S', 'O'] 
+    },
+    {
+        'test_id': 'dep_filter2',
+        'terms': ['biological macromolecule', 'nitrogen'],
+        'text': "This exoskeleton is made of the biological macromolecule chitin , which is a polysaccharide-containing nitrogen.",
+        'found_terms': {
+            'nitrogen': {
+                'text': ['nitrogen'], 
+                'tokens': [['nitrogen']],
+                'pos': [['NN']], 
+                'dep': [['attr']], 
+                'indices': [(16, 17)]
+            }
+        },
+        'bioes_tags': ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'S', 'O'] 
+    },
+    {
+        'test_id': 'pos_filter2',
+        'terms': ['regulate'],
+        'text': "Metabolic pathways are regulated systems Figure 9.13 Relationships among the Major Metabolic Pathways of the Cell",
+        'found_terms' : {},
+        'bioes_tags': ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O']
     }
     
 ]
@@ -192,12 +214,18 @@ class TestDataProcessingUtils(unittest.TestCase):
         self._test_tag_terms_generic('heuristic_match')
         
     def test_dep_filter(self):
-        self._test_tag_terms_generic('dep_filter', invalid_dep=['npadvmod', 'compound'])
+        self._test_tag_terms_generic('dep_filter', invalid_dep=['npadvmod', 'compound', 'admod'])
+        
+    def test_dep_filter2(self):
+        self._test_tag_terms_generic('dep_filter2', invalid_dep=['npadvmod', 'compound', 'admod'])
         
     #def test_uncommon_plural_match(self):
     #    self._test_tag_terms_generic('uncommon_plural')
         
     def test_pos_filter(self):
+        self._test_tag_terms_generic('pos_filter', invalid_dep=['poss'], invalid_pos=['VBZ'])
+        
+    def test_pos_filter2(self):
         self._test_tag_terms_generic('pos_filter', invalid_dep=['poss'], invalid_pos=['VBZ'])
 
         

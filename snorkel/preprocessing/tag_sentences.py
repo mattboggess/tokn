@@ -131,7 +131,7 @@ if __name__ == '__main__':
         
         # Spacy process and tag sentence with terms
         spacy_sent = nlp(sent)
-        result = tag_terms(spacy_sent, terms, nlp)
+        result = tag_terms(spacy_sent, terms, nlp, invalid_pos=invalid_pos, invalid_dep=invalid_dep)
         found_terms_info = result['found_terms']
         tokenized_sent = result['tokenized_text']
         

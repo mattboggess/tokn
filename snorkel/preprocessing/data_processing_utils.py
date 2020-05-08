@@ -40,6 +40,10 @@ def match_uncommon_plurals(text_span, term_span):
 
 def tag_terms(text, terms, nlp=None, invalid_pos=[], invalid_dep=[]):
     """ Identifies and tags any terms in a given input text.
+    
+    TODO:
+      - Handle pronoun lemmas more properly
+      - Handle noun chunk partials more fully (expand if subset??)
 
     Searches through the input text and finds all terms (single words and phrases) that are present
     in the list of provided terms. Returns a list of found terms with indices and POS/Dependency 
@@ -50,43 +54,65 @@ def tag_terms(text, terms, nlp=None, invalid_pos=[], invalid_dep=[]):
     preprocess by Spacy before inputting to prevent repeated work if calling multiple times).
 
     Gives precedence to longer terms first so that terms that are part of a larger term phrase
-    are ignored (i.e. match 'cell wall', not 'cell' within the phrase cell wall). 
+    are ignored (i.e. match 'eukaryotic cell', not 'cell' within the phrase eukaryotic cell). 
 
     Parameters
     ----------
     text: str | spacy.tokens.doc.Doc
         Input text that will be/are preprocessed using spacy and searched for terms
     terms: list of str | list of spacy.tokens.doc.Doc
-        List of input terms that will be/are preprocessed using spacy. 
+        List of input terms to tag that will be/are preprocessed using spacy. 
     nlp: 
         Spacy nlp pipeline object that will tokenize, POS tag, lemmatize, etc. 
+    invalid_pos: list of str
+        List of Spacy part of speech tags that should be ignored when tagging. 
+    invalid_dep: list of str
+        List of Spacy dependency parse tags that should be ignored when tagging. Useful for 
+        restricting tagged terms to the root of a noun phrase for example.
 
     Returns
     -------
     dict with four entries: 
         tokenized_text: tokenized text as list of tokens
         tags: list of BIOES tags for the tokenized text
-        annotated_text: original text with <entity> and <event> tags put around found terms 
-        found_terms: list of found terms each with list of indices where matches were found,
-        basic part of speech information, and entity/event tag
+        annotated_text: original text with <term> tags put around found terms in the input text
+        found_terms: list of found terms as dictionaries mapping lemmatized form of term to 
+        list of indices where matches were found and other information such as part of speech, 
+        dependency parse role, etc.
 
     Examples
     --------
     >>> tag_text('A biologist will tell you that a cell contains a cell wall.', 
                  ['cell', 'cell wall', 'biologist'])
-    
-    {'tokenized_text': ['A', 'biologist', 'will', 'tell', 'you', 'that', 'a', 'cell', 'contains', 
-                        'a', 'cell', 'wall', '.'], 
-     'tags': ['O', 'S', 'O', 'O', 'O', 'O', 'O', 'S', 'O', 'O', 'B', 'E', 'O'], 
-     'annotated_text': 'A <entity>biologist</entity> will tell you that a <entity>cell</entity> 
-                        contains a <entity>cell wall</entity>.', 
-     'found_terms': {
-         'cell wall': {'text': ['cell wall'], 'indices': [(10, 12)], 'pos': ['NN NN'], 
-                       'type': ['entity']}, 
-         'biologist': {'text': ['biologist'], 'indices': [(1, 2)], 'pos': ['NN'], 
-                       'type': ['entity']}, 
-         'cell': {'text': ['cell'], 'indices': [(7, 8)], 'pos': ['NN'], 'type': ['entity']}}}
-    """
+                 
+    {
+        'annotated_text': "A <term>biologist</term> will tell you that a <term>cell</term> contains a <term>cell wall</term>.,
+        'tokenized_text': ['A', 'biologist', 'will', 'tell', 'you', 'that', 'a', 'cell', 'contains', 'a', 'cell', 'wall', '.'],
+        'found_terms': {
+            'biologist': {
+                'text': ['biologist'], 
+                'tokens': [['biologist']], 
+                'pos': [['NN']], 
+                'dep': [['nsubj']], 
+                'indices': [(1, 2)]
+            },
+            'cell': {
+                'text': ['cell'], 
+                'tokens': [['cell']],
+                'pos': [['NN']], 
+                'dep': [['nsubj']], 
+                'indices': [(7, 8)]
+            },
+            'cell wall': {
+                'text': ['cell wall'], 
+                'tokens': [['cell', 'wall']],
+                'pos': [['NN', 'NN']], 
+                'dep': [['compound', 'dobj']], 
+                'indices': [(10, 12)]}
+        },
+        'bioes_tags': ['O', 'S', 'O', 'O', 'O', 'O', 'O', 'S', 'O', 'O', 'B', 'E', 'O']
+    }
+   """
     from spacy.lang.en.stop_words import STOP_WORDS
     spacy.tokens.token.Token.set_extension('workaround', default='', force=True)
     
@@ -122,6 +148,11 @@ def tag_terms(text, terms, nlp=None, invalid_pos=[], invalid_dep=[]):
         
         # skip terms with stop word equivalent representation
         if term_text in STOP_WORDS or term_lemma in STOP_WORDS:
+            continue
+            
+        # skip words that get lemmatized to pronoun and weren't caught by stop words check
+        # TODO: Handle this more properly
+        if term_lemma == '-pron-':
             continue
         
         # check all subsequences of the same length as the term for a match

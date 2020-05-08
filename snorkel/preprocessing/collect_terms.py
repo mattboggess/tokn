@@ -46,7 +46,8 @@ terms_vocab_output_file = f"{preprocessed_data_dir}/biology_terms_spacy_vocab"
 
 # text representations of concepts that are too general and thus problematic for text matching
 exclude_terms = ['object', 'aggregate', 'group', 'thing', 'region', 'center', 'response',
-                 'series', 'unit', 'result', 'normal', 'divide', 'whole', 'someone', 'somebody']
+                 'series', 'unit', 'result', 'normal', 'divide', 'whole', 'someone', 'somebody',
+                 'feature', 'class']
 
 #===================================================================================
 
