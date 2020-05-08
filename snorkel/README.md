@@ -22,4 +22,20 @@ Last step in prepping the data for modelling. This notebook takes in the labelle
 
 # models
 
-Coming soon.
+The code in this folder is adapted from an open source [pytorch deep learning template](https://github.com/victoresque/pytorch-template). Refer to the documentation provided at the link for more detailed information on the structure of this repo.
+
+- train.py & config.json: This is the main training script to train a model. It gets invoked with the config file that holds a bunch of parameter settings to use while training (such as learning rate, whether to balance loss function, etc.). One needs to make sure the correct splits are passed to the training data loader and the validation data loader and the correct config parameters are set (a copy of the config file gets saved to the model folder). Then you can train with the following:
+
+	python train.py -c config.json
+
+- test.py: This is the script for evaluating a model on any given split. It requires a saved model and then will produce predictions for the entire split in the form of a pickled data frame along with term level error classifications by relation (false positives, false negatives, etc.). I t also computes precision, recall, and f1 for each of these. These outputs are saved in the model folder (all models are saved in the saved folder). Example:
+
+	python test.py -r saved/models/BertEM/0508_132777/model_best.pth -s dev
+
+- model: This folder contains the main files that have been adapted from the template:
+
+  - data_loaders.py: This holds the pytorch data loader that is responsible for converting the Pandas DataFrame input into batched Bert-compatible representations.
+  - model.py: This holds the code for the Pytorch models. Currently only model is the BertEM model.
+  - metric.py: This holds functions for computing metrics such as f1, etc.
+  - loss.py: This holds loss functions for the models
+  - trainer.py: This holds the main class that does the training. The train_epoch and valid_epoch methods are the key places that have been edited.
