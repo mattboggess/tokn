@@ -1,11 +1,13 @@
 import argparse
 import torch
 import numpy as np
+import pandas as pd
 import json
 from tqdm import tqdm
 import model.data_loaders as module_data
 import model.loss as module_loss
 import model.metric as module_metric
+from model.metric import *
 import model.model as module_arch
 from parse_config import ConfigParser
 
@@ -39,11 +41,16 @@ def main(config, split, out_dir, model_version):
 
     with torch.no_grad():
         
-        epoch_target = []
-        epoch_scores = []
-        epoch_pred = []
-        epoch_word_pairs = []
-        epoch_loss = [] 
+        epoch_data = {
+            'text': [],
+            'term_pair': [],
+            'label': [],
+            'relation': [],
+            'prediction': [],
+            'score': []
+        }
+        epoch_loss = []
+        epoch_score = []
         
         for i, batch_data in enumerate(tqdm(data_loader)):
             
@@ -56,27 +63,46 @@ def main(config, split, out_dir, model_version):
                            data_loader.dataset.class_weights.to(device))
 
             # accumulate epoch quantities 
-            epoch_target += [t.item() for t in batch_data['label']]
-            epoch_scores += [output.cpu().detach().numpy()]
-            epoch_pred += [p.item() for p in pred]
-            epoch_word_pairs += batch_data['term_pair']
+            tmp = output.cpu().detach().numpy()
+            epoch_score += [tmp]
+            epoch_data['label'] += [t.item() for t in batch_data['label']]
+            epoch_data['score'] += [tmp[i, :].tolist() for i in range(tmp.shape[0])]
+            epoch_data['prediction'] += [p.item() for p in pred]
+            epoch_data['term_pair'] += batch_data['term_pair']
+            epoch_data['text'] += batch_data['text']
+            epoch_data['relation'] += batch_data['relation']
             epoch_loss += [loss.item()]
 
     log = {'loss': np.sum(epoch_loss) / len(data_loader)}
     log.update({
-        m.__name__: m(epoch_target, epoch_scores) for m in metric_fns
+        m.__name__: m(epoch_data['label'], epoch_score) for m in metric_fns
     })
     logger.info(log)
     
-    filename = f"{out_dir}/{split}-{model_version}-metrics.json"
+    # save out metrics across every single training instance
+    filename = f"{out_dir}/{split}-instance_level-metrics.json"
     with open(filename, 'w') as f:
         json.dump(log, f, indent=4)
         
-    filename = f"{out_dir}/{split}-{model_version}-predictions.txt"
+    # save out predictions for every instance 
+    predictions = pd.DataFrame(epoch_data) 
+    filename = f"{out_dir}/{split}-{model_version}-predictions.pkl"
+    predictions.to_pickle(filename)
+
+
+    # save out term pair level classifications 
+    term_pair_class = get_term_classifications(predictions)
+    filename = f"{out_dir}/{split}-term_pair-classifications.json"
     with open(filename, 'w') as f:
-        f.write('\n'.join([str(p) for p in epoch_pred]))
+        json.dump(term_pair_class, f, indent=4)
         
+    # save out term pair level metrics 
+    term_metrics = compute_term_metrics(term_pair_class)
+    filename = f"{out_dir}/{split}-term_pair-metrics.json"
+    with open(filename, 'w') as f:
+        json.dump(term_metrics, f, indent=4)
     print(log)
+    print(term_metrics)
 
 
 if __name__ == '__main__':
