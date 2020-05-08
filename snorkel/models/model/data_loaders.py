@@ -12,7 +12,7 @@ class RelationDataset(Dataset):
        Each data point is a sentence with two terms tagged and a relation type holding 
        between them."""
 
-    def __init__(self, data_dir, split, label_column, balance_loss=False, max_sent_length=256):
+    def __init__(self, data_dir, split, label_type, balance_loss=False, max_sent_length=256):
         """
         Parameters
         ----------
@@ -20,36 +20,34 @@ class RelationDataset(Dataset):
             Path to where the relations data is stored 
         split: str, ['train', 'dev', 'test', 'debug'] 
             The data split to load. debug is a small debugging dataset. 
-        label_column: str
-            Column to use for y-labels
+        label_type: str, 'hard_label' or 'soft_label'
+            Type of label to use. Hard means each label is a particular class, soft means each label is a probability dist across classes 
         balance_loss: bool
             Indicator whether the loss function should be weighted to account for class imbalance
         max_sent_length: int 
             Maximum number of tokens for each sentence. Longer sentences will be truncated. Shorter
             sentences will be padded.
         """
+        # read in data as pandas dataframe
         input_file = f"{data_dir}/{split}.pkl"
         with open(input_file, 'rb') as fid:
             self.data = pickle.load(fid)
                                   
-        if label_column == 'label_model_labels':
-            self.relations = np.arange(len(self.data.label_model_labels.iloc[0]))
-        else:
-            self.relations = sorted(np.unique(self.data.majority_vote))
+        # handle labels 
+        self.relation_classes = ['OTHER', 'HYPONYM', 'HYPERNYM'] # TODO: figure out more robust way to get this info
+        self.relations = [0, 1, 2] # TODO: figure out more robust way to get this info
+        self.label_column = label_type 
         self.num_classes = len(self.relations)
-        relation_list = list(self.data.majority_vote)
         
+        # compute class weights to balance loss
         if balance_loss:
+            relation_list = list(self.data.hard_label)
             self.class_weights = torch.Tensor(
                 compute_class_weight('balanced', self.relations, relation_list))
         else:
             self.class_weights = torch.Tensor([1.0] * len(self.relations))
                 
         self.max_sent_length = max_sent_length
-        if split == 'dev':
-            self.label_column = 'gold_label'
-        else:
-            self.label_column = label_column
         
         # set up BERT representations
         self.term1_start_token = '[E1start]'
@@ -76,17 +74,21 @@ class RelationDataset(Dataset):
           - label: y-label for this data point (relation type)
         """
         sample = self.data.iloc[idx, :]
+
+        # target goes to loss, label goes to metrics
         target = sample[self.label_column]
-     
-        term_pair = sample.term_pair
-        if type(target) != list:
+        if self.label_column == 'hard_label':
             target = [target]
             label = target
         else:
-            label = [np.argmax(target)]
+            label = [sample['hard_label']]
+     
+        input_text = sample.text
+        term_pair = sample.term_pair
+        relation = self.relation_classes[label[0]]
         
         # add term start and end tokens 
-        tokens = sample.tokens
+        tokens = [tok for tok in sample.tokens]
         term1_start_idx, term1_end_idx = sample.term1_location
         term2_start_idx, term2_end_idx = sample.term2_location
         tokens[term1_start_idx] = f"{self.term1_start_token} {tokens[term1_start_idx]}"
@@ -94,7 +96,6 @@ class RelationDataset(Dataset):
         tokens[term2_start_idx] = f"{self.term2_start_token} {tokens[term2_start_idx]}"
         tokens[term2_end_idx - 1] = f"{tokens[term2_end_idx - 1]} {self.term2_end_token}"
         text = ' '.join(tokens)
-        
         
         # convert input text to BERT token ids
         bert_ids = self.tokenizer.tokenize(text)
@@ -108,7 +109,8 @@ class RelationDataset(Dataset):
         bert_input_ids = bert_ids['input_ids']
         bert_attention_mask = bert_ids['attention_mask']
         
-        # create term start location masks
+        # create term start location masks (if a term is cut off by max sentence truncation
+        # simply 0 out the attention mask so that example is ignored)
         term1_id = self.tokenizer.convert_tokens_to_ids(self.term1_start_token)
         term2_id = self.tokenizer.convert_tokens_to_ids(self.term2_start_token)
         if term1_id in bert_input_ids:
@@ -116,18 +118,21 @@ class RelationDataset(Dataset):
         else:
             print('Missing Term 1')
             term1_mask = [0] * len(bert_input_ids)
+            bert_attention_mask *= 0
         if term2_id in bert_input_ids:
             term2_mask = [1 if tok == term2_id else 0 for tok in bert_input_ids] 
         else:
             print('Missing Term 2')
             term2_mask = [0] * len(bert_input_ids)
+            bert_attention_mask *= 0
         
         output = {
             'input_ids': torch.LongTensor(bert_input_ids),
             'attention_mask': torch.LongTensor(bert_attention_mask),
             'bert_representation': bert_representation,
-            'text': text,
+            'text': input_text,
             'term_pair': term_pair,
+            'relation': relation, 
             'term1_mask': torch.FloatTensor(term1_mask),
             'term2_mask': torch.FloatTensor(term2_mask),
             'label': torch.LongTensor(label),
@@ -140,7 +145,7 @@ class RelationDataLoader(DataLoader):
     """
     Data loader for Relations Dataset for weakly supervised relation extraction. 
     """
-    def __init__(self, data_dir, split, label_column, batch_size, shuffle=True,  
+    def __init__(self, data_dir, split, label_type, batch_size, shuffle=True,  
                  num_workers=1,  max_sent_length=256, balance_loss=False):
         """
         Parameters
@@ -149,8 +154,8 @@ class RelationDataLoader(DataLoader):
             Path to where the relations data is stored 
         split: str, ['train', 'dev', 'test', 'debug'] 
             The data split to load. debug is a small debugging dataset. 
-        label_column: str
-            Column to use for y-labels
+        label_type: str, 'hard_label' or 'soft_label'
+            Type of label to use. Hard means each label is a particular class, soft means each label is a probability dist across classes 
         batch_size: int
             Number of word-pairs in each batch (TODO: Support > 1 batch size)
         shuffle: bool
@@ -167,7 +172,7 @@ class RelationDataLoader(DataLoader):
         self.dataset = RelationDataset(
             self.data_dir, 
             split, 
-            label_column,
+            label_type,
             balance_loss=balance_loss,
             max_sent_length=max_sent_length
         )
