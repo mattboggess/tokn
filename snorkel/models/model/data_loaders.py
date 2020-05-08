@@ -76,7 +76,7 @@ class RelationDataset(Dataset):
           - label: y-label for this data point (relation type)
         """
         sample = self.data.iloc[idx, :]
-        target = list(sample[self.label_column])
+        target = sample[self.label_column]
      
         term_pair = sample.term_pair
         if type(target) != list:
