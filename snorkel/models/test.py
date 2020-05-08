@@ -1,5 +1,6 @@
 import argparse
 import torch
+import torch.nn.functional as F
 import numpy as np
 import pandas as pd
 import json
@@ -63,7 +64,7 @@ def main(config, split, out_dir, model_version):
                            data_loader.dataset.class_weights.to(device))
 
             # accumulate epoch quantities 
-            tmp = output.cpu().detach().numpy()
+            tmp = F.softmax(output, dim=-1).cpu().detach().numpy()
             epoch_score += [tmp]
             epoch_data['label'] += [t.item() for t in batch_data['label']]
             epoch_data['score'] += [tmp[i, :].tolist() for i in range(tmp.shape[0])]
