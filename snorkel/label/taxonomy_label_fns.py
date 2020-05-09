@@ -1,15 +1,9 @@
-from snorkel.labeling.lf.nlp import nlp_labeling_function
 from snorkel.labeling import labeling_function
+from label_constants import *
 import pickle
 
-# Relation Classes
-HYPONYM = 1 # subclass-of
-HYPERNYM = 2 # superclass-of
-OTHER = 0
-ABSTAIN = -1
-
 #===================================================================================
-# Sentence Dependency Pattern-Based Positive Labelers
+# Sentence Dependency Pattern-Based Taxonomy Labelers
 
 # Hearst 1992 Patterns
 
@@ -63,7 +57,7 @@ def including_pattern(cand):
             break
             
     second_valid = second.text == 'including'
-    if second_valid:
+    if second_valid and (cand.term1_location[1] - 1) < (len(cand.doc) - 3):
         first_valid = first.nbor(2) == second 
     else:
         first_valid = False
@@ -129,6 +123,7 @@ def other_pattern(cand):
             break
             
     if start.text == end.text and \
+       cand.term2_location[0] > 2 and \
        start_first.nbor(-2).text in ['and', 'or'] and \
        start_first.nbor(-1).text == 'other':
         if cand.term1_location[0] < cand.term2_location[0]:
@@ -331,72 +326,13 @@ def knownas_pattern(cand):
     return ABSTAIN
 
 #===================================================================================
-# Sentence Dependency Pattern-Based Negative Labelers
+# Sentence Dependency Pattern-Based Synonym Labelers
 
-@labeling_function()
-def list_pattern(cand):
-    """
-    FIX THIS!
-    """
-    start = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
-    end = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
-    
-    # follow the chain of conjunctions back to the as
-    while start != end:
-        if start.dep_ == 'conj':
-            start = start.head
-        else:
-            break
-    
-    if start.text == end.text:
-        return OTHER
 
-    return ABSTAIN
 
-@labeling_function()
-def nsubj_pattern(cand):
-    second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
-    first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
-    if first.dep_ == 'nsubj' and second.dep_ == 'nsubj':
-        return OTHER
-    return ABSTAIN
-    
 #===================================================================================
-# Term-Based Labelers
+# Term-Based Heuristic Labelers
 
-@labeling_function()
-def term_part_of_speech(cand):
-    """
-    Entities must be nouns/noun phrases. Check the part of speech of each of the
-    terms to filter out verbs and other terms that aren't valid.
-    """
-    invalid_pos = ['JJ', 'JJR', 'JJS', 'MD', 'RB', 'RBR', 'RBS', 'RP', 'VB', 'VBD', 'VBG', 
-                   'VBN', 'VBZ', 'VBP', 'WRB']
-    
-    term1_pos = [tok.tag_ for tok in cand.doc[cand.term1_location[0]:cand.term1_location[1]]]
-    term2_pos = [tok.tag_ for tok in cand.doc[cand.term2_location[0]:cand.term2_location[1]]]
-    
-    if term1_pos[-1] in invalid_pos or term2_pos[-1] in invalid_pos:
-        return OTHER
-    else:
-        return ABSTAIN
-    
-@labeling_function()
-def term_dep_role(cand):
-    """
-    Entities must be the root of noun phrases, not compound nouns or other noun
-    modifiers (i.e. don't match 'cell' if 'cell membrane' not in term list)
-    """
-    invalid_dep = ['npadvmod', 'compound', 'poss', 'amod']
-    
-    term1_dep = [tok.dep_ for tok in cand.doc[cand.term1_location[0]:cand.term1_location[1]]]
-    term2_dep = [tok.dep_ for tok in cand.doc[cand.term2_location[0]:cand.term2_location[1]]]
-    
-    if term1_dep[-1] in invalid_dep or term2_dep[-1] in invalid_dep:
-        return OTHER
-    else:
-        return ABSTAIN
-    
 @labeling_function()
 def term_modifier(cand):
     """
@@ -447,88 +383,18 @@ def term_subset(cand):
         return HYPONYM
     else:
         return ABSTAIN
-
-#===================================================================================
-# Distant Supervision Labelers
-
-with open("../data/kb_bio101_relations_db.pkl", 'rb') as fid:
-    relations = pickle.load(fid)
-with open("../data/kb_bio101_terms.pkl", 'rb') as fid:
-    terms = pickle.load(fid)
-
-@labeling_function(resources=dict(relations=relations, terms=terms))
-def kb_bio101_ds_taxonomy(cand, terms, relations):
-    """
-    Looks up term pair KB Bio101 knowledge base manually built on the first 10 chapters of Life
-    Biology. If it finds a subclass relation there it provides a HYPONYM/HYPERNYM label depending
-    on term pair ordering. If it finds both terms in the KB, but there is subclass relation it is
-    give a non-taxonomic label.
-    """
-    term1_lemma = ' '.join([tok.lemma_ 
-                            for tok in cand.doc[cand.term1_location[0]:cand.term1_location[1]]])
-    term1_lemma = term1_lemma.replace(' - ', ' ')
-    term2_lemma = ' '.join([tok.lemma_ 
-                            for tok in cand.doc[cand.term2_location[0]:cand.term2_location[1]]])
-    term2_lemma = term2_lemma.replace(' - ', ' ')
-    term_pair = (term1_lemma, term2_lemma)
     
-    if term_pair in relations['subclass-of']:
-        return HYPONYM
-    elif (term_pair[1], term_pair[0]) in relations['subclass-of']:
-        return HYPERNYM
+@labeling_function()
+def acronym(cand):
+    """
+    Checks if one term is likely an acronym (and thus synonym) of the other term 
+    """
+    term1_acronym = cand.term1.upper()
+    term2_acronym = cand.term2.upper()
+    term1_word_starts = ''.join([x[0] for x in cand.term1.split(' ')])
+    term2_word_starts = ''.join([x[0] for x in cand.term2.split(' ')])
+    
+    if term2_word_starts == term1_acronym or term1_word_starts == term2_acronym:
+        return SYNONYM 
     else:
         return ABSTAIN
-    
-def _kb_neg(cand, terms, relations):
-    
-    term1_lemma = ' '.join([tok.lemma_ 
-                            for tok in cand.doc[cand.term1_location[0]:cand.term1_location[1]]])
-    term1_lemma = term1_lemma.replace(' - ', ' ')
-    term2_lemma = ' '.join([tok.lemma_ 
-                            for tok in cand.doc[cand.term2_location[0]:cand.term2_location[1]]])
-    term2_lemma = term2_lemma.replace(' - ', ' ')
-    term_pair = (term1_lemma, term2_lemma)
-    
-    if term_pair not in relations['subclass-of'] and \
-       (term_pair[1], term_pair[0]) not in relations['subclass-of']:
-        if term_pair[0] in terms and term_pair[1] in terms:
-            return OTHER
-    return ABSTAIN
-
-@labeling_function(resources=dict(relations=relations, terms=terms))
-def kb_bio101_ds_negative(cand, terms, relations):
-    """
-    Looks up term pair KB Bio101 knowledge base manually built on the first 10 chapters of Life
-    Biology. If it finds a subclass relation there it provides a HYPONYM/HYPERNYM label depending
-    on term pair ordering. If it finds both terms in the KB, but there is subclass relation it is
-    give a non-taxonomic label.
-    """
-    return _kb_neg(cand, terms, relations)
-
-@labeling_function(resources=dict(relations=relations, terms=terms))
-def kb_bio101_ds_neg2(cand, terms, relations):
-    return _kb_neg(cand, terms, relations)
-
-@labeling_function(resources=dict(relations=relations, terms=terms))
-def kb_bio101_ds_neg3(cand, terms, relations):
-    return _kb_neg(cand, terms, relations)
-    
-# labeling functions to apply
-label_fns = [
-    isa_pattern, 
-    suchas_pattern, 
-    including_pattern, 
-    called_pattern, 
-    especially_pattern,
-    appo_pattern, 
-    other_pattern, 
-    are_pattern,
-    whichis_pattern,
-    term_part_of_speech,
-    term_dep_role,
-    term_modifier,
-    term_subset,
-    kb_bio101_ds_taxonomy,
-    kb_bio101_ds_negative,
-    nsubj_pattern
-]

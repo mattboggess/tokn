@@ -18,7 +18,10 @@
 #===================================================================================
 # Libraries
 
+from label_constants import *
 from taxonomy_label_fns import *
+from kb_bio101_label_fns import *
+from other_label_fns import *
 from snorkel.labeling import PandasLFApplier, LFAnalysis
 from snorkel.labeling.model.baselines import MajorityLabelVoter
 from snorkel.labeling.model.label_model import LabelModel
@@ -37,11 +40,31 @@ output_data_dir = "../data/label"
 if not os.path.exists(output_data_dir):
     os.makedirs(output_data_dir)
 
-# fix to extract name only
+label_fns = [
+    isa_pattern, 
+    suchas_pattern, 
+    including_pattern, 
+    called_pattern, 
+    especially_pattern,
+    appo_pattern, 
+    other_pattern, 
+    are_pattern,
+    whichis_pattern,
+    term_part_of_speech,
+    term_dep_role,
+    term_modifier,
+    term_subset,
+    kb_bio101_ds_taxonomy,
+    kb_bio101_ds_synonym,
+    kb_bio101_ds_negative,
+    nsubj_pattern
+]
+
+# fix to extract name only in str form for each label function
 label_fn_names = [re.match('.*Function (.+), .*', str(lf)).group(1) for lf in  label_fns]
 
 # number of different classes
-class_card = 3
+class_card = len(label_classes)
 
 splits = ['test', 'dev', 'train']
 
