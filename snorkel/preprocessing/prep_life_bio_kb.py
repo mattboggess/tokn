@@ -118,19 +118,29 @@ if __name__ == '__main__':
     # Load in KB lexicon and terms 
     with open(lexicon_file, 'r') as f:
         lexicon = json.load(f)
+    relations_db = {}
     
     terms = DocBin().from_bytes(open(kb_terms_file, 'rb').read())
     terms = list(terms.get_docs(nlp.vocab))
     terms = set([(' '.join([t.lemma_ for t in term])).replace(' - ', ' ') for term in terms])
+    
+    # special handling for pulling out synonyms from the lexicon file
+    print("Extracting Word-Pairs for Synonyms")
+    relations_db['synonym'] = set()
+    for concept in lexicon:
+        lemmas = set([t.replace(' - ', ' ') for t in lexicon[concept]['lemma_representations']])
+        for pair in itertools.product(lemmas, lemmas):
+            if pair[0] != pair[1]:
+                relations_db['synonym'].add(pair)
         
     # extract all word-pairs for relations
-    print("Extracting Word-Pairs for Relations")
-    relations_db = {}
+    print("Extracting Word-Pairs for Other Relations")
     for relation_type in relation_types:
         print(f"Parsing {relation_type} relations")
         with open(f"{relation_data_dir}/{relation_type}_relations.txt") as f:
             relations = f.readlines()
         relations_db = parse_relations(relations, relation_type, lexicon, relations_db)
+    
     
     #print("Collecting Remaining Word-Pairs for No Relation")
     #for pair in tqdm(list(itertools.product(terms, terms))):
