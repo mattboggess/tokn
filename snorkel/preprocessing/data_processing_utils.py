@@ -38,7 +38,27 @@ def match_uncommon_plurals(text_span, term_span):
     
     return s_plural_match or es_plural_match
 
-def tag_terms(text, terms, nlp=None, invalid_pos=[], invalid_dep=[]):
+def expand_noun_phrase(text, start_ix, match_length):
+    
+    np_dep = ['amod', 'npadvmod', 'compound', 'poss']
+    end_ix = start_ix + match_length - 1
+    
+    start_ix -= 1
+    while start_ix >= 0 and text[start_ix].dep_ in np_dep and text[start_ix].pos_ not in ['DET', 'ADV', 'ADJ', 'PRON'] and not text[start_ix].is_stop:
+        start_ix -= 1
+    start_ix += 1
+    
+    while end_ix < len(text) and text[end_ix].dep_ in np_dep:
+        end_ix += 1
+    if end_ix == len(text):
+        end_ix -= 1
+    
+    match_length = end_ix - start_ix + 1
+    term_lemma = ' '.join([tok.lemma_ for tok in text[start_ix:start_ix + match_length]]).replace('-', ' ').strip()
+    
+    return (term_lemma, start_ix, match_length)
+
+def tag_terms(text, terms, nlp=None, invalid_pos=[], invalid_dep=[], expand_np=False):
     """ Identifies and tags any terms in a given input text.
     
     TODO:
@@ -180,6 +200,9 @@ def tag_terms(text, terms, nlp=None, invalid_pos=[], invalid_dep=[]):
             
             # only tag term if not part of larger term
             if valid_match and tags[ix:ix + match_length] == ['O'] * match_length:
+                
+                if expand_np:
+                    term_lemma, ix, match_length = expand_noun_phrase(text, ix, match_length)
                     
                 # collect term information
                 term_text = ''.join([token.text_with_ws for token in text[ix:ix + match_length]]).strip()

@@ -172,7 +172,59 @@ tag_terms_test_data = [
         'text': "Metabolic pathways are regulated systems Figure 9.13 Relationships among the Major Metabolic Pathways of the Cell",
         'found_terms' : {},
         'bioes_tags': ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O']
+    },
+    {
+        'test_id': 'expand_np1',
+        'terms': ['protein', 'molecule'],
+        'text': "The best understood negative regulatory molecules are retinoblastoma protein (Rb), p53, and p21.",
+        'found_terms': {
+            'retinoblastoma protein': {
+                'text': ['retinoblastoma protein'], 
+                'tokens': [['retinoblastoma', 'protein']],
+                'pos': [['NN', 'NN']], 
+                'dep': [['compound', 'attr']], 
+                'indices': [(7, 9)]
+            },
+            'negative regulatory molecule': {
+                'text': ['negative regulatory molecules'], 
+                'tokens': [['negative', 'regulatory', 'molecules']],
+                'pos': [['JJ', 'JJ', 'NNS']], 
+                'dep': [['amod', 'amod', 'nsubj']], 
+                'indices': [(3, 6)]
+            }
+        },
+        'bioes_tags': ['O', 'O', 'O', 'B', 'I', 'E', 'O', 'B', 'E', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'] 
+    },
+    {
+        'test_id': 'expand_np2',
+        'terms': ['spindle'],
+        'text': "The spindle apparatus (also called the mitotic spindle or simply the spindle) is awesome.",
+        'found_terms': {
+            'spindle apparatus': {
+                'text': ['spindle apparatus'], 
+                'tokens': [['spindle', 'apparatus']],
+                'pos': [['NN', 'NN']], 
+                'dep': [['amod', 'nsubj']], 
+                'indices': [(1, 3)]
+            },
+            'mitotic spindle': {
+                'text': ['mitotic spindle'], 
+                'tokens': [['mitotic', 'spindle']],
+                'pos': [['JJ', 'NN']], 
+                'dep': [['amod', 'oprd']], 
+                'indices': [(7, 9)]
+            },
+            'spindle': {
+                'text': ['spindle'], 
+                'tokens': [['spindle']],
+                'pos': [['NN']], 
+                'dep': [['conj']], 
+                'indices': [(12, 13)]
+            }
+        },
+        'bioes_tags': ['O', 'B', 'E', 'O', 'O', 'O', 'O', 'B', 'E', 'O', 'O', 'O', 'S', 'O', 'O', 'O', 'O'] 
     }
+    
     
 ]
 
@@ -181,9 +233,9 @@ class TestDataProcessingUtils(unittest.TestCase):
     def setUp(self):
         self.test_data = pd.DataFrame(tag_terms_test_data)
     
-    def _test_tag_terms_generic(self, test_id, invalid_dep=[], invalid_pos=[]):
+    def _test_tag_terms_generic(self, test_id, invalid_dep=[], invalid_pos=[], expand_np=False):
         row = self.test_data.loc[self.test_data.test_id == test_id, :].squeeze()
-        output = tag_terms(row.text, row.terms, invalid_dep=invalid_dep, invalid_pos=invalid_pos)
+        output = tag_terms(row.text, row.terms, invalid_dep=invalid_dep, invalid_pos=invalid_pos, expand_np=expand_np)
         self.assertEqual(output['tags'], row.bioes_tags)
         self.assertDictEqual(output['found_terms'], row.found_terms)
     
@@ -227,6 +279,12 @@ class TestDataProcessingUtils(unittest.TestCase):
         
     def test_pos_filter2(self):
         self._test_tag_terms_generic('pos_filter', invalid_dep=['poss'], invalid_pos=['VBZ'])
+        
+    def test_expandnp1(self):
+        self._test_tag_terms_generic('expand_np1', expand_np=True)
+        
+    def test_expandnp2(self):
+        self._test_tag_terms_generic('expand_np2', expand_np=True)
 
         
 if __name__ == '__main__':
