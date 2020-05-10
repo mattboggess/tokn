@@ -2,6 +2,7 @@ import unittest
 import pandas as pd
 import spacy
 from taxonomy_label_fns import *
+from label_constants import *
 
 test_data = [
     { 
@@ -153,10 +154,57 @@ test_data = [
         'term1_location': (6, 8),
         'term2': 'coal',
         'term2_location': (10, 11)
+    },
+    {
+        'test_id': 'acronym_01', 
+        'label_fn': acronym,
+        'label': SYNONYM,
+        'text': "When the volume of blood returning to the heart increases and stretches the atrial walls, atrial natriuretic peptide (ANP) is released, which causes increased excretion of salt and water.", 
+        'term1': 'atrial natriuretic peptide',
+        'term1_location': (16, 19),
+        'term2': 'anp',
+        'term2_location': (20, 21)
+    },
+    {
+        'test_id': 'parens_pattern_01', 
+        'label_fn': parens_pattern,
+        'label': SYNONYM,
+        'text': "Organisms that are more complex but still only have two layers of cells in their body plan, such as jellies (Cnidaria).",
+        'term1': 'jellies',
+        'term1_location': (20, 21),
+        'term2': 'cnidaria',
+        'term2_location': (22, 23)
+    },
+    {
+        'test_id': 'also_knownas_pattern_01', 
+        'label_fn': also_knownas_pattern,
+        'label': SYNONYM,
+        'text': "ADH is also known as vasopressin.", 
+        'term1': 'adh',
+        'term1_location': (0, 1),
+        'term2': 'vasopressin',
+        'term2_location': (5, 6)
+    },
+    {
+        'test_id': 'also_called_pattern_01', 
+        'label_fn': also_called_pattern,
+        'label': SYNONYM,
+        'text': "Peptide linkages, also called peptide bonds, covalently link amino acids.",
+        'term1': 'peptide linkage',
+        'term1_location': (0, 2),
+        'term2': 'peptide bond',
+        'term2_location': (5, 7)
+    },
+    {
+        'test_id': 'plural_pattern_01', 
+        'label_fn': plural_pattern,
+        'label': SYNONYM,
+        'text': "Each stack is called a granum (plural grana).",
+        'term1': 'granum',
+        'term1_location': (5, 6),
+        'term2': 'grana',
+        'term2_location': (8, 9)
     }
-    
-    
-    
 ]
 
 class TestTaxonomyLabelFns(unittest.TestCase):
@@ -216,6 +264,21 @@ class TestTaxonomyLabelFns(unittest.TestCase):
         
     def test_especially_pattern_01(self):
         self._test_generic('especially_pattern_01')
+        
+    def test_parens_pattern_01(self):
+        self._test_generic('parens_pattern_01')
+        
+    def test_also_knonwnas_pattern_01(self):
+        self._test_generic('also_knownas_pattern_01')
+        
+    def test_also_called_pattern_01(self):
+        self._test_generic('also_called_pattern_01')
+        
+    def test_plural_pattern_01(self):
+        self._test_generic('plural_pattern_01')
+        
+    def test_acronym_01(self):
+        self._test_generic('acronym_01')
 
 if __name__ == '__main__':
     unittest.main()

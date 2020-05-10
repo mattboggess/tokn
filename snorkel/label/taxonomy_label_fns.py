@@ -328,7 +328,100 @@ def knownas_pattern(cand):
 #===================================================================================
 # Sentence Dependency Pattern-Based Synonym Labelers
 
+@labeling_function()
+def parens_pattern(cand):
+    """
+    Matches sentence structure pattern using Spacy dependency parse:
+      - Pattern: X, (Y) (X -> SYNONYM -> Y)
+      
+    Custom added pattern from scanning textbook sentences for patterns 
+    """
+    second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    second_start = cand.doc[max(cand.term1_location[0], cand.term2_location[0])]
+    first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    
+    valid_first = first.nbor(1).text == '('
+    valid_second = second.head == first and \
+                   second.dep_ == 'appos' and \
+                   second_start.nbor(-1) == first.nbor(1) and \
+                   second.nbor(1).text == ')'
+                    
+    if valid_second and valid_first:
+        return SYNONYM
+    
+    return ABSTAIN
 
+@labeling_function()
+def also_knownas_pattern(cand):
+    """
+    Matches sentence structure pattern using Spacy dependency parse:
+      - Pattern: X also known as Y (X -> SYNONYM -> Y)
+      
+    Custom added pattern from scanning textbook sentences for patterns 
+    """
+    second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    
+    valid_second = cand.term2_location[1] > 3 and \
+                   second.head.text == 'as' and \
+                   second.head.nbor(-1).text == 'known' and \
+                   second.head.nbor(-2).text == 'also'
+    
+    valid_first = False
+    if valid_second:
+        valid_first = (first.head == second.head.nbor(-1)) or (second.head.nbor(-1) in first.children)
+    
+    if valid_first and valid_second:
+        return SYNONYM
+    
+    return ABSTAIN
+
+@labeling_function()
+def also_called_pattern(cand):
+    """
+    Matches sentence structure pattern using Spacy dependency parse:
+      - Pattern: X also called Y (X -> SYNONYM -> Y)
+      
+    Custom added pattern from scanning textbook sentences for patterns 
+    """
+    second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    
+    valid_second = cand.term2_location[1] > 3 and \
+                   second.head.text == 'called' and \
+                   second.head.nbor(-1).text == 'also'
+    
+    valid_first = False
+    if valid_second:
+        valid_first = (second.head.nbor(-1) in first.children) or (first.head == second.head)
+    
+    if valid_first and valid_second:
+        return SYNONYM
+    
+    return ABSTAIN
+
+@labeling_function()
+def plural_pattern(cand):
+    """
+    Matches sentence structure pattern using Spacy dependency parse:
+      - Pattern: X (plural/singular [=] Y) (X -> SYNONYM -> Y)
+      
+    Custom added pattern from scanning textbook sentences for patterns 
+    """
+    second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    second_start = cand.doc[max(cand.term1_location[0], cand.term2_location[0])]
+    first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    
+    valid_first = first.nbor(1).text == '(' and first.nbor(2).text in ['plural', 'singular']
+    valid_second = second.head == first and \
+                   second.dep_ == 'appos' and \
+                   second_start.nbor(-1).text in ['=', 'plural', 'singular'] and \
+                   second.nbor(1).text == ')'
+                    
+    if valid_second and valid_first:
+        return SYNONYM
+    
+    return ABSTAIN
 
 #===================================================================================
 # Term-Based Heuristic Labelers
@@ -391,8 +484,18 @@ def acronym(cand):
     """
     term1_acronym = cand.term1.upper()
     term2_acronym = cand.term2.upper()
-    term1_word_starts = ''.join([x[0] for x in cand.term1.split(' ')])
-    term2_word_starts = ''.join([x[0] for x in cand.term2.split(' ')])
+    
+    # abstain if there is not an all caps acronym in the text
+    if term1_acronym != cand.doc[cand.term1_location[0]:cand.term1_location[1]].text and \
+       term2_acronym != cand.doc[cand.term2_location[0]:cand.term2_location[1]].text: 
+        return ABSTAIN
+    
+    # abstain if either is length 1 since this is too error prone
+    if len(term1_acronym) == 1 or len(term2_acronym) == 1:
+        return ABSTAIN
+    
+    term1_word_starts = ''.join([x[0] for x in cand.term1.split(' ')]).upper()
+    term2_word_starts = ''.join([x[0] for x in cand.term2.split(' ')]).upper()
     
     if term2_word_starts == term1_acronym or term1_word_starts == term2_acronym:
         return SYNONYM 
