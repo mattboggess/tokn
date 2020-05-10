@@ -199,11 +199,11 @@ test_data = [
         'test_id': 'plural_pattern_01', 
         'label_fn': plural_pattern,
         'label': SYNONYM,
-        'text': "Each stack is called a granum (plural grana).",
+        'text': "Each stack is called a granum (singular = grana).",
         'term1': 'granum',
         'term1_location': (5, 6),
         'term2': 'grana',
-        'term2_location': (8, 9)
+        'term2_location': (9, 10)
     }
 ]
 
