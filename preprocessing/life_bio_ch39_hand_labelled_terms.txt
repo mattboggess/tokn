@@ -1,0 +1,518 @@
+passive -- entity
+neurons -- entity
+internal body surfaces -- entity
+heat dissipation -- event
+controls -- event
+feedback-- entity
+intake -- entity
+temperature set point -- entity
+internal heat -- entity
+metabolic seasonal temperature acclimatization -- event
+mammalian -- entity
+isozymes -- entity
+thermoregulatory adaptation -- event
+chemiosmotic mechanism -- entity
+term -- entity
+core -- entity
+seasonal temperature acclimatization -- event
+energy -- entity
+thermal adaptations -- event
+hypothesis -- entity
+heat stress -- entity
+specializations -- event
+simple biochemical reaction -- entity
+ability -- entity
+volume -- entity
+producing -- event
+environment -- entity 
+thermal insulation -- entity
+torpor -- event
+feedback information -- event
+flows -- entity
+blood vessels -- entity
+increased -- entity
+brood -- entity
+adaptations -- entity
+torpor bouts -- entity
+mammalian hypothalamus results -- entity
+symptoms -- entity
+heat production -- entity
+cells -- entity
+protein denaturation -- event
+infrared -- entity
+bone -- entity
+system -- entity
+metabolism -- event
+stroke -- entity
+heat extraction -- entity
+q10 -- entity
+ physiological processes -- event
+homeotherms -- entity
+corals -- entity
+internal metabolic heat production -- entity
+behaviors -- entity
+reaction -- entity
+commands -- entity
+physiological systems -- entity
+bones -- entity
+muscle work capacity -- entity
+portals -- entity
+survival -- event
+command signals -- entity
+uterus -- entity
+basal heat production rates -- entity
+circadian rhythm -- entity
+control signals -- entity
+intracellular fluid -- entity
+resting endotherm -- entity
+poikilotherms -- entity
+iguana -- entity
+thermoregulatory set point -- entity
+multicellular organism -- entity
+hard work -- entity
+movements -- event
+conserve -- event
+saliva -- entity
+scarab beetle -- entity
+learning -- event
+nonshivering heat production -- event
+feedforward information -- entity
+hypothalamus -- entity
+thermal tolerances -- entity
+energy budgets -- entity
+mitochondrial membrane -- entity
+regulation -- event
+temperatures -- entity
+epithelial tissues -- entity
+females -- entity
+physiological process -- event
+vertebrates -- entity
+single -- entity
+heat transfer -- entity
+internal fluid environment -- entity
+metabolic functions -- entity
+hypothalamic set point -- entity
+vasoconstriction -- entity
+single queen bee -- entity
+columnar epithelial cells -- entity
+active processes -- event
+flowing -- entity
+mammalian metabolic -- entity
+environmental temperatures -- entity
+internal tissues -- entity
+muscle temperature -- entity
+environmental heat -- entity
+ kinetic energy -- entity
+biochemical reactions -- event
+nutrients -- entity
+function -- entity
+nervous system thermostats -- entity
+external temperatures -- entity
+group -- entity
+dichotomy -- entity
+concentration -- event
+conduction -- entity
+sclerosis -- event
+squirrels -- entity
+cell volume -- entity
+normal -- entity
+first law of thermodynamics -- entity
+hypothalamic -- entity
+biochemical -- entity
+energy budget -- entity
+glycolysis -- event
+thermal environment -- entity
+birth canal -- entity
+transfers -- entity
+bees -- entity
+adp -- entity
+sexual behavior -- entity
+elephants -- entity
+suprachiasmatic nucleus -- entity
+muscle mass -- entity
+ion concentration -- event
+cell specialization -- event
+mammalian thermostat -- entity
+tremor results -- entity
+thermal damage -- entity
+thermal stress -- entity
+physiological effects -- entity
+physiological -- entity
+secretory cells -- entity
+radiation -- event
+ecf -- entity
+heart rate -- entity
+atp synthase -- entity
+endotherms -- entity
+reaction rate -- entity
+biological systems -- entity
+adaptations -- event
+thermoneutral zone -- entity
+dissipating heat -- event
+reactants -- entity
+heat loss -- event
+sense -- event
+blood plasma volume -- entity
+body temperatures -- entity
+muscle temperatures -- entity
+body -- entity
+energy budget equation -- event
+environments -- entity
+thermostat -- entity
+cold environment -- entity
+ectotherm -- entity
+basal metabolic rate -- entity
+extracellular fluid -- entity
+contact -- event
+more heat -- entity
+active -- entity
+ blood vessels -- entity
+feedback information -- entity
+external environment -- entity
+nervous tissues -- entity
+effector cells -- entity
+regulatory systems -- entity
+organ systems -- entity
+mucosa -- entity
+rate -- entity
+cell functions -- entity
+mammalian body temperature -- entity
+thermal inactivation -- event
+uncouples proton movement -- event
+hormonal signals -- entity
+connect -- event
+survival -- entity
+biological processes -- event
+cellular functions -- entity
+muscle -- entity
+metabolic energy -- entity
+cell membranes -- entity
+energy budget equation& -- entity
+optimum -- entity
+metabolic rates -- entity
+brown -- entity
+organs -- entity
+insulation -- entity
+environmental temperature -- entity
+mass -- entity
+work capacity -- entity
+mammalian thermoregulatory system -- entity
+shunts -- entity
+error signal -- entity
+metabolic reserves -- entity
+ground squirrels -- entity
+movement -- event and entity
+fat -- entity
+physical conditioning -- event
+epithelial tissue-- entity
+cell size -- entity
+extraction -- entity
+ions -- entity
+nervous system -- entity
+brood temperature -- entity
+sensors -- entity
+functions -- entity
+arousal -- entity
+organisms -- entity
+biochemical process -- event
+produce -- event
+homeostasis -- entity
+nervous system-- entity
+ground -- entity
+toxins -- entity
+surface temperature -- entity
+forces -- entity
+controlled -- entity
+torpor -- entity
+process -- event
+body fluids -- entity
+biochemical processes -- event
+metabolic -- entity
+physiological system -- entity
+brown fat cells -- entity
+connective tissue -- entity
+growth -- entity
+burrows -- entity
+endotherm -- entity
+huddling -- event
+reptile -- entity
+adaptation -- event
+cell specializations -- event
+heat portals -- entity
+control -- entity
+burrow -- entity
+climates -- entity
+nervous tissue-- entity
+metabolic heat production -- entity
+energy transfer -- event
+atp -- entity
+heat -- entity
+energy expenditures -- entity
+tissue -- entity
+active muscles -- entity
+behavior -- entity
+positive feedback responses -- entity
+informational systems -- entity
+blood plasma -- entity
+internal environments -- entity
+biochemistry -- entity
+heart -- entity
+blood -- entity
+compartments -- entity
+surface -- entity
+epithelial tissue -- entity
+nonshivering heat production -- entity
+acclimatization -- event
+body core -- entity
+protons -- entity
+organ system -- entity
+thermodynamics -- entity
+fish -- entity
+hypothalamic heating -- event
+bouts -- entity
+proportional thermostat -- entity
+thermoneutral environment -- entity
+physiological regulatory systems -- entity
+reactions -- entity
+extracellular fluid volume -- entity
+biochemical reactions -- entity
+atp production -- entity
+epithelial lining -- entity
+neural singal-- entity
+hibernation -- event
+heat stroke -- event
+molecules -- entity
+hypothermia -- entity
+production -- entity
+cell -- entity
+information -- event
+heat--loss portals -- entity
+specialization -- entity
+thermoregulatory mechanisms -- entity
+metabolic activities -- entity
+fluid compartments -- entity
+internal body temperature -- entity
+secretory functions -- entity
+pyruvate kinase -- entity
+thermoregulatory system -- entity
+reproductive cells -- entity
+ion channels -- entity
+measure -- entity
+movement -- event
+muscles -- entity
+q10 values -- entity
+body temperature -- entity
+volumes -- entity
+thermostat analogy -- entity
+physiological functions -- entity
+interstitial fluid -- entity
+energy& -- entity
+cell specialization -- entity
+biological work& -- entity
+sponge -- entity
+marmots -- entity
+heat production -- event
+physical conditions -- entity
+predation -- event
+shivering heat production -- event
+antifreeze molecules -- entity
+freezing point -- entity
+extracellular fluid compartments -- entity
+motile cells -- entity
+tissue temperatures -- entity
+environmental -- entity
+body size -- entity
+environment -- entity
+iguanas -- entity
+anatomical adaptations -- event
+heterotherm -- entity
+thermal limits -- entity
+climate -- entity
+fish circulatory system -- entity
+digestive system -- entity
+statistical analysis -- event
+normal internal temperatures -- entity
+metabolic activity -- entity
+protein -- entity
+circulatory system adaptations -- event
+digestion -- entity
+sex cells -- entity
+damaged -- entity
+food scarcity -- entity
+temperature acclimatization -- event
+metabolic pathways -- entity
+heat stroke -- entity
+energy expenditure -- entity
+external conditions -- entity
+structure -- entity
+appendages -- entity
+brown fat -- entity
+metabolic waste -- entity
+multicellular organisms -- entity
+metabolic acclimatization -- event
+regulatory system -- entity
+pyruvate -- entity
+regulatory center -- entity
+cooled -- event
+enzymes -- entity
+female -- entity
+worker bees -- entity
+specializations -- entity
+internal set points -- entity
+evaporation -- event
+levels -- entity
+multiple tissue -- entity
+heat exchange -- event
+endogenous -- entity
+adipose tissue -- entity
+physiological adaptations -- event
+arousals -- event
+cold blood -- entity
+female worker bees -- entity
+cartilage -- entity
+heat--loss -- entity
+set point -- entity
+elephant -- entity
+response -- entity
+fish heart -- entity
+internal environment -- entity
+birth process -- event
+countercurrent heat exchange -- event
+flight -- entity
+reptiles -- entity
+temperature--sensitive -- entity
+body heat -- entity
+critical temperature -- entity
+treatment groups -- entity
+brain -- entity
+blood supply -- entity
+epithelial cells -- entity
+systems -- entity
+process information -- event
+blood vessel -- entity
+epithelium -- entity
+organ -- entity
+gills -- entity
+connective tissues -- entity
+bodies -- entity
+hyperthermia -- entity
+muscle tissue -- entity
+thermoregulatory adaptations -- event
+epidermis -- entity
+negative feedback information -- entity
+pressure--sensitive cells -- entity
+lost -- event
+insulator -- entity
+spermophilus kennicottii -- entity
+responses -- entity
+circadian rhythms -- entity
+hypothalamic temperature -- entity
+consumption -- event
+vessels -- entity
+weight -- entity
+wave forces -- entity
+increases -- event
+feedforward control mechanisms -- entity
+second law of thermodynamics -- entity
+cell surface -- entity
+body surface -- entity
+mammalian body -- entity
+fishes -- entity
+thermoregulatory adaptation -- entities
+losses -- entity
+flows -- event
+temperature -- entity
+countercurrent heat exchange system -- entity
+conditions -- event
+internal environment-- entity
+single cells -- entity
+metabolic rate -- entity
+size limit -- entity
+resting metabolic rate -- entity
+mechanism -- entity
+normal level -- entity
+positive feedback -- entity
+control group -- entity
+produced -- event
+body functions -- entity
+set points -- entity
+key -- entity
+thermoregulatory responses -- entity
+tertiary structure -- entity
+active fishes -- entity
+conserves -- event
+bmr -- entity
+cell membrane -- entity
+conduction -- event
+secretory epithelial cells -- entity
+tissue increases -- entity
+lumen -- entity
+mitochondria -- entity
+reaction rates -- entity
+organism -- entity
+reactant -- entity
+aorta -- entity
+internal -- entity
+structures -- entity
+normal body temperature -- entity
+digestive tract -- entity
+body surface temperature -- entity
+anesthesia -- entity
+temperature regulation -- event
+ectotherms -- entity
+metabolic heat -- entity
+support tissues -- entity
+metabolic fuels -- entity
+circulatory adaptations -- event
+effectors -- entity
+insulators -- entity
+rates -- entity
+feedback -- entity
+calories -- entity
+curvilinear plots -- entity
+propagate -- event
+physiological processes -- event
+environmental conditions -- event
+mammalian blood vessel adaptations -- event
+uptake -- event
+expended -- event
+exchange -- event
+barriers -- entity
+complex physiological process -- event
+conserving -- event
+exchanges -- event
+blood flow -- entity
+critical temperatures -- entity
+shivering -- event
+thermoregulatory -- entity
+amphibians -- entity
+digestive juices -- entity
+mechanisms -- entity
+hypothalamic set points -- entity
+biochemical conditions -- event
+capacity -- entity
+basal -- entity
+more -- entity
+intracellular fluid volume -- entity
+temperature sensors -- entity
+negative feedback -- entity
+connective tissue-- entity
+metabolic fuel -- entity
+tissues -- entity
+treatment group -- entity
+internal structures -- entity
+elephant tissue -- entity
+size -- entity
+flight muscles -- entity
+neural regulatory systems -- entity
+limits -- entity
+cooling -- event
+more metabolic energy -- entity
+endocrine systems -- entity
+archaea -- entity
+multicellularity -- entity
+body mass -- entity
+internal biological -- entity
+blood vessel adaptations -- event
+mammalian brain thermostat -- entity
+house thermo--regulatory system -- entity

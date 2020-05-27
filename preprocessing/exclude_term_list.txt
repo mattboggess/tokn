@@ -1,0 +1,17 @@
+object
+aggregate
+group
+thing
+region
+center
+response
+series
+unit
+result
+normal
+divide
+whole
+someone
+somebody
+feature
+class
