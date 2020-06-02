@@ -8,12 +8,12 @@ import pickle
 # Hearst 1992 Patterns
 
 @labeling_function()
-def suchas_pattern(cand):
+def suchas_pattern_lf(cand):
     """
     Matches sentence structure pattern using Spacy dependency parse:
       - Pattern: X such as Y1, Y2, ..., and/or Yk 
-      - Y1, ..., Yk -> HYPONYM -> X
-      - X -> HYPERNYM -> Y1, ..., Yk
+      - Y1, ..., Yk -> SUBCLASS -> X
+      - X -> SUPERCLASS -> Y1, ..., Yk
       
     One of original Hearst patterns (Hearst, 1992)
     """
@@ -31,18 +31,18 @@ def suchas_pattern(cand):
         if 'such' in [ch.text for ch in start.children]:
             if start.head.idx == end.idx:
                 if cand.term1_location[0] < cand.term2_location[0]:
-                    return HYPERNYM
+                    return label_classes.index('SUPERCLASS')
                 else:
-                    return HYPONYM 
+                    return label_classes.index('SUBCLASS')
     return ABSTAIN
 
 @labeling_function()
-def including_pattern(cand):
+def including_pattern_lf(cand):
     """
     Matches sentence structure pattern using Spacy dependency parse:
       - Pattern: X including Y1, Y2, ..., and/or Yk 
-      - Y -> HYPONYM -> X1, X2, ...
-      - X -> HYPERNYM -> Y1, ..., Yk
+      - Y -> SUBCLASS -> X1, X2, ...
+      - X -> SUPERCLASS -> Y1, ..., Yk
       
     One of original Hearst patterns (Hearst, 1992)
     """
@@ -64,18 +64,18 @@ def including_pattern(cand):
     
     if first_valid and second_valid:
         if cand.term1_location[0] < cand.term2_location[0]:
-            return HYPERNYM
+            return label_classes.index('SUPERCLASS')
         else:
-            return HYPONYM 
+            return label_classes.index('SUBCLASS')
     return ABSTAIN
 
 @labeling_function()
-def especially_pattern(cand):
+def especially_pattern_lf(cand):
     """
     Matches sentence structure pattern using Spacy dependency parse:
       - Pattern: Y especially X1, X2, ..., and/or Xk 
-      - X -> HYPERNYM -> Y1, ..., Yk
-      - Y -> HYPONYM -> X1, ..., Xk
+      - X -> SUPERCLASS -> Y1, ..., Yk
+      - Y -> SUBCLASS -> X1, ..., Xk
       
     One of original Hearst patterns (Hearst, 1992)
     """
@@ -97,18 +97,18 @@ def especially_pattern(cand):
     
     if first_valid and second_valid: 
         if cand.term1_location[0] < cand.term2_location[0]:
-            return HYPERNYM 
+            return label_classes.index('SUPERCLASS')
         else:
-            return HYPONYM
+            return label_classes.index('SUBCLASS')
 
     return ABSTAIN
 
 @labeling_function()
-def other_pattern(cand):
+def other_pattern_lf(cand):
     """
     Matches sentence structure pattern using Spacy dependency parse:
       - Pattern: X1, X2, ..., and/or other Y 
-      - Label: X1, X2, ... -> HYPONYM -> Y
+      - Label: X1, X2, ... -> SUBCLASS -> Y
       
     One of original Hearst patterns (Hearst, 1992)
     """
@@ -127,20 +127,20 @@ def other_pattern(cand):
        start_first.nbor(-2).text in ['and', 'or'] and \
        start_first.nbor(-1).text == 'other':
         if cand.term1_location[0] < cand.term2_location[0]:
-            return HYPONYM 
+            return label_classes.index('SUBCLASS')
         else:
-            return HYPERNYM 
+            return label_classes.index('SUPERCLASS')
     
     return ABSTAIN
 
 # Snow et al. 2004 Patterns
 
 @labeling_function()
-def called_pattern(cand):
+def called_pattern_lf(cand):
     """
     Matches sentence structure pattern using Spacy dependency parse:
       - Pattern: Y called X
-      - Y -> HYPERNYM -> X
+      - Y -> SUPERCLASS -> X
       
     One of highlighted patterns from Snow et al. 2004
     """
@@ -150,20 +150,18 @@ def called_pattern(cand):
     if start.head.text == 'called' and start.dep_ == 'oprd':
         if start.head.dep_ == 'acl' and start.head.head.text == end.text:
             if cand.term1_location[0] < cand.term2_location[0]:
-                return HYPERNYM 
+                return label_classes.index('SUPERCLASS')
             else:
-                return HYPONYM 
-        elif start.head.nbor(-1).text in ['also', 'sometimes']: # also/sometimes called implies synonym
-            return OTHER
+                return label_classes.index('SUBCLASS')
     return ABSTAIN
 
 @labeling_function()
-def isa_pattern(cand):
+def isa_pattern_lf(cand):
     """
     Matches sentence structure pattern using Spacy dependency parse:
       - Pattern: X is a/an/the Y
-      - X -> HYPONYM -> Y
-      - Y -> HYPERNYM -> X
+      - X -> SUBCLASS -> Y
+      - Y -> SUPERCLASS -> X
       
     One of highlighted patterns from Snow et al. 2004
     """
@@ -183,18 +181,18 @@ def isa_pattern(cand):
     
     if valid_second and valid_first:
         if cand.term1_location[0] < cand.term2_location[0]:
-            return HYPONYM
+            return label_classes.index('SUBCLASS')
         else:
-            return HYPERNYM
+            return label_classes.index('SUPERCLASS')
         
     return ABSTAIN
 
 @labeling_function()
-def appo_pattern(cand):
+def appo_pattern_lf(cand):
     """
     Matches sentence structure pattern using Spacy dependency parse:
       - Pattern: X, a/an Y (appos)
-      - X -> HYPONYM -> Y
+      - X -> SUBCLASS -> Y
       
     One of highlighted patterns from Snow et al. 2004
     """
@@ -204,27 +202,30 @@ def appo_pattern(cand):
     valid_second = second.head == first and second.dep_ == 'appos' and not second_conj
     
     if valid_second:
-        valid_first = first.nbor(1).text == ',' and \
-                      first.nbor(2).text in ['a', 'an'] and \
+        valid_first = first.nbor(1).text in [',', '('] and \
+                      first.nbor(2).text in ['a', 'an', 'the', 'e.g.', 'i.e.'] and \
                       first.nbor(2) in [ch for ch in second.children]
     else:
         valid_first = False
     
     if valid_second and valid_first:
         if cand.term1_location[0] < cand.term2_location[0]:
-            return HYPONYM
+            if first != cand.doc[0] and first.nbor(-1).text in ['some', 'another', 'specialized']:
+                return label_classes.index('SUPERCLASS')
+            else:
+                return label_classes.index('SUBCLASS')
         else:
-            return HYPERNYM 
+            return label_classes.index('SUPERCLASS')
     return ABSTAIN
 
 # Custom Patterns
 
 @labeling_function()
-def are_pattern(cand):
+def are_pattern_lf(cand):
     """
     Matches sentence structure pattern using Spacy dependency parse:
-      - Pattern1: X1, ..., Xk are Y (X -> HYPONYM -> Y)
-      - Pattern2: The X are Y (X -> HYPERNYM -> Y)
+      - Pattern1: X1, ..., Xk are Y (X -> SUBCLASS -> Y)
+      - Pattern2: The X are Y (X -> SUPERCLASS -> Y)
       
     Custom added pattern from scanning textbook sentences for patterns 
     """
@@ -246,52 +247,52 @@ def are_pattern(cand):
     if valid_second and valid_first and second.head.nbor(-1).text != 'not':
         if 'the' in first_children:
             if cand.term1_location[0] < cand.term2_location[0]:
-                return HYPERNYM
+                return label_classes.index('SUPERCLASS')
             else:
-                return HYPONYM
+                return label_classes.index('SUBCLASS')
         else:
             if cand.term1_location[0] < cand.term2_location[0]:
-                return HYPONYM
+                return label_classes.index('SUBCLASS')
             else:
-                return HYPERNYM
+                return label_classes.index('SUPERCLASS')
         
     return ABSTAIN
 
 @labeling_function()
-def whichis_pattern(cand):
+def symbolconj_pattern_lf(cand):
     """
-    TODO: FIX/ADD (Not many matches)
     Matches sentence structure pattern using Spacy dependency parse:
-      - Pattern: X which is a/an/the Y 
-      - X -> HYPONYM -> Y
-      
-    Custom added pattern from scanning textbook sentences for patterns 
+      - Pattern: X (Y1, Y2, ... and/or Yk)
+      - X -> SUPERCLASS -> Y
     """
     second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
+    second_conj = len([ch for ch in second.children if ch.dep_ == 'conj']) > 0
+    second_start = cand.doc[max(cand.term1_location[0], cand.term2_location[0])]
     
-    valid_second = second.head.text == 'is' and second.dep_ == 'attr' 
-    if valid_second:
-        valid_first = second.head.head.text == first.text and second.head.nbor(-1).text == 'which'
-    else:
-        valid_first = False
-    
-    if valid_second and valid_first:
-        if cand.term1_location[0] < cand.term2_location[0]:
-            return HYPONYM
-        else:
-            return HYPERNYM
-    
+    valid_first = first.nbor(1).text in ['(', '-', '—', ':']
+    if valid_first:
+        if not second_conj and second_start.nbor(-1) == first.nbor(1):
+            return ABSTAIN
+        while second.dep_ == 'conj':
+            if second.dep_ == 'conj':
+                second = second.head
+            else:
+                break
+        if (second != cand.doc[0] and second.nbor(-1) == first.nbor(1)):
+            return label_classes.index('SUPERCLASS')
+        
     return ABSTAIN
 
+
 @labeling_function()
-def knownas_pattern(cand):
+def knownas_pattern_lf(cand):
     """
     TODO: FIX/ADD (Not many matches)
     Matches sentence structure pattern using Spacy dependency parse:
       - Pattern: X [!also] known as Y 
-      - X -> HYPONYM -> Y
-      - Y -> HYPERNYM -> X
+      - X -> SUBCLASS -> Y
+      - Y -> SUPERCLASS -> X
     If also precedes the known as this is classified as OTHER since this implies an
     alternate name for the same entity.
       
@@ -317,11 +318,11 @@ def knownas_pattern(cand):
             
     if start.text == end.text and known_flag:
         if also_flag:
-            return OTHER
+            return ABSTAIN
         elif cand.term1_location[0] < cand.term2_location[0]:
-            return HYPERNYM 
+            return label_classes.index('SUPERCLASS')
         else:
-            return HYPONYM 
+            return label_classes.index('SUBCLASS')
     
     return ABSTAIN
 
@@ -329,7 +330,7 @@ def knownas_pattern(cand):
 # Sentence Dependency Pattern-Based Synonym Labelers
 
 @labeling_function()
-def parens_pattern(cand):
+def parens_pattern_lf(cand):
     """
     Matches sentence structure pattern using Spacy dependency parse:
       - Pattern: X, (Y) (X -> SYNONYM -> Y)
@@ -340,19 +341,20 @@ def parens_pattern(cand):
     second_start = cand.doc[max(cand.term1_location[0], cand.term2_location[0])]
     first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     
+    if second == cand.doc[-1]:
+        return ABSTAIN
+    
     valid_first = first.nbor(1).text == '('
-    valid_second = second.head == first and \
-                   second.dep_ == 'appos' and \
-                   second_start.nbor(-1) == first.nbor(1) and \
+    valid_second = second_start.nbor(-1) == first.nbor(1) and \
                    second.nbor(1).text == ')'
                     
     if valid_second and valid_first:
-        return SYNONYM
+        return label_classes.index('SYNONYM')
     
     return ABSTAIN
 
 @labeling_function()
-def also_knownas_pattern(cand):
+def also_knownas_pattern_lf(cand):
     """
     Matches sentence structure pattern using Spacy dependency parse:
       - Pattern: X also known as Y (X -> SYNONYM -> Y)
@@ -372,12 +374,12 @@ def also_knownas_pattern(cand):
         valid_first = (first.head == second.head.nbor(-1)) or (second.head.nbor(-1) in first.children)
     
     if valid_first and valid_second:
-        return SYNONYM
+        return label_classes.index('SYNONYM')
     
     return ABSTAIN
 
 @labeling_function()
-def also_called_pattern(cand):
+def also_called_pattern_lf(cand):
     """
     Matches sentence structure pattern using Spacy dependency parse:
       - Pattern: X also called Y (X -> SYNONYM -> Y)
@@ -396,12 +398,12 @@ def also_called_pattern(cand):
         valid_first = (second.head.nbor(-1) in first.children) or (first.head == second.head)
     
     if valid_first and valid_second:
-        return SYNONYM
+        return label_classes.index('SYNONYM')
     
     return ABSTAIN
 
 @labeling_function()
-def plural_pattern(cand):
+def plural_pattern_lf(cand):
     """
     Matches sentence structure pattern using Spacy dependency parse:
       - Pattern: X (plural/singular [=] Y) (X -> SYNONYM -> Y)
@@ -419,7 +421,7 @@ def plural_pattern(cand):
                    second.nbor(1).text == ')'
                     
     if valid_second and valid_first:
-        return SYNONYM
+        return label_classes.index('SYNONYM')
     
     return ABSTAIN
 
@@ -427,7 +429,7 @@ def plural_pattern(cand):
 # Term-Based Heuristic Labelers
 
 @labeling_function()
-def term_modifier(cand):
+def term_modifier_lf(cand):
     """
     Checks for modifier word added in front of shared base term: 
       i.e. daughter cell - hyponym - cell
@@ -443,17 +445,17 @@ def term_modifier(cand):
     term1 = term_pair[0].split(' ')
     term2 = term_pair[1].split(' ')
     
-    # daughter cell HYPONYM cell 
+    # daughter cell SUBCLASS cell 
     if term1[-1] == term2[-1] and len(term2) < len(term1):
-        return HYPONYM
-    # cell HYPERNYM daughter cell 
+        return label_classes.index('SUBCLASS')
+    # cell SUPERCLASS daughter cell 
     elif term1[-1] == term2[-1] and len(term1) < len(term2):
-        return HYPERNYM 
+        return label_classes.index('SUPERCLASS')
     else:
         return ABSTAIN
 
 @labeling_function()
-def term_subset(cand):
+def term_subset_lf(cand):
     """
     Checks for term is modified version of base term with same root: oncogene - hyponym - gene 
     """
@@ -468,17 +470,17 @@ def term_subset(cand):
     term1 = term_pair[0].split(' ')
     term2 = term_pair[1].split(' ')
     
-    # gene HYPERNYM oncogene
+    # gene SUPERCLASS oncogene
     if term2[-1].endswith(term1[-1]) and len(term1) == 1 and len(term2) == 1:
-        return HYPERNYM
-    # oncogene HYPONYM gene
+        return label_classes.index('SUPERCLASS')
+    # oncogene SUBCLASS gene
     elif term1[-1].endswith(term2[-1]) and len(term2) == 1 and len(term1) == 1:
-        return HYPONYM
+        return label_classes.index('SUBCLASS')
     else:
         return ABSTAIN
     
 @labeling_function()
-def acronym(cand):
+def acronym_lf(cand):
     """
     Checks if one term is likely an acronym (and thus synonym) of the other term 
     """
@@ -498,6 +500,25 @@ def acronym(cand):
     term2_word_starts = ''.join([x[0] for x in cand.term2.split(' ')]).upper()
     
     if term2_word_starts == term1_acronym or term1_word_starts == term2_acronym:
-        return SYNONYM 
+        return label_classes.index('SYNONYM')
     else:
         return ABSTAIN
+    
+taxonomy_label_fns = [
+    isa_pattern_lf,
+    suchas_pattern_lf,
+    including_pattern_lf,
+    called_pattern_lf,
+    especially_pattern_lf,
+    appo_pattern_lf, 
+    other_pattern_lf, 
+    are_pattern_lf,
+    symbolconj_pattern_lf,
+    term_modifier_lf,
+    term_subset_lf,
+    #acronym_lf,
+    also_knownas_pattern_lf,
+    parens_pattern_lf,
+    also_called_pattern_lf,
+    plural_pattern_lf
+]

@@ -7,8 +7,8 @@ from label_constants import *
 test_data = [
     { 
         'test_id': 'other_pattern_01',
-        'label_fn': other_pattern,
-        'label': HYPONYM,
+        'label_fn': other_pattern_lf,
+        'label': label_classes.index('SUBCLASS'),
         'text': "They bear tension, thus maintaining the cell's shape, and anchor the nucleus and other organelles in place.",
         'term1': 'nucleus',
         'term1_location': (14, 15),
@@ -17,8 +17,8 @@ test_data = [
     },
     { 
         'test_id': 'appo_pattern_01', 
-        'label_fn': appo_pattern,
-        'label': HYPONYM,
+        'label_fn': appo_pattern_lf,
+        'label': label_classes.index('SUBCLASS'),
         'text': "You are probably most familiar with keratin, a fibrous protein that strengthens your hair, nails, and the skin's epidermis.",
         'term1': 'keratin',
         'term1_location': (6, 7),
@@ -27,8 +27,8 @@ test_data = [
     },
     { 
         'test_id': 'appo_pattern_02', 
-        'label_fn': appo_pattern,
-        'label': HYPONYM,
+        'label_fn': appo_pattern_lf,
+        'label': label_classes.index('SUBCLASS'),
         'text': "Cadherin, an elongated protein in the plasma membrane connect to intermediate filaments to create desmosomes.",
         'term1': 'cadherin',
         'term1_location': (0, 1),
@@ -37,7 +37,7 @@ test_data = [
     },
     {
         'test_id': 'appo_pattern_03', 
-        'label_fn': appo_pattern,
+        'label_fn': appo_pattern_lf,
         'label': ABSTAIN,
         'text': "Further breakdown of food takes place in the small intestine where enzymes produced by the liver, the small intestine, and the pancreas continue the process of digestion.",
         'term1': 'liver',
@@ -47,7 +47,7 @@ test_data = [
     },
     {
         'test_id': 'appo_pattern_04', 
-        'label_fn': appo_pattern,
+        'label_fn': appo_pattern_lf,
         'label': ABSTAIN,
         'text': "Lysosomes digest macromolecules, recycle worn-out organelles, and destroy pathogens.",
         'term1': 'lysosome',
@@ -57,8 +57,8 @@ test_data = [
     },
     { 
         'test_id': 'called_pattern_01', 
-        'label_fn': called_pattern,
-        'label': HYPERNYM,
+        'label_fn': called_pattern_lf,
+        'label': label_classes.index('SUPERCLASS'),
         'text': "In the active , dephosphorylated state, Rb binds to proteins called transcription factors , most commonly, E2F ( Figure 10.13 ).",
         'term1': 'protein',
         'term1_location': (10, 11),
@@ -67,8 +67,8 @@ test_data = [
     },
     {
         'test_id': 'called_pattern_02', 
-        'label_fn': called_pattern,
-        'label': OTHER,
+        'label_fn': called_pattern_lf,
+        'label': ABSTAIN,
         'text': "The spindle apparatus (also called the mitotic spindle or simply the spindle) is a dynamic microtubule structure that moves sister chromatids apart during mitosis.",
         'term1': 'spindle apparatus',
         'term1_location': (1, 3),
@@ -77,8 +77,8 @@ test_data = [
     },
     {
         'test_id': 'are_pattern_01', 
-        'label_fn': are_pattern,
-        'label': HYPONYM,
+        'label_fn': are_pattern_lf,
+        'label': label_classes.index('SUBCLASS'),
         'text': "Fats and oils are triglycerides.",
         'term1': 'fat',
         'term1_location': (0, 1),
@@ -87,8 +87,8 @@ test_data = [
     },
     {
         'test_id': 'are_pattern_02', 
-        'label_fn': are_pattern,
-        'label': HYPONYM,
+        'label_fn': are_pattern_lf,
+        'label': label_classes.index('SUBCLASS'),
         'text': "Fats and oils are triglycerides.",
         'term1': 'oil',
         'term1_location': (2, 3),
@@ -97,8 +97,8 @@ test_data = [
     },
     {
         'test_id': 'are_pattern_03', 
-        'label_fn': are_pattern,
-        'label': HYPERNYM,
+        'label_fn': are_pattern_lf,
+        'label': label_classes.index('SUPERCLASS'),
         'text': "The receptors are actually sodium channels that open to allow the passage of Na + into the cell when they receive a neurotransmitter signal.",
         'term1': 'receptor',
         'term1_location': (1, 2),
@@ -106,19 +106,9 @@ test_data = [
         'term2_location': (4, 6)
     },
     {
-        'test_id': 'whichis_pattern_01', 
-        'label_fn': whichis_pattern,
-        'label': HYPONYM,
-        'text': "Most cells have a single nucleus, which is usually the most prominent organelle.",
-        'term1': 'nucleus',
-        'term1_location': (5, 6),
-        'term2': 'organelle',
-        'term2_location': (13, 14)
-    },
-    {
         'test_id': 'isa_pattern_01', 
-        'label_fn': isa_pattern,
-        'label': HYPONYM,
+        'label_fn': isa_pattern_lf,
+        'label': label_classes.index('SUBCLASS'),
         'text': "So a fatty acid is a molecule with a hydrophilic end and a long hydrophobic tail.",
         'term1': 'fatty acid',
         'term1_location': (2, 4),
@@ -127,8 +117,8 @@ test_data = [
     },
     {
         'test_id': 'including_pattern_01', 
-        'label_fn': including_pattern,
-        'label': HYPERNYM,
+        'label_fn': including_pattern_lf,
+        'label': label_classes.index('SUPERCLASS'),
         'text': "The hypothalamus controls food intake via feedback from blood glucose and hormones, including insulin, leptin, and ghrelin.",
         'term1': 'hormones',
         'term1_location': (11, 12),
@@ -137,7 +127,7 @@ test_data = [
     },
     {
         'test_id': 'including_pattern_02', 
-        'label_fn': including_pattern,
+        'label_fn': including_pattern_lf,
         'label': ABSTAIN,
         'text': "The hypothalamus controls food intake via feedback from blood glucose and hormones, including insulin, leptin, and ghrelin.",
         'term1': 'glucose',
@@ -147,8 +137,8 @@ test_data = [
     },
     {
         'test_id': 'especially_pattern_01', 
-        'label_fn': especially_pattern,
-        'label': HYPERNYM,
+        'label_fn': especially_pattern_lf,
+        'label': label_classes.index('SUPERCLASS'),
         'text': "These new technologies were powered using fossil fuels, especially coal.", 
         'term1': 'fossil fuel',
         'term1_location': (6, 8),
@@ -157,8 +147,8 @@ test_data = [
     },
     {
         'test_id': 'acronym_01', 
-        'label_fn': acronym,
-        'label': SYNONYM,
+        'label_fn': acronym_lf,
+        'label': label_classes.index('SYNONYM'),
         'text': "When the volume of blood returning to the heart increases and stretches the atrial walls, atrial natriuretic peptide (ANP) is released, which causes increased excretion of salt and water.", 
         'term1': 'atrial natriuretic peptide',
         'term1_location': (16, 19),
@@ -167,8 +157,8 @@ test_data = [
     },
     {
         'test_id': 'parens_pattern_01', 
-        'label_fn': parens_pattern,
-        'label': SYNONYM,
+        'label_fn': parens_pattern_lf,
+        'label': label_classes.index('SYNONYM'),
         'text': "Organisms that are more complex but still only have two layers of cells in their body plan, such as jellies (Cnidaria).",
         'term1': 'jellies',
         'term1_location': (20, 21),
@@ -177,8 +167,8 @@ test_data = [
     },
     {
         'test_id': 'also_knownas_pattern_01', 
-        'label_fn': also_knownas_pattern,
-        'label': SYNONYM,
+        'label_fn': also_knownas_pattern_lf,
+        'label': label_classes.index('SYNONYM'),
         'text': "ADH is also known as vasopressin.", 
         'term1': 'adh',
         'term1_location': (0, 1),
@@ -187,8 +177,8 @@ test_data = [
     },
     {
         'test_id': 'also_called_pattern_01', 
-        'label_fn': also_called_pattern,
-        'label': SYNONYM,
+        'label_fn': also_called_pattern_lf,
+        'label': label_classes.index('SYNONYM'),
         'text': "Peptide linkages, also called peptide bonds, covalently link amino acids.",
         'term1': 'peptide linkage',
         'term1_location': (0, 2),
@@ -197,13 +187,33 @@ test_data = [
     },
     {
         'test_id': 'plural_pattern_01', 
-        'label_fn': plural_pattern,
-        'label': SYNONYM,
+        'label_fn': plural_pattern_lf,
+        'label': label_classes.index('SYNONYM'),
         'text': "Each stack is called a granum (singular = grana).",
         'term1': 'granum',
         'term1_location': (5, 6),
         'term2': 'grana',
         'term2_location': (9, 10)
+    },
+    {
+        'test_id': 'knownas_pattern_01', 
+        'label_fn': knownas_pattern_lf,
+        'label': label_classes.index('SUPERCLASS'),
+        'text': "When a person internal body temperature rises above 40, major organs begin to fail, a condition known as heat stroke.",
+        'term1': 'condition',
+        'term1_location': (17, 18),
+        'term2': 'heat stroke',
+        'term2_location': (20, 22)
+    },
+    {
+        'test_id': 'symbolconj_pattern_01', 
+        'label_fn': symbolconj_pattern_lf,
+        'label': label_classes.index('SUPERCLASS'),
+        'text': "Human body (somatic) cells have 46 chromosomes, while human gametes (sperm or eggs) have 23 chromosomes each.",
+        'term1': 'gametes',
+        'term1_location': (12, 13),
+        'term2': 'sperm',
+        'term2_location': (14, 15)
     }
 ]
 
@@ -250,9 +260,6 @@ class TestTaxonomyLabelFns(unittest.TestCase):
     def test_are_pattern_03(self):
         self._test_generic('are_pattern_03')
         
-    def test_whichis_pattern_01(self):
-        self._test_generic('whichis_pattern_01')
-        
     def test_isa_pattern_01(self):
         self._test_generic('isa_pattern_01')
         
@@ -279,6 +286,12 @@ class TestTaxonomyLabelFns(unittest.TestCase):
         
     def test_acronym_01(self):
         self._test_generic('acronym_01')
+        
+    def test_knownas_01(self):
+        self._test_generic('knownas_pattern_01')
+        
+    def test_symbolconj_01(self):
+        self._test_generic('symbolconj_pattern_01')
 
 if __name__ == '__main__':
     unittest.main()

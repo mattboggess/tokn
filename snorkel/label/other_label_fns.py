@@ -2,11 +2,11 @@ from snorkel.labeling import labeling_function
 from label_constants import *
 
 @labeling_function()
-def nsubj_pattern(cand):
+def nsubj_pattern_lf(cand):
     second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     if first.dep_ == 'nsubj' and second.dep_ == 'nsubj':
-        return OTHER
+        return label_classes.index('OTHER')
     return ABSTAIN
 
 @labeling_function()
@@ -22,7 +22,7 @@ def term_part_of_speech(cand):
     term2_pos = [tok.tag_ for tok in cand.doc[cand.term2_location[0]:cand.term2_location[1]]]
     
     if term1_pos[-1] in invalid_pos or term2_pos[-1] in invalid_pos:
-        return OTHER
+        return label_classes.index('OTHER')
     else:
         return ABSTAIN
     

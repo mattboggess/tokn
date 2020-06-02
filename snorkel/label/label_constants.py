@@ -1,14 +1,41 @@
 
 
 ABSTAIN = -1
-OTHER = 0
-HYPONYM = 1
-HYPERNYM = 2
-SYNONYM = 3
+taxonomy_classes = [
+    'SUBCLASS',
+    'SUPERCLASS',
+    'SYNONYM'
+]
+meronym_classes = [
+    'HAS-PART/REGION',
+    'PART/REGION-OF',
+    #'HAS-REGION',
+    #'REGION-OF',
+    #'HAS-ELEMENT',
+    #'ELEMENT-OF',
+    #'POSSESSES',
+    #'POSSESSED-BY'
+]
 
-label_classes = ['OTHER', 'HYPONYM', 'HYPERNYM', 'SYNONYM']
+label_classes = ['OTHER'] + taxonomy_classes + meronym_classes
 
 kb_bio101_mapping = {
-    'subclass-of': [HYPONYM, HYPERNYM],
-    'synonym': [SYNONYM, SYNONYM]
+    'subclass-of': [label_classes.index('SUBCLASS'), 
+                    label_classes.index('SUPERCLASS')],
+    'synonym': [label_classes.index('SYNONYM'), 
+                label_classes.index('SYNONYM')],
+    'has-part': [label_classes.index('HAS-PART/REGION'), 
+                 label_classes.index('PART/REGION-OF')],
+    #'possesses': [label_classes.index('POSSESSES'), 
+    #              label_classes.index('POSSESSED-BY')],
+    #'element': [label_classes.index('HAS-ELEMENT'), 
+    #            label_classes.index('ELEMENT-OF')],
+    'has-region': [label_classes.index('HAS-PART/REGION'), 
+                   label_classes.index('PART/REGION-OF')]
 }
+
+def human_label(x, label_classes):
+    if x == -1:
+        return 'ABSTAIN'
+    else:
+        return label_classes[x]
