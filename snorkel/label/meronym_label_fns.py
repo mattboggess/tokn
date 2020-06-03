@@ -12,6 +12,10 @@ def has_pattern_lf(cand):
     second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     
+    if first[-1].text in ['structure', 'function', 'structures', 'functions'] or 
+       second[-1].text in ['structure', 'function', 'structures', 'functions']:
+        return ABSTAIN
+    
     while second.dep_ == 'conj':
         second = second.head
         if second == first:
@@ -88,6 +92,10 @@ def of_pattern_lf(cand):
     second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     
+    if first[-1].text in ['structure', 'function', 'structures', 'functions'] or 
+       second[-1].text in ['structure', 'function', 'structures', 'functions']:
+        return ABSTAIN
+    
     if first.nbor(1).text == 'of' and first.nbor(2).text in ['a', 'an', 'the'] and \
        second.head == first.nbor(1) and not first.text.endswith('ion'):
         return label_classes.index('PART/REGION-OF')
@@ -135,7 +143,7 @@ meronym_label_fns = [
     in_pattern_lf,
     #term_postmod_lf,
     poss_pattern_lf,
-    of_pattern_lf,
+    #of_pattern_lf,
     contain_pattern_lf,
     consist_pattern_lf,
     partof_pattern_lf
