@@ -1,8 +1,21 @@
+# Collects various term lists together into a single term list dataframe and Spacy preprocesses the terms. 
+#
+# Author: Matthew Boggess
+# Version: 6/08/20
+#
+# Data Source: Output terms of preprocess_textbooks.py, preprocess_kb_bio101_terms.py, and any hand-labelled terms.
+#
+#===================================================================================
+# Libraries 
+
 import os
 import pandas as pd
 import re
 from tqdm import tqdm
 import spacy
+
+#===================================================================================
+# Parameters 
 
 terms_dir = "../data/preprocessed/terms"
 
@@ -25,6 +38,8 @@ domain_mapping = {
     'University_Physics_Volume_2': 'physics',
     'University_Physics_Volume_3': 'physics'
 }
+
+#===================================================================================
 
 if __name__ == '__main__':
     

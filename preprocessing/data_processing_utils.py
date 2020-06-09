@@ -41,18 +41,20 @@ def match_uncommon_plurals(text_span, term_span):
 
 def expand_noun_phrase(text, start_ix, match_length):
     
-    np_dep = ['amod', 'npadvmod', 'compound', 'poss']
+    np_dep = ['amod', 'npadvmod', 'compound', 'poss', 'nmod']
     end_ix = start_ix + match_length - 1
     
     start_ix -= 1
-    while start_ix >= 0 and ((text[start_ix].dep_ in np_dep and not text[start_ix].pos_.startswith('V')  and not text[start_ix].is_stop) or text.text == "'s"):
+    while start_ix >= 0 and ((text[start_ix].dep_ in np_dep and not text[start_ix].pos_.startswith('V')  and not text[start_ix].is_stop) or text.text in ['-', "’s", "'", "'s", "s'"]):
         start_ix -= 1
     start_ix += 1
     
-    while end_ix < len(text) and (text[end_ix].dep_ in np_dep or text.text == "'s"):
-        end_ix += 1
-    if end_ix == len(text):
-        end_ix -= 1
+    #while end_ix < len(text) and \
+    #      (text[end_ix].dep_ in np_dep or text.text == ["’s", '-', "'"]) and \
+    #      not text[end_ix].pos_.startswith('V'):
+    #    end_ix += 1
+    #if end_ix == len(text):
+    #    end_ix -= 1
     
     match_length = end_ix - start_ix + 1
     term_lemma = ' '.join([tok.lemma_ for tok in text[start_ix:start_ix + match_length]]).replace('-', ' ').strip()

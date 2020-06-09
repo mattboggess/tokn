@@ -104,7 +104,7 @@ def clean_paren_stuff(x):
 df_id = pd.read_csv('../../data/raw_data/openstax/book_cnxid.csv')
 
 ### User params -- the yaml file from which we extract metadata
-book_title = 'University Physics Volume 3' # This name needs to match a title in df_id
+book_title = 'Anatomy and Physiology' # This name needs to match a title in df_id
 cnx_id = df_id[df_id['title']==book_title].cnx_id.iloc[0]
 
 ### Compute some filename constants

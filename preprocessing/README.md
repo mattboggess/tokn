@@ -6,10 +6,11 @@ ensure all dependencies for each script are met.
 
 ## Extract Sentences from Raw Book Formats
 
-These scripts turn raw HTML/cnxml versions of the book into separate cleaned sentences:
+These scripts turn raw HTML/cnxml versions of the books into separate cleaned sentences:
   - parse_life_bio_sentences.py: Extracts sentences from html version of Life Biology textbook
-  - openstax_book_import: This folder holds scripts that extract sentences from cnxml version of
-    multiple OpenStax textbooks.
+  - openstax_book_import: This folder holds scripts that extract sentences from cnxml versions of
+    multiple OpenStax textbooks. The parse_sentences.py script must be run with each Openstax book specified in
+    the book_title variable.
 
 ## Collect Term List and Preprocessed Sentences
 
@@ -18,9 +19,11 @@ have both been preprocessed with Spacy:
   - preprocess_textbooks.py: Extracts key terms from the textbooks parse into separate text files
     and filters textbooks sentences to relevant sentences and saves them out with spacy preprocessing
   - preprocess_kb_bio101_terms.py: Pulls out terms from the Bio101 knowledge base into a separate text file
+  - Manually curated hand labelled term lists should be manually copied to the data/preprocessed/terms folder at this point 
+    before running the next script. 
   - collect_terms.py: Assembles all terms from all the different sources into a single dataframe and
     Spacy preprocesses the terms. Previous two scripts must be run first and any hand-labelled term lists
-    need to be manually copied in to the input term folder.
+    need to be manually copied in to the data/preprocessed/terms folder.
 
 ## Create Term Extraction Data
 
