@@ -1,10 +1,15 @@
-# Parses an html version of life biology into a separate csv file with one row per cleaned sentence.
+# Converts Life Biology Raw HTML into individual clean sentences in csv file 
 #
 # Author: Matthew Boggess
-# Version: 6/08/20
-#
-# Data Source: Raw html of Life Biology in raw data directory.
-#
+# Version: 5/28/20
+
+# Data Source: HTML versions of Life Biology chapters shared by Dr. Chaudhri
+
+# Description: 
+#   For each provided chapter/section this script finds the all valid full sentences for that
+#   section and then cleans up encoding errors and removes the HTML markup. It assembles it all
+#   into a csv file for the entire book.
+
 #===================================================================================
 # Libraries 
 
@@ -50,7 +55,7 @@ exclude_classes = [
 # Helper Functions
 
 def clean_sent(sent):
-    """Removes html formatting and cleans up parsing errors for sentences."""
+    """Removes HTML markup and fixes several encoding errors."""
     sent = re.sub('<span class="sidebar-division-title".*?>.*?</span>', '', sent)
     sent = re.sub('<.*?>', '', sent)
     sent = sent.replace('*', '')
@@ -126,3 +131,4 @@ if __name__ == '__main__':
             
     data = pd.DataFrame(data)
     data.to_csv(f"{output_dir}/sentences_Life_Biology_parsed.csv", index=False)
+    

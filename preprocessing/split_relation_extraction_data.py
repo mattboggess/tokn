@@ -1,12 +1,12 @@
-# Splits sentences tagged with term pairs into a train, dev, and test split. 
+# Splits sentences tagged with term pairs into a train, dev, and test split for relation extraction.
 #
 # Author: Matthew Boggess
-# Version: 4/27/20
+# Version: 5/28/20
 #
-# Data Source: Tagged sentences from tag_sentences.py
+# Data Source: Sentence, term pair grouped dataframes from generate_term_pairs.py
 #
-# Description: Combines Life Biology and OpenStax biology tagged sentences and split them into
-# a train, dev, and test set removing overlap between the train and dev/test set.
+# Description: Combines Life Biology and OpenStax biology tagged sentences/term pairs and split them 
+# into a train, dev, and test set removing overlap between the train and dev/test set.
 
 #===================================================================================
 # Libraries 
@@ -15,8 +15,6 @@ import pandas as pd
 
 #===================================================================================
 # Parameters
-
-## Filepaths
 
 life_bio_file = "../data/preprocessed/term_pair_sentences/Life_Biology_term_pairs.pkl"
 openstax_bio_file = "../data/preprocessed/term_pair_sentences/Biology_2e_term_pairs.pkl"
@@ -77,10 +75,8 @@ if __name__ == '__main__':
     train['term_pair'] = list(zip(train['term1'], train['term2']))
     dev['term_pair'] = list(zip(dev['term1'], dev['term2']))
     test['term_pair'] = list(zip(test['term1'], test['term2']))
-    print(train.shape)
     train = train[~train.term_pair.isin(dev.term_pair)]
     train = train[~train.term_pair.isin(test.term_pair)]
-    print(train.shape)
     
     # write splits to file  
     train.drop(['filter_col'], axis=1).to_pickle(f"{output_dir}/train.pkl")

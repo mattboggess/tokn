@@ -2,9 +2,9 @@
 # sets for training and evaluating term extraction models.
 
 # Author: Matthew Boggess
-# Version: 4/13/20
+# Version: 5/28/20
 
-# Data Source: Output of tag_sentences.py.
+# Data Source: Output of tag_sentences.py for term extraction.
 
 # Description: 
 #   - User specifies a splits parameter that maps different data splits to sets of input
@@ -41,22 +41,22 @@ output_data_dir = "../data/term_extraction"
 # mapping from data splits to data sources 
 splits = {
     'train': [
-        ('Life_Biology', 'all', 'all'),
-        ('Biology_2e', 'all', 'all')
-        #('Anatomy_and_Physiology', 'all', 'all'), 
-        #('Astronomy', 'all', 'all'), 
-        #('Chemistry_2e', 'all', 'all'), 
-        #('Microbiology', 'all', 'all'), 
-        #('University_Physics_Volume_1', 'all', 'all'),
-        #('University_Physics_Volume_2', 'all', 'all'),
-        #('University_Physics_Volume_3', 'all', 'all')
+        #('Life_Biology', 'all', 'all'),
+        #('Biology_2e', 'all', 'all')
+        ('Anatomy_and_Physiology', 'all', 'all'), 
+        ('Astronomy', 'all', 'all'), 
+        ('Chemistry_2e', 'all', 'all'), 
+        ('Microbiology', 'all', 'all'), 
+        ('University_Physics_Volume_1', 'all', 'all'),
+        ('University_Physics_Volume_2', 'all', 'all'),
+        ('University_Physics_Volume_3', 'all', 'all')
     ],
     'dev': [('dev', 'all', 'all')],
     'test': [('test', 'all', 'all')]
 }
 
 # flag on whether sentences without any key terms tagged should be excluded
-ignore_empty_sentences = True
+ignore_empty_sentences = False 
 
 # 1/3 length of small debugging set to create
 debug_length = 20
@@ -72,7 +72,7 @@ if __name__ == '__main__':
         
         split_data = []
         for textbook, chapters, sections in sources:
-            data = pd.read_pickle(f"{input_data_dir}/{textbook}_tagged_sentences.pkl")
+            data = pd.read_pickle(f"{input_data_dir}/{textbook}_term_extraction_tagged_sentences.pkl")
             
             # filter to chapter and section selections
             if chapters == 'all':

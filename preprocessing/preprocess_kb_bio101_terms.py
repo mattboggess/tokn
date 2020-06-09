@@ -1,10 +1,14 @@
-# Extracts biology terms from the Bio101 knowledge base. 
+# Pulls out biology terms from a dump of the Bio101 knowledge base lexicon. 
 #
 # Author: Matthew Boggess
-# Version: 6/08/20
+# Version: 4/26/20
 #
-# Data Source: Raw dump of Bio101 KB lexicon. 
+# Data Source: Lexicon dump of Bio101 KB provided by Dr. Chaudhri 
 #
+# Description: For each biology concept in the Bio101 KB, enumerates all surface forms for each
+# concept and saves these to a text file. Also saves out relations (volume, area, etc.) that are
+# used to filter the final key term list.
+
 #===================================================================================
 # Libraries 
 
@@ -25,7 +29,7 @@ lexicon_input_file = f"{life_bio_data_dir}/kb_lexicon.txt"
 terms_output_file = f"{term_dir}/kb_bio101_terms.txt"
 rel_terms_output_file = f"{term_dir}/kb_bio101_relations_exclude.txt"
 
-# concepts that have too general representations
+# concepts that are too general
 exclude_concepts = ['Aggregate', 'Center', 'Grouping-Activity', 'Normal', 'Person',
                     'Unstable-System', 'Sequence', 'Region']
 
@@ -58,7 +62,6 @@ if __name__ == '__main__':
     upper_ontology = set(upper_ontology.text)
     lexicon = lexicon[(lexicon.concept.isin(bio_concepts)) & (~lexicon.concept.isin(exclude_concepts))]
 
-    # spacy process terms to get lemmas
     terms = []
     relation_terms = set()
     seen_terms = set()
@@ -86,4 +89,3 @@ if __name__ == '__main__':
         fid.write('\n'.join(sorted(terms)))
     with open(rel_terms_output_file, 'w') as fid:
         fid.write('\n'.join(sorted(list(relation_terms))))
-    

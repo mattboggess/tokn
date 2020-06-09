@@ -1,12 +1,16 @@
-# Separates out chapter sentences for each textbook and extracts terms from glossary/index of openstax textbooks. 
-# Additionally Spacy preprocesses the textbook sentences.
+# Filters parsed sentences from OpenStax textbooks and Life Biology to only relevant chapter 
+# sentences and Spacy preprocesses the sentences. Also, pulls out key terms from the textbooks.
 #
 # Author: Matthew Boggess
-# Version: 6/08/20
-#
-# Data Source: Parsed sentence files of Life Biology and Openstax textbooks from parse_life_bio_sentences.py
-# and openstax_book_import.
-#
+# Version: 5/28/20
+
+# Data Source: Parsed csv sentences of Life Biology and OpenStax textbooks from parsing scripts 
+
+# Description: 
+#   For each textbook, filters sentences only to educational sections. Then spacy preprocesses each
+#   sentence. Saved to pickled pandas dataframe (with spacy doc) and csv (without spacy doc).
+#   Pulls out key term lists from each textbook and saves them to newline delimited text files.
+
 #===================================================================================
 # Libraries 
 
@@ -45,7 +49,7 @@ if not os.path.exists(sent_output):
 if not os.path.exists(term_output):
     os.makedirs(term_output)
 
-# sections for dev and test splits for term extraction
+# chapters/sections to be separated into a dev/test set for term extraction
 test = ('Life_Biology', [([39], [0, 1, 2, 3, 4, 5, 6])])
 dev = ('Biology_2e', [([4], [3]), ([10], [3, 5])])
 
@@ -93,7 +97,7 @@ exclude_sections = [
     'Measurements and the Metric System'
 ]
 
-# section that have terms for our term lists
+# sections that hold key terms
 term_sections = ['Key Terms', 'Index']
 
 #===================================================================================
@@ -116,7 +120,7 @@ if __name__ == '__main__':
         book = pd.read_csv(f"{sent_input}/{file}")
         book['textbook'] = textbook
 
-        # handle ze terms
+        # process terms into newline separated text file 
         print("Processing Terms")
         terms = book[book.section_name.isin(term_sections)].sentence
         terms = [t.split(':')[0] for t in terms]
@@ -137,16 +141,20 @@ if __name__ == '__main__':
             with open(f"{term_output}/{textbook}_terms.txt", 'w') as fid:
                 fid.write('\n'.join(terms))
 
-        # preproc sentences and write out
+        # spacy preprocess relevant sentences and save 
         print("Processing Sentences")
-        book = book[~book.section_name.isin(exclude_sections)].reset_index()
+        book = book[~book.section_name.isin(exclude_sections)]
         docs = []
         for sent in tqdm(book.sentence):
             docs.append(nlp(sent))
         book['doc'] = docs 
-        book.to_pickle(f"{sent_output}/{textbook}_sentences.pkl")
 
-        # special versions for dev and test sets
+        if 'page_id' in book.columns:
+            book = book.drop(['page_id'], axis=1)
+        book.to_pickle(f"{sent_output}/{textbook}_sentences.pkl")
+        book.drop(['doc'], axis=1).to_csv(f"{sent_output}/{textbook}_sentences.csv", index=False)
+
+        # special separate versions for dev and test sets for term extraction
         if textbook == dev[0]:
             textbook = 'dev'
             split = dev
@@ -159,4 +167,6 @@ if __name__ == '__main__':
         for ch, sects in split[1]:
             new_book.append(book[(book.chapter.isin(ch)) & (book.section.isin(sects))])
         book = pd.concat(new_book)
+    
         book.to_pickle(f"{sent_output}/{textbook}_sentences.pkl")
+        book.drop(['doc'], axis=1).to_csv(f"{sent_output}/{textbook}_sentences.csv", index=False)
