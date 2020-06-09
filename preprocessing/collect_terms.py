@@ -1,8 +1,29 @@
+# Collects all terms from all sources into single standardized dataframe and spacy preprocesses
+# the terms.
+#
+# Author: Matthew Boggess
+# Version: 5/28/20
+#
+# Data Source: All text files containing terms output by preprocess_textbooks.py (textbook key
+# terms), output by preprocess_kb_bio101_terms.py (kb terms), and manually curated and copied over
+# hand labelled terms lists for select sections.
+#
+# Description: 
+#   For each term source, pulls out the term and spacy preprocesses. Also pulls out concept mappings
+#   for the KB terms and event/entity labels where provided. Exports to single dataframe with
+#   markers for source of the term as well as academic domain from where it was derived.
+
+#===================================================================================
+# Libraries 
+
 import os
 import pandas as pd
 import re
 from tqdm import tqdm
 import spacy
+
+#===================================================================================
+# Parameters 
 
 terms_dir = "../data/preprocessed/terms"
 
@@ -26,10 +47,13 @@ domain_mapping = {
     'University_Physics_Volume_3': 'physics'
 }
 
+#===================================================================================
+
 if __name__ == '__main__':
     
     nlp = spacy.load('en_core_web_sm')
     
+    # relations/other terms that should be excluded from our final list
     exclude_terms = []
     with open(rel_terms_exclude_file, 'r') as fid:
         rel_terms = fid.readlines()

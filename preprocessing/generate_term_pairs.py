@@ -1,3 +1,16 @@
+# Enumerates all sentence, term pair combinations for a set of term-tagged sentences to be used
+# for relation extraction
+#
+# Author: Matthew Boggess
+# Version: 5/28/20
+#
+# Data Source: Tagged sentences dataframes output from tag_sentences.py.
+#
+# Description: 
+#   For each provided set of tagged sentences: Enumerates all term pairs from the set of tagged 
+#.  terms in each sentence creating a row in a new data frame for each pair.
+
+#===================================================================================
 # Libraries 
 
 import spacy
@@ -8,34 +21,25 @@ import os
 import pandas as pd
 import json
 
+#===================================================================================
+# Parameters 
+
 input_data_dir = '../data/preprocessed/tagged_sentences'
 output_data_dir = '../data/preprocessed/term_pair_sentences'
 
 textbooks = [
     'Life_Biology', 
     'Biology_2e'
-    #'Anatomy_and_Physiology',
-    #'Astronomy',
-    #'Chemistry_2e',
-    #'Microbiology',
-    #'Psychology',
-    #'University_Physics_Volume_1',
-    #'University_Physics_Volume_2',
-    #'University_Physics_Volume_3',
 ]
 
-# invalid parts of speech that shouldn't be tagged
-invalid_pos = ['JJ', 'JJR', 'JJS', 'MD', 'RB', 'RBR', 'RBS', 'RP', 'VB', 'VBD', 'VBG', 'VBN', 'VBZ', 
-               'VBP', 'WRB']
-
-one_direction = True
+#===================================================================================
 
 if __name__ == '__main__':
     
     nlp = spacy.load('en_core_web_sm')
     
     for i, textbook in enumerate(textbooks):
-        data = pd.read_pickle(f"{input_data_dir}/{textbook}_tagged_sentences.pkl")
+        data = pd.read_pickle(f"{input_data_dir}/{textbook}_relation_extraction_tagged_sentences.pkl")
         
         new_df = []
         for k, row in tqdm(list(data.iterrows())):
@@ -46,10 +50,6 @@ if __name__ == '__main__':
                 for j in range(i + 1, len(found_terms)):
                     term_pair = (found_terms[i], found_terms[j])
                     
-                    if found_terms_info[term_pair[0]]['pos'][0][-1] in invalid_pos or \
-                       found_terms_info[term_pair[1]]['pos'][0][-1] in invalid_pos:
-                        continue
-                        
                     indices = get_closest_match(
                         found_terms_info[term_pair[0]]['indices'],
                         found_terms_info[term_pair[1]]['indices']
@@ -65,14 +65,7 @@ if __name__ == '__main__':
                     new_row['term1_location'] = indices[0]
                     new_row['term2_location'] = indices[1]
                     new_df.append(new_row)
-
-                    #if not one_direction:
-                    #    term_pair_reverse = (found_terms[j], found_terms[i])
-                    #    indices_reverse = get_closest_match(
-                    #        found_terms_info[term_pair_reverse[0]]['indices'],
-                    #        found_terms_info[term_pair_reverse[1]]['indices']
-                    #    )
-                    #    found_term_pairs.append((term_pair_reverse, indices_reverse))
+                    
         data = pd.DataFrame(new_df).reset_index()
-        data = data.drop(['level_0', 'index'], axis=1)
+        data = data.drop(['index', 'tags', 'term_info'], axis=1)
         data.to_pickle(f"{output_data_dir}/{textbook}_term_pairs.pkl")

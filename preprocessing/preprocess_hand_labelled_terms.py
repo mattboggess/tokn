@@ -1,21 +1,32 @@
+# Converts Life Biology Raw HTML into individual clean sentences in csv file 
+#
+# Author: Matthew Boggess
+# Version: 5/28/20
+
+# Data Source: HTML versions of Life Biology chapters shared by Dr. Chaudhri
+
+# Description: 
+#   For each provided chapter/section this script finds the all valid full sentences for that
+#   section and then cleans up encoding errors and removes the HTML markup. It assembles it all
+#   into a csv file for the entire book.
+
+#===================================================================================
+# Libraries 
+
 import spacy
 import pandas as pd
 from io import StringIO
 import os
 from tqdm import tqdm
 
-# text representations of concepts that are too general and thus problematic for text matching
-exclude_terms = ['object', 'aggregate', 'group', 'thing', 'region', 'center', 'response',
-                 'series', 'unit', 'result', 'normal', 'divide', 'whole', 'someone', 'somebody',
-                 'feature', 'class']
+#===================================================================================
+# Parameters 
+
 # data directories
-exclude_term_file
 raw_data_dir = "../data/raw_data/hand_labelled"
 output_dir = "../data/preprocessed/terms"
     
-## Important Enumerations 
-
-# textbook sections/chapters to be processed
+# textbook sections/chapters to be processed that have hand labelled list of terms
 textbook_sections = [
     'openstax_bio2e_section10-2_hand_labelled',
     'openstax_bio2e_section10-4_hand_labelled',
@@ -25,7 +36,7 @@ textbook_sections = [
 
 #===================================================================================
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     
     for i, section in enumerate(textbook_sections):
         
