@@ -12,7 +12,7 @@ from parse_config import ConfigParser
 import os
 
 # hack to fix OMP error on Mac
-os.environ['KMP_DUPLICATE_LIB_OK']='True'
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 # fix random seeds for reproducibility
 SEED = 123
@@ -25,8 +25,8 @@ def main(config):
     logger = config.get_logger('train')
 
     # setup data_loader instances
-    data_loader = config.init_obj('data_loader', module_data, split="full")
-    valid_data_loader = config.init_obj('data_loader', module_data, split="life_test")
+    data_loader = config.init_obj('data_loader', module_data, split='train')
+    valid_data_loader = config.init_obj('data_loader', module_data, split='dev')
 
     # build model architecture, then print to console
     model = config.init_obj('arch', module_arch)

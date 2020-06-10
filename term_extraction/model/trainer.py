@@ -92,7 +92,6 @@ class Trainer:
         
         epoch_target = []
         epoch_pred = []
-        epoch_terms = Counter() 
         epoch_loss = 0
         
         for batch_idx, batch_data in enumerate(self.data_loader):
@@ -121,23 +120,21 @@ class Trainer:
             loss.backward()
             self.optimizer.step()
 
-            # compute the predicted terms for this batch 
-            term_predictions = get_term_predictions(pred, batch_data['target'], 
-                                                    batch_data['bert_mask'], 
-                                                    batch_data['sentences'], self.data_loader.tags)
             
-            # add loss and sentence metrics to tensorboard display for this batch
+            # get token level predictions
+            pred = torch.flatten(pred * batch_data['bert_mask']).tolist()
+            target = torch.flatten(batch_data['target'] * batch_data['bert_mask']).tolist()
+            
+            # add loss and token metrics to tensorboard display for this batch
             self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
             self.writer.add_scalar("loss", loss.item())
             for met in self.sentence_metric_ftns:
-                self.writer.add_scalar(met.__name__, met(term_predictions['target'], 
-                                                         term_predictions['prediction']))
+                self.writer.add_scalar(met.__name__, met(pred, target))
                 
             # update full epoch trackers
-            epoch_target += term_predictions['target']
-            epoch_pred += term_predictions['prediction']
+            epoch_target += target 
+            epoch_pred += pred 
             epoch_loss += loss.item()
-            epoch_terms.update(term_predictions['predicted_terms'])
             
             if batch_idx % self.log_step == 0:
                 self.logger.debug('Train Epoch: {} {} Loss: {:.6f}'.format(
@@ -149,13 +146,8 @@ class Trainer:
             if batch_idx == self.len_epoch:
                 break
                 
-        # compute epoch level sentence metrics
+        # compute epoch level token metrics
         log = {m.__name__: m(epoch_target, epoch_pred) for m in self.sentence_metric_ftns}
-        
-        # compute overall term identification metrics
-        term_classifications = compute_term_categories(self.data_loader.dataset.term_counts,
-                                                       epoch_terms)
-        log.update(**{m.__name__: m(term_classifications) for m in self.term_metric_ftns})
         
         log["loss"] = epoch_loss / batch_idx
 
@@ -166,7 +158,6 @@ class Trainer:
         #if self.lr_scheduler is not None:
         #    self.lr_scheduler.step()
         
-        self.train_classifications = term_classifications
         return log
 
     def _valid_epoch(self, epoch):
@@ -189,7 +180,6 @@ class Trainer:
             
             epoch_target = []
             epoch_pred = []
-            epoch_terms = Counter() 
             epoch_loss = 0
             
             for batch_idx, batch_data in enumerate(self.valid_data_loader):
@@ -212,41 +202,30 @@ class Trainer:
                 loss = self.criterion(output, batch_data['target'], batch_data['bert_mask'],
                                       self.data_loader.dataset.class_weights.to(self.device),
                                       self.model)
-
-                # compute the predicted terms for this batch 
-                term_predictions = get_term_predictions(pred, batch_data['target'], 
-                                                        batch_data['bert_mask'], 
-                                                        batch_data['sentences'], 
-                                                        self.valid_data_loader.tags)
                 
-                # add loss and sentence metrics to tensorboard display for this batch
+                 # get token level predictions
+                pred = torch.flatten(pred * batch_data['bert_mask']).tolist()
+                target = torch.flatten(batch_data['target'] * batch_data['bert_mask']).tolist()
+
+                # add loss and token metrics to tensorboard display for this batch
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.writer.add_scalar("loss", loss.item())
                 for met in self.sentence_metric_ftns:
-                    self.writer.add_scalar(met.__name__, met(term_predictions["target"], 
-                                                             term_predictions["prediction"]))
+                    self.writer.add_scalar(met.__name__, met(pred, target))
                     
                 # update full epoch trackers
-                epoch_target += term_predictions["target"]
-                epoch_pred += term_predictions["prediction"]
+                epoch_target += target 
+                epoch_pred += pred 
                 epoch_loss += loss.item()
-                epoch_terms.update(term_predictions["predicted_terms"])
                 
         # add histogram of model parameters to the tensorboard
         for name, p in self.model.named_parameters():
             self.writer.add_histogram(name, p, bins='auto')
         
-        # compute epoch level sentence metrics
+        # compute epoch level token metrics
         log = {m.__name__: m(epoch_target, epoch_pred) for m in self.sentence_metric_ftns}
         
-        # compute overall term identification metrics
-        term_classifications = compute_term_categories(self.valid_data_loader.dataset.term_counts,
-                                                       epoch_terms)
-        log.update(**{m.__name__: m(term_classifications) for m in self.term_metric_ftns})
-        
         log["loss"] = epoch_loss / batch_idx
-        
-        self.validation_classifications = term_classifications
         
         return log
 

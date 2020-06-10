@@ -69,35 +69,35 @@ class BertCRFNER(BaseModel):
         self.dropout = nn.Dropout(dropout_rate)
         self.softmax = nn.LogSoftmax(dim=-1)
         
-        self.crf = CRF(len(tags), batch_first=True)
+        self.crf = CRF(num_classes, batch_first=True)
         
         # Can't start with interior/end of term phrase
-        self.crf.start_transitions.data[tags.index('I')] = -1e5
-        self.crf.start_transitions.data[tags.index('E')] = -1e5
-        
-        # Can't end with interior/beginning of term phrase
-        self.crf.end_transitions.data[tags.index('I')] = -1e5
-        self.crf.end_transitions.data[tags.index('B')] = -1e5
-        
-        # Unlikely to immediately transition to another term 
-        self.crf.transitions.data[tags.index('E'), tags.index('B')] = -1e5
-        self.crf.transitions.data[tags.index('E'), tags.index('S')] = -1e5
-        self.crf.transitions.data[tags.index('S'), tags.index('B')] = -1e5
-        self.crf.transitions.data[tags.index('S'), tags.index('S')] = -1e5
-        
-        # Must form valid term phrase 
-        self.crf.transitions.data[tags.index('B'), tags.index('O')] = -1e5
-        self.crf.transitions.data[tags.index('B'), tags.index('S')] = -1e5
-        self.crf.transitions.data[tags.index('B'), tags.index('B')] = -1e5
-        self.crf.transitions.data[tags.index('I'), tags.index('O')] = -1e5
-        self.crf.transitions.data[tags.index('I'), tags.index('S')] = -1e5
-        self.crf.transitions.data[tags.index('I'), tags.index('B')] = -1e5
-        self.crf.transitions.data[tags.index('E'), tags.index('I')] = -1e5
-        self.crf.transitions.data[tags.index('E'), tags.index('E')] = -1e5
-        self.crf.transitions.data[tags.index('O'), tags.index('I')] = -1e5
-        self.crf.transitions.data[tags.index('O'), tags.index('E')] = -1e5
-        self.crf.transitions.data[tags.index('S'), tags.index('I')] = -1e5
-        self.crf.transitions.data[tags.index('S'), tags.index('E')] = -1e5
+        #self.crf.start_transitions.data[tags.index('I')] = -1e5
+        #self.crf.start_transitions.data[tags.index('E')] = -1e5
+        #
+        ## Can't end with interior/beginning of term phrase
+        #self.crf.end_transitions.data[tags.index('I')] = -1e5
+        #self.crf.end_transitions.data[tags.index('B')] = -1e5
+        #
+        ## less likely to immediately transition to another term 
+        #self.crf.transitions.data[tags.index('E'), tags.index('B')] = -1e5
+        #self.crf.transitions.data[tags.index('E'), tags.index('S')] = -1e2
+        #self.crf.transitions.data[tags.index('S'), tags.index('B')] = -1e2
+        #self.crf.transitions.data[tags.index('S'), tags.index('S')] = -1e8
+        #
+        ## Must form valid term phrase 
+        #self.crf.transitions.data[tags.index('B'), tags.index('O')] = -1e5
+        #self.crf.transitions.data[tags.index('B'), tags.index('S')] = -1e5
+        #self.crf.transitions.data[tags.index('B'), tags.index('B')] = -1e5
+        #self.crf.transitions.data[tags.index('I'), tags.index('O')] = -1e5
+        #self.crf.transitions.data[tags.index('I'), tags.index('S')] = -1e5
+        #self.crf.transitions.data[tags.index('I'), tags.index('B')] = -1e5
+        #self.crf.transitions.data[tags.index('E'), tags.index('I')] = -1e5
+        #self.crf.transitions.data[tags.index('E'), tags.index('E')] = -1e5
+        #self.crf.transitions.data[tags.index('O'), tags.index('I')] = -1e5
+        #self.crf.transitions.data[tags.index('O'), tags.index('E')] = -1e5
+        #self.crf.transitions.data[tags.index('S'), tags.index('I')] = -1e5
+        #self.crf.transitions.data[tags.index('S'), tags.index('E')] = -1e5
         
     def forward(self, batch_data):
         s, _ = self.bert(batch_data['data'], attention_mask=batch_data['pad_mask'])
@@ -106,20 +106,28 @@ class BertCRFNER(BaseModel):
         return emissions 
 
     def decode(self, emissions, mask):
-        preds = []
-        for i in range(emissions.shape[0]):
-            m = mask[i, :] == 1
-            ems = emissions[i, m, :].unsqueeze(0)
-            seq = self.crf.decode(ems)[0]
-            
-            seq_ix = 0
-            tmp = []
-            for i in range(len(m)):
-                if m[i]:
-                    tmp.append(seq[seq_ix])
-                    seq_ix += 1
-                else:
-                    tmp.append(0)
-            preds.append(tmp)
-        return torch.Tensor(preds).to(torch.int32) 
+        #preds = []
+        #for i in range(emissions.shape[0]):
+        #    m = mask[i, :] == 1
+        #    ems = emissions[i, m, :].unsqueeze(0)
+        #    seq = self.crf.decode(ems)[0]
+        #    
+        #    seq_ix = 0
+        #    tmp = []
+        #    for i in range(len(m)):
+        #        if m[i]:
+        #            tmp.append(seq[seq_ix])
+        #            seq_ix += 1
+        #        else:
+        #            tmp.append(0)
+        #    preds.append(tmp)
+        #return torch.Tensor(preds).to(torch.int32) 
+        preds = torch.zeros([emissions.shape[0], emissions.shape[1]])
+        emissions = emissions[:, 1:, :]
+        mask_in = mask[:, 1:]
+        a = self.crf.decode(emissions, mask=mask_in.to(torch.uint8))
+        for i, row in enumerate(a):
+            preds[i, mask[i, :] == 1] = torch.Tensor(row)
+        return preds.to(torch.int32)
+        #return torch.Tensor(a).to(torch.int32)
 

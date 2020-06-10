@@ -38,9 +38,10 @@ class TermNERDataset(Dataset):
         
         # compute term_counts
         self.term_counts = Counter()
-        for ti in self.data.term_info:
-            for term in ti:
-                self.term_counts[term] += len(ti[term]['indices'])
+        if 'term_info' in self.data.columns:
+            for ti in self.data.term_info:
+                for term in ti:
+                    self.term_counts[term] += len(ti[term]['indices'])
                                   
         # compute class weights to handle class imbalance
         tag_classes = [t for tags in self.data.tags for t in tags]
@@ -65,21 +66,23 @@ class TermNERDataset(Dataset):
           - tags: list of BIOES tags for sentence (data label)
           - pad_mask: mask denoting which tokens in sentence are padding tokens
           - bert_mask: mask denoting which tokens correspond to valid, originally tagged tokens
-          - source: textbook/section source of the sentence
-          - sentence_text: Original text of the sentence
+          - doc: Spacy parse of the input sentence 
         """
         sample = self.data.iloc[idx, :]
         
         source = sample['textbook'] 
-        terms = sample['terms']
+        if 'terms' in sample:
+            terms = sample['terms']
+        else:
+            terms = ['']
         sentence, tags, pad_mask, bert_mask = self.preprocess(sample['tokens'], sample['tags'])
         sentence = torch.Tensor(sentence).to(torch.int64)
         tags = torch.Tensor(tags).to(torch.int64)
         pad_mask = torch.Tensor(pad_mask).to(torch.int64)
         bert_mask = torch.Tensor(bert_mask).to(torch.int64)
-        sentence_text = sample['sentence'].split()
+        doc = sample['doc']
         
-        return (sentence, tags, pad_mask, bert_mask, source, sentence_text, terms)
+        return (sentence, tags, pad_mask, bert_mask, doc)
 
     def preprocess(self, sentence_tokenized, tags):
         """
@@ -165,7 +168,7 @@ class TermNERDataLoader(DataLoader):
     Pytorch data loader for term extraction Dataset
     """
     def __init__(self, data_dir, batch_size, shuffle=True, num_workers=0,
-                 split='train', tags=['O', 'S', 'B', 'I', 'E'], 
+                 split='train', tags=['O', 'S', 'B', 'I', 'E'], balance_loss=True,
                  max_sent_length=10):
         """
         Parameters
@@ -195,7 +198,7 @@ class TermNERDataLoader(DataLoader):
         """
         self.data_dir = data_dir
         self.tags = tags
-        self.dataset = TermNERDataset(self.data_dir, split=split, 
+        self.dataset = TermNERDataset(self.data_dir, split=split, balance_loss=balance_loss,
                                       tags=tags, max_sent_length=max_sent_length)
         super().__init__(self.dataset, batch_size=batch_size, shuffle=shuffle, 
                          num_workers=num_workers, collate_fn=self.collate_fn)
@@ -212,9 +215,7 @@ class TermNERDataLoader(DataLoader):
             'target': torch.stack([bd[1] for bd in batch_data]).squeeze(0),
             'pad_mask': torch.stack([bd[2] for bd in batch_data]),
             'bert_mask': torch.stack([bd[3] for bd in batch_data]),
-            'sources': [bd[4] for bd in batch_data],
-            'sentences': [bd[5] for bd in batch_data],
-            'terms': [bd[6] for bd in batch_data]
+            'sentences': [bd[4] for bd in batch_data],
         }
         
         return batch_data 

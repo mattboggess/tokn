@@ -34,11 +34,11 @@ def crf_loss(emissions, target, bert_mask, class_weights, model):
     """
     Conditional random field negative log likelihood with extra Bert tokens masked out.
     """
-    ll = 0
-    for i in range(emissions.shape[0]):
-        mask = bert_mask[i, :] == 1
-        ems = emissions[i, mask, :].unsqueeze(0)
-        tags = target[i, mask].unsqueeze(0)
-        ll += model.crf(ems, tags)
+    #ll = 0
+    #for i in range(emissions.shape[0]):
+    #    mask = bert_mask[i, :] == 1
+    #    ems = emissions[i, mask, :].unsqueeze(0)
+    #    tags = target[i, mask].unsqueeze(0)
+    #    ll += model.crf(ems, tags)
         
-    return -ll
+    return -model.crf(emissions[:, 1:, :], target[:, 1:], mask=bert_mask[:, 1:].to(torch.uint8))
