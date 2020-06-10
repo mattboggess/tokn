@@ -241,7 +241,7 @@ def tag_terms(text, terms, nlp=None, invalid_pos=[], invalid_dep=[], expand_np=F
                 text[ix]._.workaround = '<term>' + text[ix]._.workaround
                 end_ix = ix + match_length - 1
                 if text[end_ix]._.workaround.endswith(' '):
-                    text[end_ix]._.workaround = text[end_ix]._.workaround[:-1] + '</term>'
+                    text[end_ix]._.workaround = text[end_ix]._.workaround[:-1] + '</term> '
                 else:
                     text[end_ix]._.workaround += '</term>'
                     

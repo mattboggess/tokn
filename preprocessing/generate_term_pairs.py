@@ -26,6 +26,8 @@ import json
 
 input_data_dir = '../data/preprocessed/tagged_sentences'
 output_data_dir = '../data/preprocessed/term_pair_sentences'
+if not os.path.exists(output_data_dir):
+    os.makedirs(output_data_dir)
 
 textbooks = [
     'Life_Biology', 

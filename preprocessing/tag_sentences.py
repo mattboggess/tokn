@@ -43,6 +43,8 @@ tag_type = 'relation_extraction'
 terms_file = "../data/preprocessed/terms/processed_terms.pkl"
 sentences_dir = "../data/preprocessed/clean_sentences"
 output_dir = '../data/preprocessed/tagged_sentences'
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
 
 # invalid dependency parse tags that shouldn't be tagged
 invalid_dep = ['npadvmod', 'compound', 'amod', 'nmod']
@@ -140,13 +142,20 @@ if __name__ == '__main__':
         tags = []
         if textbook == 'dev':
             tagging_terms = dev_terms
+            tagging_pos = []
+            tagging_dep = []
         elif textbook == 'test':
             tagging_terms = test_terms
+            tagging_pos = []
+            tagging_dep = []
         else:
             tagging_terms = train_terms
+            tagging_pos = invalid_pos
+            tagging_dep = invalid_dep
+            
         for _, row in tqdm(list(data.iterrows())): 
-            result = tag_terms(row.doc, tagging_terms, nlp, invalid_pos=invalid_pos, 
-                               invalid_dep=invalid_dep, expand_np=expand_np)
+            result = tag_terms(row.doc, tagging_terms, nlp, invalid_pos=tagging_pos, 
+                               invalid_dep=tagging_dep, expand_np=expand_np)
             tokens.append(result['tokenized_text'])
             tags.append(result['tags'])
             term_info.append(result['found_terms'])

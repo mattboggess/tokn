@@ -1,17 +1,10 @@
-# Takes in preprocessed sentences and KB relations file 
-# Creates separate sentence and key term files for each.
-# For Life, does additional parsing to extract out the knowledge base lexicon and first 10 chapters.
+# Extracts out relation pairs and terms from Bio101 KB to be used for relation extraction. 
 
 # Author: Matthew Boggess
 # Version: 4/22/20
 
 # Data Source: 
-#   - Outputs from Inquire knowledge base provided by Dr. Chaudhri
-
-# Description: 
-#   - Processes a dump from the Inquire knowledge base to produce the following output:
-#       A Spacy NLP preprocessed set of biology terms extracted from the first 10 chapters
-#       of Life Biology for the previous knowledge base
+#   - Raw dumps of relations from Bio101 KB. Processed terms from output of collect_terms.py 
 
 #===================================================================================
 
@@ -21,6 +14,7 @@ import json
 import pickle
 import spacy
 from collections import defaultdict
+import pandas as pd
 import string
 import re
 import os
@@ -34,12 +28,12 @@ from data_processing_utils import read_spacy_docs
 
 # Filepaths 
 # directory holding KB dump of relations
-relation_data_dir = "../../data/raw_data/life_bio"
+relation_data_dir = "../data/raw_data/life_bio/bio101_kb"
 # file mapping KB concepts to various text representations
-lexicon_file = f"../../data/preprocessed_data/Life_Biology_kb_lexicon.json"
+lexicon_file = f"{relation_data_dir}/Life_Biology_kb_lexicon.json"
 # file with full list of terms in Kb already spacy preprocessed 
-kb_terms_file = f"../../data/preprocessed_data/Life_Biology_kb_key_terms_spacy"
-output_data_dir = "../data"
+terms_file = "../data/preprocessed/terms/processed_terms.pkl"
+output_data_dir = "../data/preprocessed"
 
 # different groupings of relations whose KB dumps are stored in separate relation files 
 relation_types = ['taxonomy', 'structure', 'process']
@@ -120,9 +114,8 @@ if __name__ == '__main__':
         lexicon = json.load(f)
     relations_db = {}
     
-    terms = DocBin().from_bytes(open(kb_terms_file, 'rb').read())
-    terms = list(terms.get_docs(nlp.vocab))
-    terms = set([(' '.join([t.lemma_ for t in term])).replace(' - ', ' ') for term in terms])
+    terms = pd.read_pickle(terms_file)
+    terms = set(terms[terms.source == 'kb_bio101'].term)
     
     # special handling for pulling out synonyms from the lexicon file
     print("Extracting Word-Pairs for Synonyms")
@@ -140,23 +133,6 @@ if __name__ == '__main__':
         with open(f"{relation_data_dir}/{relation_type}_relations.txt") as f:
             relations = f.readlines()
         relations_db = parse_relations(relations, relation_type, lexicon, relations_db)
-    
-    
-    #print("Collecting Remaining Word-Pairs for No Relation")
-    #for pair in tqdm(list(itertools.product(terms, terms))):
-    #    
-    #    # don't include self pairs
-    #    if pair[0] == pair[1]:
-    #        continue
-    #    # don't include actual relations
-    #    if pair in valid_pairs:
-    #        continue
-    #    # don't include reverse of valid relation pairs since those might get handled differently
-    #    if (pair[1], pair[0]) in valid_pairs:
-    #        print(pair)
-    #        continue
-    #    
-    #    relations_db['no-relation'].add(pair)
     
     with open(f"{output_data_dir}/kb_bio101_relations_db.pkl", 'wb') as fid:
         pickle.dump(relations_db, fid)
