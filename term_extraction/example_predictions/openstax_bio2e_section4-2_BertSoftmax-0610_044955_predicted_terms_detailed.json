@@ -1,0 +1,2657 @@
+{
+    "\" nucleus \"": {
+        "text": [
+            "\u201cnucleus\u201d"
+        ],
+        "tokens": [
+            [
+                "\u201c",
+                "nucleus",
+                "\u201d"
+            ]
+        ],
+        "indices": [
+            [
+                36,
+                39
+            ]
+        ],
+        "pos": [
+            [
+                "``",
+                "NNP",
+                "''"
+            ]
+        ],
+        "dep": [
+            [
+                "punct",
+                "dobj",
+                "punct"
+            ]
+        ]
+    },
+    "animal cell": {
+        "text": [
+            "Animal cells"
+        ],
+        "tokens": [
+            [
+                "Animal",
+                "cells"
+            ]
+        ],
+        "indices": [
+            [
+                41,
+                43
+            ]
+        ],
+        "pos": [
+            [
+                "NN",
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "compound",
+                "nsubj"
+            ]
+        ]
+    },
+    "eukaryote": {
+        "text": [
+            "eukaryotes",
+            "eukaryotes"
+        ],
+        "tokens": [
+            [
+                "eukaryotes"
+            ]
+        ],
+        "indices": [
+            [
+                52,
+                53
+            ],
+            [
+                181,
+                182
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "attr"
+            ]
+        ]
+    },
+    "protist": {
+        "text": [
+            "protists"
+        ],
+        "tokens": [
+            [
+                "protists"
+            ]
+        ],
+        "indices": [
+            [
+                49,
+                50
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "conj"
+            ]
+        ]
+    },
+    "fungus": {
+        "text": [
+            "fungi"
+        ],
+        "tokens": [
+            [
+                "fungi"
+            ]
+        ],
+        "indices": [
+            [
+                46,
+                47
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "conj"
+            ]
+        ]
+    },
+    "prokaryote": {
+        "text": [
+            "prokaryotes",
+            "prokaryotes",
+            "prokaryote",
+            "prokaryotes",
+            "prokaryotes",
+            "prokaryotes"
+        ],
+        "tokens": [
+            [
+                "prokaryotes"
+            ]
+        ],
+        "indices": [
+            [
+                26,
+                27
+            ],
+            [
+                132,
+                133
+            ],
+            [
+                143,
+                144
+            ],
+            [
+                202,
+                203
+            ],
+            [
+                255,
+                256
+            ],
+            [
+                626,
+                627
+            ]
+        ],
+        "pos": [
+            [
+                "VBZ"
+            ],
+            [
+                "NNS"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ]
+        ]
+    },
+    "archaea": {
+        "text": [
+            "Archaea"
+        ],
+        "tokens": [
+            [
+                "Archaea"
+            ]
+        ],
+        "indices": [
+            [
+                24,
+                25
+            ]
+        ],
+        "pos": [
+            [
+                "NNP"
+            ]
+        ],
+        "dep": [
+            [
+                "conj"
+            ]
+        ]
+    },
+    "bacteria": {
+        "text": [
+            "Bacteria",
+            "Bacteria"
+        ],
+        "tokens": [
+            [
+                "Bacteria"
+            ]
+        ],
+        "indices": [
+            [
+                22,
+                23
+            ],
+            [
+                292,
+                293
+            ]
+        ],
+        "pos": [
+            [
+                "NNP"
+            ],
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "dobj"
+            ]
+        ]
+    },
+    "cell": {
+        "text": [
+            "Cells",
+            "cells",
+            "cell",
+            "cell",
+            "cell",
+            "cell",
+            "cell",
+            "cell",
+            "cells",
+            "cell",
+            "cells",
+            "cell",
+            "cell",
+            "cell",
+            "cell",
+            "cell",
+            "cell"
+        ],
+        "tokens": [
+            [
+                "Cells"
+            ]
+        ],
+        "indices": [
+            [
+                0,
+                1
+            ],
+            [
+                63,
+                64
+            ],
+            [
+                102,
+                103
+            ],
+            [
+                116,
+                117
+            ],
+            [
+                188,
+                189
+            ],
+            [
+                232,
+                233
+            ],
+            [
+                245,
+                246
+            ],
+            [
+                646,
+                647
+            ],
+            [
+                692,
+                693
+            ],
+            [
+                719,
+                720
+            ],
+            [
+                723,
+                724
+            ],
+            [
+                831,
+                832
+            ],
+            [
+                843,
+                844
+            ],
+            [
+                875,
+                876
+            ],
+            [
+                972,
+                973
+            ],
+            [
+                980,
+                981
+            ],
+            [
+                1015,
+                1016
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NNS"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NNS"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "nsubj"
+            ]
+        ]
+    },
+    "eukaryotic cell": {
+        "text": [
+            "eukaryotic cells",
+            "eukaryotic cells",
+            "eukaryotic cells",
+            "eukaryotic cells"
+        ],
+        "tokens": [
+            [
+                "eukaryotic",
+                "cells"
+            ]
+        ],
+        "indices": [
+            [
+                73,
+                75
+            ],
+            [
+                608,
+                610
+            ],
+            [
+                667,
+                669
+            ],
+            [
+                934,
+                936
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NNS"
+            ],
+            [
+                "JJ",
+                "NNS"
+            ],
+            [
+                "JJ",
+                "NNS"
+            ],
+            [
+                "JJ",
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "pobj"
+            ]
+        ]
+    },
+    "genetic material": {
+        "text": [
+            "genetic material",
+            "genetic material",
+            "genetic material"
+        ],
+        "tokens": [
+            [
+                "genetic",
+                "material"
+            ]
+        ],
+        "indices": [
+            [
+                56,
+                58
+            ],
+            [
+                272,
+                274
+            ],
+            [
+                284,
+                286
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NN"
+            ],
+            [
+                "JJ",
+                "NN"
+            ],
+            [
+                "JJ",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "appos"
+            ]
+        ]
+    },
+    "cellular component": {
+        "text": [
+            "cellular components"
+        ],
+        "tokens": [
+            [
+                "cellular",
+                "components"
+            ]
+        ],
+        "indices": [
+            [
+                46,
+                48
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "attr"
+            ]
+        ]
+    },
+    "plasma membrane": {
+        "text": [
+            "plasma membrane",
+            "plasma membrane"
+        ],
+        "tokens": [
+            [
+                "plasma",
+                "membrane"
+            ]
+        ],
+        "indices": [
+            [
+                10,
+                12
+            ],
+            [
+                849,
+                851
+            ]
+        ],
+        "pos": [
+            [
+                "NN",
+                "NN"
+            ],
+            [
+                "NN",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "compound",
+                "appos"
+            ]
+        ]
+    },
+    "common component": {
+        "text": [
+            "common components"
+        ],
+        "tokens": [
+            [
+                "common",
+                "components"
+            ]
+        ],
+        "indices": [
+            [
+                4,
+                6
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "dobj"
+            ]
+        ]
+    },
+    "environment": {
+        "text": [
+            "environment",
+            "environment"
+        ],
+        "tokens": [
+            [
+                "environment"
+            ]
+        ],
+        "indices": [
+            [
+                25,
+                26
+            ],
+            [
+                252,
+                253
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ]
+        ]
+    },
+    "synthesize": {
+        "text": [
+            "synthesize"
+        ],
+        "tokens": [
+            [
+                "synthesize"
+            ]
+        ],
+        "indices": [
+            [
+                65,
+                66
+            ]
+        ],
+        "pos": [
+            [
+                "VBP"
+            ]
+        ],
+        "dep": [
+            [
+                "relcl"
+            ]
+        ]
+    },
+    "ribosome": {
+        "text": [
+            "ribosomes"
+        ],
+        "tokens": [
+            [
+                "ribosomes"
+            ]
+        ],
+        "indices": [
+            [
+                62,
+                63
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "conj"
+            ]
+        ]
+    },
+    "dna": {
+        "text": [
+            "DNA"
+        ],
+        "tokens": [
+            [
+                "DNA"
+            ]
+        ],
+        "indices": [
+            [
+                51,
+                52
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "conj"
+            ]
+        ]
+    },
+    "cytosol": {
+        "text": [
+            "cytosol"
+        ],
+        "tokens": [
+            [
+                "cytosol"
+            ]
+        ],
+        "indices": [
+            [
+                37,
+                38
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ]
+        ]
+    },
+    "cytoplasm": {
+        "text": [
+            "cytoplasm"
+        ],
+        "tokens": [
+            [
+                "cytoplasm"
+            ]
+        ],
+        "indices": [
+            [
+                29,
+                30
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "appos"
+            ]
+        ]
+    },
+    "prokaryotic dna": {
+        "text": [
+            "Prokaryotic DNA"
+        ],
+        "tokens": [
+            [
+                "Prokaryotic",
+                "DNA"
+            ]
+        ],
+        "indices": [
+            [
+                41,
+                43
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NNP"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "nsubj"
+            ]
+        ]
+    },
+    "organelle": {
+        "text": [
+            "organelle",
+            "organelles"
+        ],
+        "tokens": [
+            [
+                "organelle"
+            ]
+        ],
+        "indices": [
+            [
+                25,
+                26
+            ],
+            [
+                916,
+                917
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ],
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "conj"
+            ]
+        ]
+    },
+    "nucleus": {
+        "text": [
+            "nucleus"
+        ],
+        "tokens": [
+            [
+                "nucleus"
+            ]
+        ],
+        "indices": [
+            [
+                17,
+                18
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "dobj"
+            ]
+        ]
+    },
+    "lack": {
+        "text": [
+            "lacks"
+        ],
+        "tokens": [
+            [
+                "lacks"
+            ]
+        ],
+        "indices": [
+            [
+                15,
+                16
+            ]
+        ],
+        "pos": [
+            [
+                "VBZ"
+            ]
+        ],
+        "dep": [
+            [
+                "relcl"
+            ]
+        ]
+    },
+    "organism": {
+        "text": [
+            "organism",
+            "organisms"
+        ],
+        "tokens": [
+            [
+                "organism"
+            ]
+        ],
+        "indices": [
+            [
+                13,
+                14
+            ],
+            [
+                330,
+                331
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ],
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "attr"
+            ]
+        ]
+    },
+    "peptidoglycan cell wall": {
+        "text": [
+            "peptidoglycan cell wall"
+        ],
+        "tokens": [
+            [
+                "peptidoglycan",
+                "cell",
+                "wall"
+            ]
+        ],
+        "indices": [
+            [
+                4,
+                7
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NN",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "compound",
+                "compound",
+                "dobj"
+            ]
+        ]
+    },
+    "host cell": {
+        "text": [
+            "host cell"
+        ],
+        "tokens": [
+            [
+                "host",
+                "cell"
+            ]
+        ],
+        "indices": [
+            [
+                98,
+                100
+            ]
+        ],
+        "pos": [
+            [
+                "NN",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "compound",
+                "pobj"
+            ]
+        ]
+    },
+    "direct contact": {
+        "text": [
+            "direct contact"
+        ],
+        "tokens": [
+            [
+                "direct",
+                "contact"
+            ]
+        ],
+        "indices": [
+            [
+                88,
+                90
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "pobj"
+            ]
+        ]
+    },
+    "cell wall": {
+        "text": [
+            "cell wall"
+        ],
+        "tokens": [
+            [
+                "cell",
+                "wall"
+            ]
+        ],
+        "indices": [
+            [
+                19,
+                21
+            ]
+        ],
+        "pos": [
+            [
+                "NN",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "compound",
+                "nsubj"
+            ]
+        ]
+    },
+    "polysaccharide capsule": {
+        "text": [
+            "polysaccharide capsule"
+        ],
+        "tokens": [
+            [
+                "polysaccharide",
+                "capsule"
+            ]
+        ],
+        "indices": [
+            [
+                11,
+                13
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "dobj"
+            ]
+        ]
+    },
+    "conjugation": {
+        "text": [
+            "conjugation"
+        ],
+        "tokens": [
+            [
+                "conjugation"
+            ]
+        ],
+        "indices": [
+            [
+                74,
+                75
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ]
+        ]
+    },
+    "locomotion": {
+        "text": [
+            "locomotion"
+        ],
+        "tokens": [
+            [
+                "locomotion"
+            ]
+        ],
+        "indices": [
+            [
+                67,
+                68
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ]
+        ]
+    },
+    "fimbriae": {
+        "text": [
+            "fimbriae",
+            "fimbriae"
+        ],
+        "tokens": [
+            [
+                "fimbriae"
+            ],
+            [
+                "fimbriae"
+            ]
+        ],
+        "indices": [
+            [
+                61,
+                62
+            ],
+            [
+                93,
+                94
+            ]
+        ],
+        "pos": [
+            [
+                "VB"
+            ],
+            [
+                "VBP"
+            ]
+        ],
+        "dep": [
+            [
+                "conj"
+            ],
+            [
+                "dobj"
+            ]
+        ]
+    },
+    "pili": {
+        "text": [
+            "pili"
+        ],
+        "tokens": [
+            [
+                "pili"
+            ]
+        ],
+        "indices": [
+            [
+                58,
+                59
+            ]
+        ],
+        "pos": [
+            [
+                "NNP"
+            ]
+        ],
+        "dep": [
+            [
+                "conj"
+            ]
+        ]
+    },
+    "flagella": {
+        "text": [
+            "flagella",
+            "Flagella"
+        ],
+        "tokens": [
+            [
+                "flagella"
+            ],
+            [
+                "Flagella"
+            ]
+        ],
+        "indices": [
+            [
+                56,
+                57
+            ],
+            [
+                63,
+                64
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ],
+            [
+                "NNP"
+            ]
+        ],
+        "dep": [
+            [
+                "dobj"
+            ],
+            [
+                "nsubjpass"
+            ]
+        ]
+    },
+    "capsule": {
+        "text": [
+            "capsule"
+        ],
+        "tokens": [
+            [
+                "capsule"
+            ]
+        ],
+        "indices": [
+            [
+                41,
+                42
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "nsubj"
+            ]
+        ]
+    },
+    "dehydration": {
+        "text": [
+            "dehydration"
+        ],
+        "tokens": [
+            [
+                "dehydration"
+            ]
+        ],
+        "indices": [
+            [
+                38,
+                39
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "dobj"
+            ]
+        ]
+    },
+    "contagious illness": {
+        "text": [
+            "contagious illnesses"
+        ],
+        "tokens": [
+            [
+                "contagious",
+                "illnesses"
+            ]
+        ],
+        "indices": [
+            [
+                12,
+                14
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "pobj"
+            ]
+        ]
+    },
+    "body": {
+        "text": [
+            "body"
+        ],
+        "tokens": [
+            [
+                "body"
+            ]
+        ],
+        "indices": [
+            [
+                108,
+                109
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "dobj"
+            ]
+        ]
+    },
+    "nose": {
+        "text": [
+            "nose"
+        ],
+        "tokens": [
+            [
+                "nose"
+            ]
+        ],
+        "indices": [
+            [
+                98,
+                99
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "conj"
+            ]
+        ]
+    },
+    "mucus": {
+        "text": [
+            "mucus"
+        ],
+        "tokens": [
+            [
+                "mucus"
+            ]
+        ],
+        "indices": [
+            [
+                82,
+                83
+            ]
+        ],
+        "pos": [
+            [
+                "NNP"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ]
+        ]
+    },
+    "doorknob": {
+        "text": [
+            "doorknobs",
+            "doorknob",
+            "doorknob"
+        ],
+        "tokens": [
+            [
+                "doorknobs"
+            ],
+            [
+                "doorknob"
+            ],
+            [
+                "doorknob"
+            ]
+        ],
+        "indices": [
+            [
+                45,
+                46
+            ],
+            [
+                66,
+                67
+            ],
+            [
+                74,
+                75
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ],
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ],
+            [
+                "dobj"
+            ],
+            [
+                "dobj"
+            ]
+        ]
+    },
+    "sneeze": {
+        "text": [
+            "sneezes"
+        ],
+        "tokens": [
+            [
+                "sneezes"
+            ]
+        ],
+        "indices": [
+            [
+                59,
+                60
+            ]
+        ],
+        "pos": [
+            [
+                "VBZ"
+            ]
+        ],
+        "dep": [
+            [
+                "ROOT"
+            ]
+        ]
+    },
+    "microscope": {
+        "text": [
+            "microscopes"
+        ],
+        "tokens": [
+            [
+                "microscopes"
+            ]
+        ],
+        "indices": [
+            [
+                37,
+                38
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ]
+        ]
+    },
+    "microbe": {
+        "text": [
+            "microbes",
+            "microbes",
+            "microbes",
+            "microbes",
+            "microbes",
+            "microbes",
+            "microbes"
+        ],
+        "tokens": [
+            [
+                "microbes"
+            ],
+            [
+                "microbes"
+            ],
+            [
+                "microbes"
+            ]
+        ],
+        "indices": [
+            [
+                25,
+                26
+            ],
+            [
+                77,
+                78
+            ],
+            [
+                104,
+                105
+            ],
+            [
+                423,
+                424
+            ],
+            [
+                439,
+                440
+            ],
+            [
+                463,
+                464
+            ],
+            [
+                535,
+                536
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "nsubj"
+            ],
+            [
+                "nsubj"
+            ],
+            [
+                "nsubj"
+            ]
+        ]
+    },
+    "cause disease": {
+        "text": [
+            "cause disease"
+        ],
+        "tokens": [
+            [
+                "cause",
+                "disease"
+            ]
+        ],
+        "indices": [
+            [
+                10,
+                12
+            ]
+        ],
+        "pos": [
+            [
+                "VBP",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "ccomp",
+                "dobj"
+            ]
+        ]
+    },
+    "gut": {
+        "text": [
+            "gut"
+        ],
+        "tokens": [
+            [
+                "gut"
+            ]
+        ],
+        "indices": [
+            [
+                23,
+                24
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ]
+        ]
+    },
+    "microorganism": {
+        "text": [
+            "microorganisms",
+            "microorganisms"
+        ],
+        "tokens": [
+            [
+                "microorganisms"
+            ],
+            [
+                "microorganisms"
+            ]
+        ],
+        "indices": [
+            [
+                8,
+                9
+            ],
+            [
+                29,
+                30
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "oprd"
+            ],
+            [
+                "nsubjpass"
+            ]
+        ]
+    },
+    "bacterial infection": {
+        "text": [
+            "bacterial infections"
+        ],
+        "tokens": [
+            [
+                "bacterial",
+                "infections"
+            ]
+        ],
+        "indices": [
+            [
+                59,
+                61
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "dobj"
+            ]
+        ]
+    },
+    "development": {
+        "text": [
+            "development"
+        ],
+        "tokens": [
+            [
+                "development"
+            ]
+        ],
+        "indices": [
+            [
+                50,
+                51
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "conj"
+            ]
+        ]
+    },
+    "work": {
+        "text": [
+            "work",
+            "work",
+            "work"
+        ],
+        "tokens": [
+            [
+                "work"
+            ],
+            [
+                "work"
+            ]
+        ],
+        "indices": [
+            [
+                19,
+                20
+            ],
+            [
+                38,
+                39
+            ],
+            [
+                564,
+                565
+            ]
+        ],
+        "pos": [
+            [
+                "VB"
+            ],
+            [
+                "VB"
+            ],
+            [
+                "VB"
+            ]
+        ],
+        "dep": [
+            [
+                "ccomp"
+            ],
+            [
+                "ROOT"
+            ]
+        ]
+    },
+    "microbiologist": {
+        "text": [
+            "Microbiologists",
+            "Microbiologists",
+            "microbiologists",
+            "Microbiologists"
+        ],
+        "tokens": [
+            [
+                "Microbiologists"
+            ],
+            [
+                "Microbiologists"
+            ]
+        ],
+        "indices": [
+            [
+                0,
+                1
+            ],
+            [
+                7,
+                8
+            ],
+            [
+                522,
+                523
+            ],
+            [
+                561,
+                562
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ],
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "nsubj"
+            ],
+            [
+                "nsubj"
+            ]
+        ]
+    },
+    "bacterial epidemic": {
+        "text": [
+            "bacterial epidemics"
+        ],
+        "tokens": [
+            [
+                "bacterial",
+                "epidemics"
+            ]
+        ],
+        "indices": [
+            [
+                69,
+                71
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "appos"
+            ]
+        ]
+    },
+    "bioinformatic field": {
+        "text": [
+            "bioinformatics field"
+        ],
+        "tokens": [
+            [
+                "bioinformatics",
+                "field"
+            ]
+        ],
+        "indices": [
+            [
+                46,
+                48
+            ]
+        ],
+        "pos": [
+            [
+                "NNS",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "compound",
+                "pobj"
+            ]
+        ]
+    },
+    "bioremediation technology": {
+        "text": [
+            "bioremediation technologies"
+        ],
+        "tokens": [
+            [
+                "bioremediation",
+                "technologies"
+            ]
+        ],
+        "indices": [
+            [
+                37,
+                39
+            ]
+        ],
+        "pos": [
+            [
+                "NN",
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "compound",
+                "dobj"
+            ]
+        ]
+    },
+    "model": {
+        "text": [
+            "models"
+        ],
+        "tokens": [
+            [
+                "models"
+            ]
+        ],
+        "indices": [
+            [
+                63,
+                64
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ]
+        ]
+    },
+    "specificity": {
+        "text": [
+            "specificity"
+        ],
+        "tokens": [
+            [
+                "specificity"
+            ]
+        ],
+        "indices": [
+            [
+                60,
+                61
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "conj"
+            ]
+        ]
+    },
+    "element": {
+        "text": [
+            "elements"
+        ],
+        "tokens": [
+            [
+                "elements"
+            ]
+        ],
+        "indices": [
+            [
+                27,
+                28
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "dobj"
+            ]
+        ]
+    },
+    "soil": {
+        "text": [
+            "soil"
+        ],
+        "tokens": [
+            [
+                "soil"
+            ]
+        ],
+        "indices": [
+            [
+                19,
+                20
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ]
+        ]
+    },
+    "pollutant": {
+        "text": [
+            "pollutants"
+        ],
+        "tokens": [
+            [
+                "pollutants"
+            ]
+        ],
+        "indices": [
+            [
+                17,
+                18
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "dobj"
+            ]
+        ]
+    },
+    "intracellular transport": {
+        "text": [
+            "intracellular transport"
+        ],
+        "tokens": [
+            [
+                "intracellular",
+                "transport"
+            ]
+        ],
+        "indices": [
+            [
+                84,
+                86
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "dobj"
+            ]
+        ]
+    },
+    "structural adaptation": {
+        "text": [
+            "structural adaptations"
+        ],
+        "tokens": [
+            [
+                "structural",
+                "adaptations"
+            ]
+        ],
+        "indices": [
+            [
+                80,
+                82
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "dobj"
+            ]
+        ]
+    },
+    "organic molecule": {
+        "text": [
+            "organic molecules"
+        ],
+        "tokens": [
+            [
+                "organic",
+                "molecules"
+            ]
+        ],
+        "indices": [
+            [
+                39,
+                41
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "conj"
+            ]
+        ]
+    },
+    "prokaryotic cell": {
+        "text": [
+            "prokaryotic cells",
+            "prokaryotic cell"
+        ],
+        "tokens": [
+            [
+                "prokaryotic",
+                "cells"
+            ],
+            [
+                "prokaryotic",
+                "cell"
+            ]
+        ],
+        "indices": [
+            [
+                8,
+                10
+            ],
+            [
+                61,
+                63
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NNS"
+            ],
+            [
+                "JJ",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "nsubj"
+            ],
+            [
+                "amod",
+                "pobj"
+            ]
+        ]
+    },
+    "diffuse": {
+        "text": [
+            "diffuse",
+            "diffuse"
+        ],
+        "tokens": [
+            [
+                "diffuse"
+            ],
+            [
+                "diffuse"
+            ]
+        ],
+        "indices": [
+            [
+                46,
+                47
+            ],
+            [
+                65,
+                66
+            ]
+        ],
+        "pos": [
+            [
+                "VB"
+            ],
+            [
+                "VB"
+            ]
+        ],
+        "dep": [
+            [
+                "xcomp"
+            ],
+            [
+                "ROOT"
+            ]
+        ]
+    },
+    "range": {
+        "text": [
+            "ranging"
+        ],
+        "tokens": [
+            [
+                "ranging"
+            ]
+        ],
+        "indices": [
+            [
+                20,
+                21
+            ]
+        ],
+        "pos": [
+            [
+                "VBG"
+            ]
+        ],
+        "dep": [
+            [
+                "acl"
+            ]
+        ]
+    },
+    "\u03bcm": {
+        "text": [
+            "\u03bcm",
+            "\u03bcm"
+        ],
+        "tokens": [
+            [
+                "\u03bcm"
+            ],
+            [
+                "\u03bcm"
+            ]
+        ],
+        "indices": [
+            [
+                4,
+                5
+            ],
+            [
+                25,
+                26
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ],
+            [
+                "pobj"
+            ]
+        ]
+    },
+    "surface area to volume ratio": {
+        "text": [
+            "surface area-to-volume ratio",
+            "surface area-to-volume ratio",
+            "surface area-to-volume ratio",
+            "surface area-to-volume ratio"
+        ],
+        "tokens": [
+            [
+                "surface",
+                "area",
+                "-",
+                "to",
+                "-",
+                "volume",
+                "ratio"
+            ]
+        ],
+        "indices": [
+            [
+                133,
+                140
+            ],
+            [
+                948,
+                955
+            ],
+            [
+                1000,
+                1007
+            ],
+            [
+                1035,
+                1042
+            ]
+        ],
+        "pos": [
+            [
+                "NN",
+                "NN",
+                "HYPH",
+                "IN",
+                "HYPH",
+                "NN",
+                "NN"
+            ],
+            [
+                "NN",
+                "NN",
+                "HYPH",
+                "IN",
+                "HYPH",
+                "NN",
+                "NN"
+            ],
+            [
+                "NN",
+                "NN",
+                "HYPH",
+                "IN",
+                "HYPH",
+                "NN",
+                "NN"
+            ],
+            [
+                "NN",
+                "NN",
+                "HYPH",
+                "IN",
+                "HYPH",
+                "NN",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "compound",
+                "nmod",
+                "punct",
+                "prep",
+                "punct",
+                "pobj",
+                "nsubj"
+            ]
+        ]
+    },
+    "rate of diffusion": {
+        "text": [
+            "rate of diffusion"
+        ],
+        "tokens": [
+            [
+                "rate",
+                "of",
+                "diffusion"
+            ]
+        ],
+        "indices": [
+            [
+                178,
+                181
+            ]
+        ],
+        "pos": [
+            [
+                "NN",
+                "IN",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "dobj",
+                "prep",
+                "pobj"
+            ]
+        ]
+    },
+    "surface area": {
+        "text": [
+            "surface area",
+            "surface area",
+            "surface area",
+            "surface area",
+            "surface area",
+            "surface area",
+            "surface area"
+        ],
+        "tokens": [
+            [
+                "surface",
+                "area"
+            ],
+            [
+                "surface",
+                "area"
+            ],
+            [
+                "surface",
+                "area"
+            ],
+            [
+                "surface",
+                "area"
+            ]
+        ],
+        "indices": [
+            [
+                69,
+                71
+            ],
+            [
+                97,
+                99
+            ],
+            [
+                173,
+                175
+            ],
+            [
+                216,
+                218
+            ],
+            [
+                961,
+                963
+            ],
+            [
+                992,
+                994
+            ],
+            [
+                1027,
+                1029
+            ]
+        ],
+        "pos": [
+            [
+                "NN",
+                "NN"
+            ],
+            [
+                "NN",
+                "NN"
+            ],
+            [
+                "NN",
+                "NN"
+            ],
+            [
+                "NN",
+                "NN"
+            ],
+            [
+                "NN",
+                "NN"
+            ],
+            [
+                "NN",
+                "NN"
+            ],
+            [
+                "NN",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "compound",
+                "pobj"
+            ],
+            [
+                "compound",
+                "nsubj"
+            ],
+            [
+                "compound",
+                "dobj"
+            ],
+            [
+                "compound",
+                "dobj"
+            ]
+        ]
+    },
+    "sophisticated cell": {
+        "text": [
+            "sophisticated cells"
+        ],
+        "tokens": [
+            [
+                "sophisticated",
+                "cells"
+            ]
+        ],
+        "indices": [
+            [
+                246,
+                248
+            ]
+        ],
+        "pos": [
+            [
+                "JJ",
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "amod",
+                "dobj"
+            ]
+        ]
+    },
+    "cell membrane": {
+        "text": [
+            "cell membrane"
+        ],
+        "tokens": [
+            [
+                "cell",
+                "membrane"
+            ]
+        ],
+        "indices": [
+            [
+                222,
+                224
+            ]
+        ],
+        "pos": [
+            [
+                "NN",
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "compound",
+                "pobj"
+            ]
+        ]
+    },
+    "adaptation": {
+        "text": [
+            "adaptations"
+        ],
+        "tokens": [
+            [
+                "adaptations"
+            ]
+        ],
+        "indices": [
+            [
+                241,
+                242
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "nsubj"
+            ]
+        ]
+    },
+    "mm3": {
+        "text": [
+            "mm3",
+            "mm3"
+        ],
+        "tokens": [
+            [
+                "mm3"
+            ],
+            [
+                "mm3"
+            ]
+        ],
+        "indices": [
+            [
+                51,
+                52
+            ],
+            [
+                86,
+                87
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ],
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ],
+            [
+                "pobj"
+            ]
+        ]
+    }
+}
