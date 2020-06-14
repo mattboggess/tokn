@@ -14,6 +14,7 @@ import spacy
 import pandas as pd
 import os
 import sys
+import re
 from nltk import sent_tokenize
 sys.path.append("../preprocessing")
 from data_processing_utils import tag_terms
@@ -53,15 +54,19 @@ def determine_term_type(term):
     
     return term_type
 
-def merge_term_results(results1, results2, offset=0):
+def merge_term_results(results1, results2, input_type, offset=0):
     """ Merges results of term tagging into a single dictionary
         accounting for offset with term indices.
     """
+    fields = ['text', 'pos', 'dep', 'indices']
+    if input_type == 'csv':
+        fields += ['chapter', 'section']
+        
     for term in results2:
         if term not in results1:
             results1[term] = results2[term]
         else:
-            for field in ["text", "indices", "pos"]:
+            for field in fields:
                 if field == "indices":
                     indices_adj = [(t[0] + offset, t[1] + offset) for t in results2[term][field]]
                     results1[term][field] += indices_adj 
@@ -174,9 +179,14 @@ def main(config, input_file, out_dir, term_file, model_version):
     
     # read in text data
     if input_file.endswith('.csv'):
-       data = pd.read_csv(input_file)
-       lines = data.sentence
+        input_type = 'csv'
+        data = pd.read_csv(input_file)
+        data['terms'] = '' 
+        data['chapter'] = data['chapter'].fillna(-1)
+        data['section'] = data['section'].fillna(-1)
+        lines = data.sentence
     else: 
+        input_type = 'text'
         with open(input_file, "r") as f:
             lines = f.readlines()
             text = "\n".join(lines)
@@ -196,11 +206,11 @@ def main(config, input_file, out_dir, term_file, model_version):
     # tag/annotate the text with our predicted terms
     print("Annotating Input Text")
     tagging_terms = list(predicted_terms.keys())
-    tagging_terms = [t for t in tagging_terms if t.strip() != '-']
+    tagging_terms = [t for t in tagging_terms if t.strip() not in ['-', '']]
     tagging_terms = [nlp(t) for t in tagging_terms]    
     result = {"found_terms": {}, "annotated_text": ""}
     offset = 0
-    for text in tqdm(spacy_text):
+    for i, text in enumerate(tqdm(spacy_text)):
         if text == '\n':
             result['annotated_text'] += '\n' 
             continue
@@ -208,17 +218,33 @@ def main(config, input_file, out_dir, term_file, model_version):
         # Tag our predicted terms in the original text 
         tmp = tag_terms(text, tagging_terms, nlp, invalid_dep=invalid_dep, invalid_pos=invalid_pos)
         num_tokens = len(tmp['tokenized_text'])
+        if input_type == 'csv':
+            chapter = data.loc[i, 'chapter']
+            section = data.loc[i, 'section']
+            for term in tmp['found_terms'].keys():
+                num_occ = len(tmp['found_terms'][term]['indices'])
+                tmp['found_terms'][term]['chapter'] = [int(chapter)] * num_occ
+                tmp['found_terms'][term]['section'] = [int(section)] * num_occ
+                
+        if input_type == 'csv':
+            data.loc[i, 'sentence'] = tmp['annotated_text']
+            data.loc[i, 'terms'] = '; '.join([t.replace('<term>', '').replace('</term>', '') 
+                                              for t in re.findall('<term>.*?</term>', tmp['annotated_text'])])
        
         # Merge results with tmp 
         result['annotated_text'] = '\n'.join([result['annotated_text'], tmp['annotated_text']])
-        result['found_terms'] = merge_term_results(result['found_terms'], tmp['found_terms'], offset)
+        result['found_terms'] = merge_term_results(result['found_terms'], tmp['found_terms'], input_type, offset)
         offset += num_tokens 
     
     # write out annotated text
     input_filename = input_file.split('/')[-1][:-4]
-    filename = f"{out_dir}/{input_filename}_{model_version}_annotated_text.txt"
-    with open(filename, 'w') as f:
-        f.write(result['annotated_text'].strip('\n'))
+    if input_type == 'text':
+        filename = f"{out_dir}/{input_filename}_{model_version}_annotated_text.txt"
+        with open(filename, 'w') as f:
+            f.write(result['annotated_text'].strip('\n'))
+    else: 
+        filename = f"{out_dir}/{input_filename}_{model_version}_annotated.csv"
+        data.to_csv(filename, index=False)
     
     # write out detailed terms
     filename = f"{out_dir}/{input_filename}_{model_version}_predicted_terms_detailed.json"
@@ -226,13 +252,25 @@ def main(config, input_file, out_dir, term_file, model_version):
         json.dump(result['found_terms'], f, indent=4)
     
     # create simplified representation of terms with confidence scores and entity/event labels
-    simplified_terms = {'term': [], 'base_term': [], 'type': [], 'confidence': []}
+    simplified_terms = {'term': [], 'base_term': [], 'type': [], 'confidence': [], 'location': []}
     for lemma in result['found_terms']:
         for text_rep in set(result['found_terms'][lemma]['text']):
             simplified_terms['term'].append(text_rep)
             simplified_terms['base_term'].append(lemma)
             simplified_terms['type'].append(determine_term_type(nlp(text_rep)))
-            simplified_terms['confidence'].append(predicted_terms[lemma])
+            if lemma in predicted_terms:
+                simplified_terms['confidence'].append(predicted_terms[lemma])
+            else:
+                # sometimes new lemmas are formed ?
+                simplified_terms['confidence'].append(-1)
+            
+            if input_type == 'csv':
+                simplified_terms['location'].append('; '.join(set([f"{ch}.{sec}" for ch, sec 
+                                                    in zip(result['found_terms'][lemma]['chapter'], 
+                                                           result['found_terms'][lemma]['section'])])))
+            else:
+                simplified_terms['location'].append('n/a')
+                
     simplified_terms = pd.DataFrame(simplified_terms)
     filename = f"{out_dir}/{input_filename}_{model_version}_predicted_terms_simple.csv"
     simplified_terms.sort_values(['base_term']).to_csv(filename, index=False)

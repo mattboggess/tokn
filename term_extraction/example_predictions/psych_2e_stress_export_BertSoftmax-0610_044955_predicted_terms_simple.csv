@@ -1,0 +1,1377 @@
+term,base_term,type,confidence,location
+“response,""" response",entity,0.9794077277183533,14.1
+Abramson,abramson,entity,0.9813879728317261,14.4
+absenteeism,absenteeism,entity,0.7843515276908875,14.2
+accelerate,accelerate,entity,0.8504417240619659,14.3
+accomplishment,accomplishment,event,0.6281247437000275,14.2; 14.5
+accomplishments,accomplishment,entity,0.6281247437000275,14.2; 14.5
+accumulating,accumulate,event,0.9522484242916107,14.2; 14.3
+accumulate,accumulate,entity,0.9522484242916107,14.2; 14.3
+accumulation,accumulation,event,0.5713393092155457,-1.-1; 14.4
+acne,acne,entity,0.9895696043968201,14.2
+acquired immune deficiency syndrome,acquire immune deficiency syndrome,event,0.9778763055801392,14.3
+ACTH,acth,entity,0.9881929457187653,14.1
+activation,activation,event,0.913736879825592,14.1
+activity,activity,entity,0.9541529037735679,-1.-1; 14.5; 14.4; 14.3
+activities,activity,entity,0.9541529037735679,-1.-1; 14.5; 14.4; 14.3
+acute episodes,acute episode,entity,0.7616401016712189,14.3
+acute physical emergencies,acute physical emergency,entity,0.7399314443270365,14.3
+acute reaction,acute reaction,entity,0.9981922805309296,14.4
+acute stress response,acute stress response,entity,0.9791363875071207,14.4
+Acute stressors,acute stressor,entity,0.9177724123001099,14.2
+adaptation,adaptation,event,0.9153183102607727,14.1
+adaptive coping efforts,adaptive coping effort,event,0.7468797365824381,14.5
+adaptive energy,adaptive energy,entity,0.9974786639213562,-1.-1
+Ader,ader,entity,0.6618621349334717,14.3
+adherence,adherence,entity,0.7565757036209106,14.5
+adrenal enlargement,adrenal enlargement,event,0.913651317358017,14.1
+adrenal glands,adrenal gland,entity,0.9807396158576012,14.1
+adrenaline,adrenaline,entity,0.9794586002826691,14.1
+adrenocorticotropic hormone,adrenocorticotropic hormone,entity,0.9285865724086761,14.1
+adversity,adversity,entity,0.8546404242515564,14.3
+aesthetic sensibility,aesthetic sensibility,entity,0.768029659986496,14.5
+affective forecasting,affective forecasting,event,0.8646945357322693,14.5
+afflictions,affliction,entity,0.8031456470489502,14.4
+agitated,agitate,event,0.7514078617095947,14.3
+AHA,aha,entity,0.8876504103342692,14.3
+Ahola,ahola,entity,0.7600407600402832,14.2
+AIDS,aids,entity,0.9948751926422119,14.3
+aim,aim,entity,0.8330968618392944,14.1; 14.5; 14.4
+aimed,aim,event,0.8330968618392944,14.1; 14.5; 14.4
+air conditioner,air conditioner,entity,0.9230483174324036,14.3
+air pollution,air pollution,entity,0.9819944500923157,14.3
+airways,airway,entity,0.6390823125839233,14.3
+airway function,airway function,entity,0.8961596786975861,14.3
+airway obstruction,airway obstruction,entity,0.7742043733596802,14.3
+Ajrouch,ajrouch,entity,0.8787193894386292,14.4
+alarms,alarm,entity,0.9433102011680603,14.1
+Alarm reaction,alarm reaction,entity,0.992873091250658,-1.-1; 14.1
+alarm reaction,alarm reaction,entity,0.992873091250658,-1.-1; 14.1
+alcohol consumption,alcohol consumption,event,0.54813352227211,14.4; 14.3
+alertness,alertness,entity,0.946775496006012,14.5
+allergens,allergen,entity,0.9934350848197937,14.3
+allergic reaction,allergic reaction,entity,0.9965215027332306,14.3
+Almeida,almeida,entity,0.9452828168869019,14.4
+Alper,alper,entity,0.9187614321708679,14.4
+altruism,altruism,entity,0.9847837090492249,14.5
+Amelang,amelang,entity,0.9256548285484314,14.4
+American Heart Association,american heart association,event,0.6978211204210917,14.3
+American Lung Association,american lung association,event,0.6325650413831075,14.3
+American Psychiatric Association,american psychiatric association,event,0.8768690824508667,14.2
+amplified levels,amplify level,event,0.6182311475276947,14.4
+anger,anger,entity,0.8287373259663582,-1.-1; 14.3
+angered,anger,event,0.8287373259663582,-1.-1; 14.3
+anger/hostility dimension,anger / hostility dimension,event,0.6762027740478516,14.3
+angina,angina,entity,0.9754767417907715,14.3
+antagonistic environment,antagonistic environment,event,0.716082900762558,14.3
+antibody-producing cells,antibody produce cell,event,0.9849357306957245,14.3
+antibody response,antibody response,entity,0.9505159556865692,14.3
+anxiety,anxiety,entity,0.9215330382188162,14.1; 14.4; 14.3
+anxiety levels,anxiety level,entity,0.9113544225692749,14.4
+APA,apa,entity,0.9878978133201599,14.2
+Apfelbacher,apfelbacher,entity,0.8616844415664673,14.3
+appraisals,appraisal,entity,0.878559410572052,14.1; 14.2
+appraisal,appraisal,entity,0.878559410572052,14.1; 14.2
+arms,arm,entity,0.9940908551216125,14.3
+arm rests,arm rest,entity,0.8848779201507568,14.3
+armrests,armrest,entity,0.8284210562705994,14.3
+Arola,arola,entity,0.9430156350135803,14.1
+Arora,arora,entity,0.9270839095115662,14.5
+arousal,arousal,entity,0.9028755307197571,14.1; 14.4
+Arthritis,arthritis,entity,0.7876527309417725,14.3
+Arthur,arthur,entity,0.9045687317848206,14.2
+association,association,event,0.9981514513492584,14.5; 14.3
+associations,association,entity,0.9981514513492584,14.5; 14.3
+Association,association,event,0.9981514513492584,14.5; 14.3
+Asthma,asthma,entity,0.9679747317966662,-1.-1; 14.4; 14.3
+asthma,asthma,entity,0.9679747317966662,-1.-1; 14.4; 14.3
+Asthma attacks,asthma attack,entity,0.9428906962275505,14.3
+asthma attacks,asthma attack,entity,0.9428906962275505,14.3
+asthma exacerbation,asthma exacerbation,event,0.8615860790014267,14.3
+Asthma exacerbation,asthma exacerbation,event,0.8615860790014267,14.3
+asthma onset,asthma onset,entity,0.4898707866668701,14.3
+athletic injuries,athletic injury,entity,0.6533825993537903,14.2
+attitudes,attitude,entity,0.5201974511146545,14.2; 14.3
+attitude,attitude,entity,0.5201974511146545,14.2; 14.3
+attractiveness,attractiveness,entity,0.690253496170044,14.5
+attribution,attribution,entity,0.9325688282648722,14.4
+attributions,attribution,entity,0.9325688282648722,14.4
+attribution habits,attribution habit,entity,0.7827608287334442,14.4
+auditory signals,auditory signal,entity,0.9057071208953857,14.4
+autoimmune disease,autoimmune disease,entity,0.9969449460506439,14.3
+autonomy,autonomy,entity,0.7307520806789398,14.2; 14.5
+average score,average score,entity,0.840972051024437,14.5
+awareness,awareness,entity,0.936705470085144,14.1; 14.3
+axis,axis,entity,0.997802197933197,-1.-1; 14.1
+axis activation,axis activation,event,0.8505196571350098,14.3
+backache,backache,entity,0.970661461353302,14.2
+Bandura,bandura,entity,0.7988750537236532,14.4
+bar,bar,entity,0.8264891505241394,14.5
+Barefoot,barefoot,entity,0.4662555158138275,14.3
+Baron,baron,entity,0.8470242917537689,14.4
+based,base,event,0.9983155528704325,14.1; 14.2; 14.5
+baseline levels,baseline level,entity,0.8798108398914337,14.5
+basic tenet,basic tenet,entity,0.5487653911113739,14.4
+Baumeister,baumeister,entity,0.7438014149665833,14.4
+Baumgartner,baumgartner,entity,0.9546510577201843,14.2
+born,bear,event,0.9865746796131134,14.1; 14.5; 14.3
+bear,bear,entity,0.9865746796131134,14.1; 14.5; 14.3
+bed,bed,entity,0.6463912129402161,14.3
+behavior,behavior,entity,0.569263368844986,14.1; 14.5; -1.-1; 14.2; 14.4
+behaviors,behavior,entity,0.569263368844986,14.1; 14.5; -1.-1; 14.2; 14.4
+behavior pattern,behavior pattern,entity,0.8387522161006927,14.3
+behavioral factors,behavioral factor,entity,0.8623784780502319,14.1
+behavioral risk factors,behavioral risk factor,entity,0.8567811648050944,14.3
+belief,belief,entity,0.6068605780601501,14.1; 14.4
+beliefs,belief,entity,0.6068605780601501,14.1; 14.4
+beneficial effects,beneficial effect,entity,0.8300577104091644,-1.-1
+Benson,benson,entity,0.9817048907279968,14.4
+Bergeman,bergeman,entity,0.9199475049972534,14.4
+Berkman,berkman,entity,0.7793281078338623,14.4
+biofeedback,biofeedback,entity,0.9567107955614725,14.4
+Biofeedback,biofeedback,entity,0.9567107955614725,14.4
+biofeedback research,biofeedback research,entity,0.6481401473283768,14.4
+biological functions,biological function,entity,0.9168165326118469,14.5
+bipolar disorder,bipolar disorder,entity,0.7892943918704987,14.3
+Bisconti,bisconti,entity,0.9044130444526672,14.4
+Biswas-Diener,biswas diener,entity,0.7153744399547577,14.5
+Black,black,entity,0.7831253409385681,14.4
+Blackburn,blackburn,entity,0.6652857065200806,14.3
+blindness,blindness,entity,0.9832170605659485,14.3
+blizzard,blizzard,entity,0.5589905977249146,14.1
+blood circulation system,blood circulation system,event,0.968324879805247,14.3
+blood flow,blood flow,entity,0.9690389037132263,14.3
+blood pressure,blood pressure,entity,0.9900228530168533,14.1; 14.4; 14.3
+bloodstream,bloodstream,entity,0.9744353890419006,14.1
+bodily measures,bodily measure,entity,0.7683888971805573,14.4
+bodily processes,bodily process,event,0.9221729189157486,14.1; 14.4
+bodies,body,entity,0.812360589504242,14.1; -1.-1; 14.2; 14.4; 14.3
+body,body,entity,0.812360589504242,14.1; -1.-1; 14.2; 14.4; 14.3
+Bolger,bolger,entity,0.8764153718948364,14.2
+bone marrow,bone marrow,entity,0.9908335208892822,14.3
+Booth-Kewley,booth kewley,entity,0.9805604418118795,14.3
+Bosma,bosma,entity,0.8671013712882996,14.4
+Boyle,boyle,entity,0.8597162365913391,14.3
+Bradbury,bradbury,entity,0.6664535403251648,14.5
+Bradford,bradford,entity,0.9678993821144104,14.4
+brain,brain,entity,0.9838680475950241,14.1; 14.3
+breast cancer,breast cancer,entity,0.9886632263660431,14.1; 14.4
+breast lump,breast lump,entity,0.9787388841311137,14.1; 14.4
+breast self-examinations,breast self examination,entity,0.822889506816864,14.1
+breathe,breathe,entity,0.7921406626701355,14.1; 14.3
+breathing,breathe,event,0.7921406626701355,14.1; 14.3
+Brickman,brickman,entity,0.7915587723255157,14.5
+Brisson,brisson,entity,0.9157479405403137,14.3
+buffers,buffer,entity,0.9336865395307541,-1.-1; 14.4
+buffer,buffer,entity,0.9336865395307541,-1.-1; 14.4
+Bugg,bugg,entity,0.6194644570350647,14.4
+built-in mechanism,build in mechanism,event,0.9690786004066467,14.1
+bullying victimization,bully victimization,event,0.5883999466896057,14.3
+Bunde,bunde,entity,0.8064197301864624,14.3
+buoyed,buoy,entity,0.6610354781150818,14.4
+Burns,burns,entity,0.9362044930458069,14.3
+burst,burst,entity,0.9936056137084961,14.5
+butterflies,butterfly,entity,0.9683338403701782,14.1
+Campbell,campbell,entity,0.9456022381782532,14.5
+cancer,cancer,entity,0.99375119805336,14.1; 14.4
+Cannon,cannon,entity,0.9944828301668167,-1.-1; 14.1
+cardiac death,cardiac death,entity,0.859115868806839,14.3
+cardiac disease,cardiac disease,entity,0.9897199273109436,14.4
+cardiovascular disease,cardiovascular disease,entity,0.9901358882586161,14.4; 14.3
+cardiovascular diseases,cardiovascular disease,entity,0.9901358882586161,14.4; 14.3
+Cardiovascular disorders,cardiovascular disorder,entity,0.7763969451189041,-1.-1; 14.4; 14.3
+cardiovascular disorder,cardiovascular disorder,entity,0.7763969451189041,-1.-1; 14.4; 14.3
+cardiovascular disorders,cardiovascular disorder,entity,0.7763969451189041,-1.-1; 14.4; 14.3
+cardiovascular health,cardiovascular health,entity,0.8501386493444443,14.5; 14.3
+cardiovascular illnesses,cardiovascular illness,entity,0.9221313893795013,14.3
+cardiovascular outcomes,cardiovascular outcome,entity,0.6662056744098663,14.3
+cardiovascular problems,cardiovascular problem,entity,0.8297519534826279,14.3
+cardiovascular responses,cardiovascular response,entity,0.8733685910701752,14.3
+cardiovascular system,cardiovascular system,entity,0.9949101110299429,14.3
+career,career,entity,0.7562204599380493,14.1; 14.5
+careers,career,entity,0.7562204599380493,14.1; 14.5
+Carroll,carroll,entity,0.9329248368740082,14.5; 14.4
+Cathcart,cathcart,entity,0.8911009430885315,14.3
+causal relationship,causal relationship,entity,0.818362295627594,14.2
+causation,causation,event,0.9903427958488464,14.2
+CDC,cdc,entity,0.9854535236954689,14.3
+Cecchi,cecchi,entity,0.7692011594772339,14.3
+cells,cell,entity,0.9549891352653503,14.3
+cell biology,cell biology,entity,0.9767060279846191,14.3
+cell division,cell division,event,0.788468599319458,14.3
+Center,center,entity,0.5145671367645264,14.5
+central nervous system,central nervous system,entity,0.9988311727841696,14.3
+centrality,centrality,entity,0.6167362332344055,14.3
+certain reactions,certain reaction,entity,0.6346116065979004,14.1
+cessation,cessation,event,0.7268942594528198,14.4
+Chandola,chandola,entity,0.6603633165359497,14.2
+Chang,chang,entity,0.8990773558616638,14.3
+Charles,charles,entity,0.9912295341491699,14.4
+chemotherapy,chemotherapy,entity,0.9701380729675293,14.1
+chest tightness,chest tightness,entity,0.8115012943744659,14.3
+Chida,chida,entity,0.8874476552009583,14.3
+Christie,christie,entity,0.5426307320594788,14.5
+chromosomes,chromosome,entity,0.9914078116416931,14.3
+chronic health problems,chronic health problem,entity,0.7222292820612589,14.3
+Chronic occupational stress,chronic occupational stress,entity,0.8381861050923666,14.2
+chronic sense,chronic sense,entity,0.8054307401180267,14.3
+chronic stress,chronic stress,entity,0.8731735646724701,14.1; 14.3
+chronic stress reaction,chronic stress reaction,entity,0.9449865619341532,14.2
+chronic stressor,chronic stressor,entity,0.9169138669967651,14.2; 14.4; 14.3
+chronic stressors,chronic stressor,entity,0.9169138669967651,14.2; 14.4; 14.3
+Chronic stressors,chronic stressor,entity,0.9169138669967651,14.2; 14.4; 14.3
+chronic struggle,chronic struggle,entity,0.7507163286209106,14.3
+chronic tension headaches,chronic tension headache,event,0.8979626893997192,14.3
+chronicity,chronicity,entity,0.979233980178833,14.4
+cigarette smoke,cigarette smoke,entity,0.7765186429023743,14.3
+Clark,clark,entity,0.6811601221561432,14.5; 14.3
+classical conditioning,classical conditioning,event,0.9896009564399719,14.3
+close relationships,close relationship,entity,0.9257270693778992,14.2
+closest relationship,close relationship,entity,0.9257270693778992,14.2
+co,co,entity,0.9358911514282227,14.2
+Coats,coats,entity,0.9200665950775146,14.5
+cognitive appraisals,cognitive appraisal,entity,0.7967780232429504,14.1
+Cohen,cohen,entity,0.8555993708697233,14.1; 14.5; 14.2; 14.4; 14.3
+Cohrs,cohrs,entity,0.7068161964416504,14.5
+colds,cold,entity,0.5379539728164673,14.3
+cold air,cold air,entity,0.7062781453132629,14.3
+cold pressor test,cold pressor test,entity,0.9915152390797933,14.3
+cold virus,cold virus,entity,0.9969351589679718,14.3
+common cold,common cold,entity,0.9515775442123413,14.1; 14.4
+common denominators,common denominator,entity,0.8857736587524414,14.2
+community,community,entity,0.9768644571304321,14.5; 14.4
+communities,community,entity,0.9768644571304321,14.5; 14.4
+community ties,community tie,entity,0.6750743240118027,14.4
+commute,commute,entity,0.7571123540401459,14.1; 14.3
+commutes,commute,entity,0.7571123540401459,14.1; 14.3
+comparison,comparison,entity,0.9789618253707886,14.4
+comparisons,comparison,entity,0.9789618253707886,14.4
+competitive drive,competitive drive,entity,0.9492267370223999,14.3
+complex system,complex system,entity,0.761827826499939,14.3
+Compton,compton,entity,0.9874173700809479,14.5
+concentrating,concentrate,event,0.5619732141494751,14.1
+concept,concept,entity,0.9985799491405487,14.1; 14.4
+conceptualizations,conceptualization,entity,0.7960937470197678,14.1; 14.2
+conceptualization,conceptualization,event,0.7960937470197678,14.1; 14.2
+condition,condition,event,0.7112843990325928,14.1; 14.5; -1.-1; 14.2; 14.3
+conditioned,condition,event,0.7112843990325928,14.1; 14.5; -1.-1; 14.2; 14.3
+conditions,condition,entity,0.7112843990325928,14.1; 14.5; -1.-1; 14.2; 14.3
+conditioned aversion,condition aversion,event,0.8946802020072937,14.3
+conditioned response,condition response,event,0.9980526864528656,14.3
+Cone,cone,entity,0.9299563765525818,14.1
+conflicts,conflict,entity,0.8370547518134117,14.2; 14.5; 14.3
+conflict,conflict,entity,0.8370547518134117,14.2; 14.5; 14.3
+connected,connect,event,0.9974821209907532,14.4
+connotation,connotation,event,0.838113009929657,14.1
+constellation,constellation,event,0.9991896748542786,14.1
+contempt,contempt,entity,0.8585894107818604,14.3
+contentment,contentment,event,0.7373881340026855,14.5
+contexts,context,entity,0.7173248529434204,14.4
+contrast,contrast,entity,0.9989558060963949,14.1; 14.5; 14.4
+controls,control,entity,0.699823131163915,14.5; -1.-1; 14.2; 14.4; 14.3
+controlling,control,event,0.699823131163915,14.5; -1.-1; 14.2; 14.4; 14.3
+control,control,entity,0.699823131163915,14.5; -1.-1; 14.2; 14.4; 14.3
+Control,control,entity,0.699823131163915,14.5; -1.-1; 14.2; 14.4; 14.3
+coping,cope,event,0.7276739656925202,-1.-1; 14.1; 14.4
+cope,cope,entity,0.7276739656925202,-1.-1; 14.1; 14.4
+coping strategies,cope strategy,event,0.7197360843420029,14.4
+Cordoba,cordoba,entity,0.7966648936271667,14.4
+coronary artery disease,coronary artery disease,entity,0.9908920526504517,14.1
+correlation,correlation,event,0.9970307250817617,14.2; 14.5; 14.3
+correlations,correlation,entity,0.9970307250817617,14.2; 14.5; 14.3
+correlation coefficient,correlation coefficient,event,0.9009766429662704,14.2
+correlational research method,correlational research method,entity,0.8758039474487305,14.2
+corrosive effects,corrosive effect,entity,0.7514510452747345,14.3
+corruption,corruption,event,0.8029264211654663,14.5
+corticotrophin-releasing factor,corticotrophin release factor,event,0.9931949824094772,14.1
+Cortisol,cortisol,entity,0.9860812276601791,14.1; 14.3
+cortisol,cortisol,entity,0.9860812276601791,14.1; 14.3
+Cotton,cotton,entity,0.9642919301986694,14.4
+Courneya,courneya,entity,0.9444150328636169,14.4
+coworkers,coworker,entity,0.7648531893889109,14.2; 14.4; 14.3
+coworker,coworker,entity,0.7648531893889109,14.2; 14.4; 14.3
+Coyne,coyne,entity,0.9183691740036011,14.2
+Craft,craft,entity,0.8419593572616577,14.4
+creative endeavors,creative endeavor,entity,0.7403691709041595,14.5
+creativity,creativity,entity,0.9873495697975159,14.5
+Csikszentmihalyi,csikszentmihalyi,entity,0.7124297171831131,14.5
+cue,cue,entity,0.8254246115684509,14.5
+cultural changes,cultural change,entity,0.9083906710147858,14.4
+cultures,culture,entity,0.9600720206896464,14.5
+culture,culture,entity,0.9600720206896464,14.5
+curriculum,curriculum,entity,0.5982736945152283,14.5
+Cutrona,cutrona,entity,0.9011271595954895,14.4
+Cyber hassles,cyber hassle,entity,0.9385744333267212,14.2
+cycle,cycle,event,0.5256171226501465,14.3
+cynicism,cynicism,entity,0.9899225831031799,14.2
+-dadah,dadah,entity,-1.0,14.3
+Dahme,dahme,entity,0.9682654738426208,14.3
+daily hassles,daily hassle,entity,0.6456804573535919,-1.-1; 14.2
+Daily hassles,daily hassle,entity,0.6456804573535919,-1.-1; 14.2
+Dakof,dakof,entity,0.8459006547927856,14.2
+Das,das,entity,0.7537531852722168,14.5
+Davidson,davidson,entity,0.9620816310246786,14.5
+de Jong,de jong,entity,0.8773553967475891,14.3
+de Kluizenaar,de kluizenaar,entity,0.8619783818721771,14.3
+De Vogli,de vogli,entity,0.9340314120054245,14.2; 14.3
+death rate,death rate,entity,0.9744650721549988,14.3
+Deaton,deaton,entity,0.9759145379066467,14.5
+Debling,debling,event,0.890886664390564,14.3
+debt,debt,entity,0.717178463935852,-1.-1
+DeLongis,delongis,entity,0.8748149573802948,14.2
+deluge,deluge,entity,0.9528394341468811,14.1
+dementia,dementia,entity,0.9891812801361084,14.2
+dementia sufferers,dementia sufferer,entity,0.6539575457572937,14.4
+demographic groups,demographic group,entity,0.9892922043800354,14.1
+depersonalization,depersonalization,event,0.9645402431488037,14.2
+depletion,depletion,entity,0.8912159204483032,14.1
+depression,depression,event,0.9926018041949118,14.5; -1.-1; 14.2; 14.4; 14.3
+depression scores,depression score,event,0.9254435151815414,14.3
+depressive symptoms,depressive symptom,entity,0.7246648967266083,14.4
+Derogatis,derogatis,entity,0.9543904662132263,14.2
+detachment,detachment,event,0.9092779457569122,14.2
+detainees,detainee,entity,0.854919970035553,14.4
+development,development,event,0.9991960823535919,-1.-1; 14.1; 14.4; 14.3
+devoted,devote,event,0.7887490391731262,-1.-1; 14.1
+diabetes,diabetes,entity,0.9889049530029297,14.3
+diagnosis,diagnosis,event,0.9983305931091309,14.3
+diarrhea,diarrhea,entity,0.9869659543037415,14.2
+diary study,diary study,entity,0.6963626742362976,14.4
+Diegnan,diegnan,entity,0.7918351888656616,14.4
+Diehl,diehl,entity,0.8079235553741455,14.4
+Diener,diener,entity,0.8374279964537847,14.5
+diet,diet,entity,0.5485254526138306,14.5; 14.4; 14.3
+difficulty,difficulty,entity,0.7801782488822937,-1.-1; 14.1; 14.5; 14.3
+difficulties,difficulty,entity,0.7801782488822937,-1.-1; 14.1; 14.5; 14.3
+digestion,digestion,entity,0.98199462890625,14.1
+dilate,dilate,event,0.7799329161643982,14.1
+direct action,direct action,entity,0.6895230412483215,14.1
+disagreements,disagreement,entity,0.878391444683075,14.2
+Discrimination,discrimination,event,0.9222765684127807,14.4
+discrimination,discrimination,event,0.9222765684127807,14.4
+discrimination-induced stress,discrimination induce stress,event,0.842464342713356,14.4
+discriminatory behaviors,discriminatory behavior,entity,0.7869496941566467,14.4
+disease,disease,entity,0.7806627869606018,-1.-1; 14.1; 14.3
+diseases,disease,entity,0.7806627869606018,-1.-1; 14.1; 14.3
+disgust,disgust,entity,0.6402987837791443,14.3
+disorder,disorder,entity,0.8223176761107012,14.1; 14.2; 14.4; 14.3
+disorders,disorder,entity,0.8223176761107012,14.1; 14.2; 14.4; 14.3
+disparity,disparity,entity,0.6643861532211304,14.3
+dissatisfaction,dissatisfaction,entity,0.7174697518348694,14.2
+distancing,distance,event,0.5668033361434937,14.4
+distress,distress,entity,0.9698493083318075,14.1; 14.4; 14.3
+distrust,distrust,entity,0.9652184247970581,14.5
+DNA,dna,entity,0.7934520840644836,14.3
+Dohrenwend,dohrenwend,entity,0.9427596728006998,14.2
+Doyle,doyle,entity,0.513896644115448,14.4
+Dunn,dunn,entity,0.9407121539115906,14.5
+Duval,duval,entity,0.890724778175354,14.4
+economic downturn,economic downturn,entity,0.757096141576767,14.1
+economic standard,economic standard,entity,0.5010540187358856,14.5
+Edwards,edwards,entity,0.9716458916664124,14.3
+efficiency,efficiency,entity,0.9800505042076111,14.1
+electric shocks,electric shock,entity,0.930522084236145,14.4
+element,element,event,0.938086524605751,14.1; 14.2; 14.5; 14.3
+elements,element,entity,0.938086524605751,14.1; 14.2; 14.5; 14.3
+emotions,emotion,entity,0.727206643138613,14.1; 14.5; 14.3
+Emotion-focused coping,emotion focus coping,event,0.7593042055765787,-1.-1; 14.4
+emotion-focused coping,emotion focus coping,event,0.7593042055765787,-1.-1; 14.4
+emotional boosts,emotional boost,entity,0.621702641248703,14.5
+emotional factors,emotional factor,entity,0.9638505081335703,-1.-1; 14.3
+emotional reactions,emotional reaction,entity,0.9281956851482391,14.5
+emotional states,emotional state,entity,0.8257574215531349,14.2; 14.3
+emotionality,emotionality,entity,0.48306751251220703,14.3
+empathetic vocal response,empathetic vocal response,entity,0.867000679175059,14.4
+empathy,empathy,entity,0.9764307737350464,14.5
+employment status,employment status,event,0.7567408084869385,14.3
+endocrine system,endocrine system,entity,0.9963919818401337,14.1; 14.3
+endocrinologist,endocrinologist,entity,0.9454622268676758,-1.-1
+energized,energize,event,0.8533719182014465,14.1
+engaging,engage,event,0.8087252378463745,-1.-1; 14.1; 14.5; 14.4
+engage,engage,entity,0.8087252378463745,-1.-1; 14.1; 14.5; 14.4
+engaged,engage,event,0.8087252378463745,-1.-1; 14.1; 14.5; 14.4
+engagement,engagement,event,0.699263721704483,14.5
+enthusiasm,enthusiasm,entity,0.6942046880722046,14.5
+environment,environment,event,0.8526311715443929,-1.-1; 14.1; 14.5
+environmental factors,environmental factor,entity,0.9443366527557373,14.4; 14.3
+Epel,epel,entity,0.9167970816294352,14.3
+epinephrine,epinephrine,entity,0.9902864992618561,14.1
+episodes,episode,entity,0.6794816255569458,14.3
+erode,erode,entity,0.8877279758453369,14.1; 14.5; 14.3
+essence,essence,entity,0.7639195322990417,14.5
+ethics,ethic,entity,0.9094650149345398,14.4
+ethnicity,ethnicity,entity,0.7276285886764526,14.4
+eustress,eustress,entity,0.9784558216730753,14.1; 14.2
+events,event,entity,0.984155486768751,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+event,event,entity,0.984155486768751,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+exact mechanisms,exact mechanism,entity,0.9571710824966431,14.3
+excelled,excel,event,0.6487286686897278,14.3
+excitement,excitement,event,0.9577671885490417,14.5
+exercises,exercise,entity,0.9797041972478231,14.1; 14.5; 14.4; 14.3
+exercise,exercise,entity,0.9797041972478231,14.1; 14.5; 14.4; 14.3
+exercising,exercise,event,0.9797041972478231,14.1; 14.5; 14.4; 14.3
+exercised,exercise,event,0.9797041972478231,14.1; 14.5; 14.4; 14.3
+exhaustion,exhaustion,entity,0.8250158776839575,-1.-1; 14.1; 14.2
+experiment,experiment,event,0.9779490033785502,14.5; 14.4; 14.3
+experiments,experiment,entity,0.9779490033785502,14.5; 14.4; 14.3
+experimenters,experimenter,entity,0.9906975030899048,14.4
+exposure,exposure,entity,0.9867893209060034,14.1; 14.2; 14.3
+Exposure,exposure,entity,0.9867893209060034,14.1; 14.2; 14.3
+extreme positive affect,extreme positive affect,entity,0.7667017181714376,14.5
+eye,eye,entity,0.8659557104110718,14.1; 14.5
+eyes,eye,entity,0.8659557104110718,14.1; 14.5
+eye strain,eye strain,entity,0.7165135443210602,14.3
+Facebook,facebook,entity,0.5835798382759094,14.3
+facial muscle movement,facial muscle movement,event,0.9766207933425903,14.4
+fact,fact,entity,0.9992509007453918,14.5; 14.4; 14.3
+faith,faith,entity,0.4985366761684418,14.5
+fatigue,fatigue,entity,0.802789568901062,14.1; 14.3
+fatigued,fatigue,event,0.802789568901062,14.1; 14.3
+faults,fault,entity,0.6027401685714722,14.5
+feeling states,feel state,event,-1.0,14.1
+feelings,feeling,entity,0.7316566109657288,14.1; 14.2
+feeling,feeling,event,0.7316566109657288,14.1; 14.2
+Feinleib,feinleib,entity,0.659400463104248,14.3
+Fieman,fieman,entity,0.8901020884513855,14.1
+fight-or-flight reactions,fight or flight reaction,event,0.995746244986852,-1.-1
+fight-or-flight responses,fight or flight response,event,0.9976110532879829,-1.-1; 14.1
+fight-or-flight response,fight or flight response,event,0.9976110532879829,-1.-1; 14.1
+first-year programs,first year program,entity,0.8013516664505005,14.4
+Fleshner,fleshner,entity,0.9708956480026245,14.3
+Flory,flory,entity,0.9277418255805969,14.3
+Flow,flow,event,0.8472050097253587,-1.-1; 14.5
+flow,flow,event,0.8472050097253587,-1.-1; 14.5
+fluids,fluid,entity,0.9980669021606445,14.3
+focal events,focal event,entity,0.844057559967041,14.2
+focal point,focal point,entity,0.8971864283084869,14.3
+focus,focus,entity,0.9885495901107788,14.1; 14.5
+focusing,focus,event,0.9885495901107788,14.1; 14.5
+focused,focus,event,0.9885495901107788,14.1; 14.5
+Folkman,folkman,entity,0.7221265179770333,14.1; 14.2; 14.4
+Fontana,fontana,entity,0.9490956664085388,14.4
+Ford,ford,entity,0.850814163684845,14.3
+forearm,forearm,entity,0.9946077466011047,14.3
+forehead,forehead,entity,0.5705366730690002,14.3
+Foreman,foreman,entity,0.9473210573196411,14.3
+foundation,foundation,event,0.895205020904541,14.3
+freedom,freedom,entity,0.5176483988761902,14.5
+Friedman,friedman,entity,0.869686621427536,14.3
+fueled,fuel,event,0.8114063739776611,14.4
+Fuhrer,fuhrer,entity,0.9248421788215637,14.2
+Fujita,fujita,entity,0.887142151594162,14.5
+function,function,entity,0.5067654848098755,14.3
+fundamental human motive,fundamental human motive,entity,0.7488561272621155,14.4
+Gallagher,gallagher,entity,0.5689197778701782,14.4
+Gallup Organization,gallup organization,event,0.9916876256465912,14.5
+Gansevoort,gansevoort,entity,0.6414448022842407,14.3
+gastrointestinal problems,gastrointestinal problem,entity,0.9033154845237732,14.1
+GDP,gdp,entity,0.8112661441167196,14.5
+Geer,geer,entity,0.9240850806236267,14.4
+gender differences,gender difference,entity,0.7441824525594711,14.5; 14.3
+general adaptation syndrome,general adaptation syndrome,event,0.8527494033177694,-1.-1; 14.1; 14.4
+general sense,general sense,entity,0.9093574732542038,14.2; 14.5
+generalized tendency,generalized tendency,entity,0.7616169154644012,14.5
+generosity,generosity,entity,0.9314479827880859,14.5
+Geoffroy,geoffroy,entity,0.457837849855423,14.1
+Gerber,gerber,entity,0.8139038681983948,14.4
+German respondents,german respondent,entity,0.7043238282203674,14.5
+Gerstorf,gerstorf,entity,0.9122800230979919,14.4
+Gilbert,gilbert,entity,0.9858624935150146,14.5
+Glaser,glaser,entity,0.9190458399908883,14.1; 14.4; 14.3
+Glassman,glassman,entity,0.9566408395767212,14.3
+Gordon,gordon,entity,0.512047290802002,14.4
+governed,govern,event,0.9667637944221497,14.4
+gradation,gradation,event,0.9796038269996643,14.3
+grade,grade,entity,0.7043555378913879,14.4
+Gravenstein,gravenstein,entity,0.8974227905273438,14.3
+Greater personal control,great personal control,entity,0.8171458641688029,14.4
+Greenberg,greenberg,entity,0.9409574866294861,14.4
+Greenhouse,greenhouse,entity,0.9106388688087463,14.5
+grounds,ground,entity,0.9617002010345459,-1.-1
+groundwork,groundwork,entity,0.9954366087913513,14.1
+groups,group,entity,0.5627660155296326,14.1; 14.5; 14.2; 14.4; 14.3
+group,group,entity,0.5627660155296326,14.1; 14.5; 14.2; 14.4; 14.3
+Grundy,grundy,entity,0.7679473757743835,14.3
+guilt,guilt,entity,0.9495877623558044,14.3
+habits,habit,entity,0.5490009188652039,14.2
+Hackney,hackney,entity,0.8194528222084045,14.5
+hairs,hair,entity,0.8527247309684753,14.3
+Hansen,hansen,entity,0.9581281542778015,14.5
+Happiness,happiness,entity,0.7875343916507868,-1.-1; 14.5; 14.4
+happiness,happiness,entity,0.7875343916507868,-1.-1; 14.5; 14.4
+happiness levels,happiness level,entity,0.9129167993863424,-1.-1; 14.5
+happiness scores,happiness score,entity,0.7077360451221466,14.5
+happiness set points,happiness set point,entity,0.7579629421234131,-1.-1; 14.5
+Hare,hare,entity,0.7551519274711609,14.3
+harmful bacteria,harmful bacteria,entity,0.947719007730484,14.3
+Harris,harris,entity,0.9629162549972534,14.3
+Harter,harter,entity,0.8824758529663086,14.5
+Hartman,hartman,entity,0.9429144263267517,14.4
+Hasselbach,hasselbach,entity,0.7868961095809937,14.4
+Hatch,hatch,entity,0.5798382759094238,14.2
+hatred,hatred,entity,0.9547204971313477,14.5
+Hay,hay,entity,0.45740216970443726,14.4
+head,head,entity,0.7420026659965515,14.2; 14.4; 14.3
+Head,head,entity,0.7420026659965515,14.2; 14.4; 14.3
+headaches,headache,entity,0.9625645875930786,14.1; 14.3
+headache,headache,entity,0.9625645875930786,14.1; 14.3
+health disparities,health disparity,entity,0.8888951539993286,14.3
+Health psychology,health psychology,entity,0.7989965379238129,-1.-1; 14.1; 14.3
+health psychology,health psychology,entity,0.7989965379238129,-1.-1; 14.1; 14.3
+health standpoint,health standpoint,entity,0.8139830231666565,14.3
+healthy attribution habits,healthy attribution habit,entity,0.6192110379536947,14.4
+healthy cells,healthy cell,entity,0.9830540120601654,14.3
+Healthy Minds,healthy mind,entity,-1.0,14.5
+heard,hear,event,0.9828336238861084,14.1
+heart,heart,entity,0.9865206778049469,14.1; 14.3
+heart attacks,heart attack,entity,0.9673337665471163,14.2; 14.4; 14.3
+heart attack,heart attack,entity,0.9673337665471163,14.2; 14.4; 14.3
+Heart disease,heart disease,entity,0.9946281481534243,14.1; 14.5; 14.2; 14.4; 14.3
+heart disease,heart disease,entity,0.9946281481534243,14.1; 14.5; 14.2; 14.4; 14.3
+heart failure,heart failure,entity,0.806148886680603,14.3
+heart problems,heart problem,entity,0.9395789206027985,14.2; 14.3
+heart rate,heart rate,entity,0.8967991570631663,14.1
+heart surgery,heart surgery,entity,0.8421502113342285,14.5
+Heavy alcohol consumption,heavy alcohol consumption,event,0.6580712993939718,14.2
+Helenius,helenius,entity,0.7838155031204224,14.3
+Helenowski,helenowski,entity,0.8026522994041443,14.4
+Helliwell,helliwell,entity,0.9165725111961365,14.5
+Helson,helson,entity,0.9027137756347656,14.5
+Hemingway,hemingway,entity,0.7964244484901428,14.4
+Herbert,herbert,entity,0.9270748794078827,14.1; 14.4
+Hertzman,hertzman,entity,0.7646418809890747,14.1
+Hicklin,hicklin,entity,0.7203705310821533,14.4
+highest levels,high level,entity,0.632055401802063,14.1; 14.5; 14.2; 14.4; 14.3
+high level,high level,entity,0.632055401802063,14.1; 14.5; 14.2; 14.4; 14.3
+high levels,high level,entity,0.632055401802063,14.1; 14.5; 14.2; 14.4; 14.3
+High levels,high level,entity,0.632055401802063,14.1; 14.5; 14.2; 14.4; 14.3
+higher levels,high level,entity,0.632055401802063,14.1; 14.5; 14.2; 14.4; 14.3
+hippocampus,hippocampu,entity,0.9828322529792786,14.4
+HIV,hiv,entity,0.9962871074676514,14.3
+HIV infection,hiv infection,entity,0.9938046336174011,14.4
+hobbies,hobby,entity,0.8793202936649323,14.5
+Hochron,hochron,entity,0.9765033721923828,14.3
+Holmes,holmes,entity,0.975187785923481,-1.-1; 14.2
+Holmes and Rahe Social Readjustment Rating Scale,holmes and rahe social readjustment rating scale,event,0.9338098594120571,14.2
+Holt-Lunstad,holt lunstad,entity,0.8405974308649699,14.4
+homeostasis,homeostasis,event,0.9910244941711426,14.1
+hopelessness theory,hopelessness theory,entity,0.8557499945163727,14.4
+hormones,hormone,entity,0.927467922369639,14.1
+hormone,hormone,entity,0.927467922369639,14.1
+hostility,hostility,entity,0.803784085644616,14.3
+HPA axis,hpa axis,entity,0.894534707069397,14.1
+human condition,human condition,event,0.5806284546852112,14.1
+human immunodeficiency virus,human immunodeficiency virus,entity,0.9956393241882324,14.3
+human service jobs,human service job,entity,0.6707507967948914,14.2
+Hunt,hunt,entity,0.49271202087402344,14.4
+Hupbach,hupbach,entity,0.606848418712616,14.1
+Hurewitz,hurewitz,entity,0.797511875629425,14.3
+Hyland,hyland,entity,0.9108251929283142,14.3
+Hypertension,hypertension,event,0.989513736963272,14.1; 14.2; 14.3
+hypertension,hypertension,event,0.989513736963272,14.1; 14.2; 14.3
+hypothalamic-pituitary-adrenal responsiveness,hypothalamic pituitary adrenal responsiveness,entity,0.9326628347237905,14.4
+hypothalamus,hypothalamus,event,0.9917236566543579,14.1
+hypothesis,hypothesis,event,0.9949491322040558,14.2; 14.4
+ideal world,ideal world,entity,0.6607049703598022,14.5
+ideology,ideology,entity,0.8150008916854858,14.3
+Ikeda,ikeda,entity,0.877139687538147,14.3
+immediate reaction,immediate reaction,entity,0.9861003458499908,14.1
+immune function,immune function,entity,0.9746136963367462,14.3
+immune functioning measures,immune function measure,event,0.6959330439567566,14.4
+immune functioning,immune functioning,event,0.9219424843788147,-1.-1; 14.5; 14.4; 14.3
+immune organs,immune organ,entity,0.9941866397857666,14.3
+immune proteins,immune protein,entity,0.997023731470108,14.3
+immune response,immune response,entity,0.99679084867239,14.3
+immune responses,immune response,entity,0.99679084867239,14.3
+immune system,immune system,entity,0.9893386454685874,-1.-1; 14.1; 14.4; 14.3
+immune system functioning,immune system function,event,0.7664893865585327,14.1; 14.5; 14.3
+immunosuppression,immunosuppression,event,0.9825499852498373,14.3
+immunosuppressive drug,immunosuppressive drug,entity,0.9897229671478271,14.3
+impatience,impatience,entity,0.8635123372077942,14.3
+imprisonment,imprisonment,event,0.8393731713294983,14.2
+inadequacies,inadequacy,entity,0.89507657289505,14.4
+inadequacy,inadequacy,entity,0.89507657289505,14.4
+incidence,incidence,entity,0.9770886600017548,14.4
+income inequality,income inequality,entity,0.9380699098110199,14.5
+income levels,income level,entity,0.985928863286972,14.3
+index,index,entity,0.4745635390281677,14.5
+inert substance,inert substance,entity,0.9608314037322998,14.3
+infections,infection,entity,0.9550067335367203,14.3
+infection,infection,entity,0.9550067335367203,14.3
+infectious diseases,infectious disease,entity,0.996400773525238,14.4
+inflammation,inflammation,event,0.9858076870441437,14.3
+Inflammation,inflammation,event,0.9858076870441437,14.3
+Infurna,infurna,entity,0.719453364610672,14.4
+inheritance,inheritance,entity,0.7804986238479614,14.5
+inhibiting,inhibit,event,0.5794698596000671,14.3
+inhibit,inhibit,entity,0.5794698596000671,14.3
+inner peace,inner peace,entity,0.9074285626411438,14.5
+insensitivity,insensitivity,entity,0.9601633548736572,14.3
+intelligence,intelligence,entity,0.8506990075111389,14.5
+interactions,interaction,entity,0.87362668911616,14.2; 14.3
+interaction,interaction,entity,0.87362668911616,14.2; 14.3
+interests,interest,entity,0.8512320518493652,-1.-1; 14.1; 14.5; 14.4
+interest,interest,entity,0.8512320518493652,-1.-1; 14.1; 14.5; 14.4
+Interest,interest,entity,0.8512320518493652,-1.-1; 14.1; 14.5; 14.4
+internal environment,internal environment,event,0.6132176518440247,14.1
+interpersonal conflicts,interpersonal conflict,entity,0.8658822476863861,14.2; 14.3
+interpersonal relationships,interpersonal relationship,entity,0.729745090007782,14.4
+interpersonal skill,interpersonal skill,entity,0.8726785480976105,14.5
+interpersonal stressors,interpersonal stressor,entity,0.7910610437393188,14.4
+Isenberg,isenberg,entity,0.9146741628646851,14.3
+Ismail,ismail,entity,0.5945674777030945,14.4
+Jaarsma,jaarsma,entity,0.9366572499275208,14.3
+Jackson,jackson,entity,0.8539344668388367,14.2
+Janicki-Deverts,janicki deverts,entity,0.792872612675031,14.1; 14.2
+Janoff-Bulman,janoff bulman,entity,0.9068983594576517,14.5
+Job burnout,job burnout,entity,0.832493700764396,-1.-1; 14.2
+job burnout,job burnout,entity,0.832493700764396,-1.-1; 14.2
+job control,job control,entity,0.7877349257469177,14.2
+Job strain,job strain,entity,0.7232657730579376,-1.-1; 14.2; 14.3
+job strain,job strain,entity,0.7232657730579376,-1.-1; 14.2; 14.3
+job termination,job termination,event,0.7704509794712067,14.2
+Johansson,johansson,entity,0.7504899501800537,14.3
+joints,joint,entity,0.9976243376731873,14.3
+Jonas,jonas,entity,0.7746344804763794,14.3
+Jordan,jordan,entity,0.955824613571167,14.1
+joy,joy,entity,0.7212622463703156,14.5
+Kahneman,kahneman,entity,0.957957923412323,14.5
+Kaitlin,kaitlin,entity,0.9132320404052734,14.3
+Kamarck,kamarck,entity,0.7277008891105652,14.3
+Kannel,kannel,entity,0.9304944276809692,14.3
+Kanner,kanner,entity,0.8838372826576233,14.2
+Karasek,karasek,entity,0.8878120183944702,14.2
+Karner,karner,entity,0.744076669216156,14.5
+Kellman,kellman,entity,0.7912867665290833,14.4
+Keltner,keltner,entity,0.9679842591285706,14.4
+Kerr,kerr,entity,0.9553425908088684,14.4
+Kessler,kessler,entity,0.8985463380813599,14.2
+key factors,key factor,entity,0.6586835086345673,14.5
+key variables,key variable,entity,0.6970737874507904,14.5
+kidney failure,kidney failure,entity,0.7349766492843628,14.3
+Kiecolt-Glaser,kiecolt glaser,entity,0.9151734255609059,14.1; 14.4; 14.3
+killer stress,killer stress,entity,0.7729290425777435,14.3
+Kilpeläinen,kilpeläinen,entity,0.8771812915802002,14.3
+King,king,event,0.8673762083053589,14.5
+Kivimaki,kivimaki,entity,0.7199701070785522,14.3
+Klag,klag,entity,0.949761152267456,14.3
+Kliment,kliment,event,0.8673848509788513,14.3
+Konnikova,konnikova,entity,0.8586078882217407,14.4
+Kraus,kraus,entity,0.6924020051956177,14.4
+Krosnick,krosnick,entity,0.8810500502586365,14.4
+Krueger,krueger,entity,0.7370920181274414,14.4
+Krumboltz,krumboltz,entity,0.6183173656463623,14.4
+Kubzansky,kubzansky,entity,0.5698256492614746,14.5
+Kumar,kumar,entity,0.8032031059265137,14.3
+Lachman,lachman,entity,0.7431069016456604,14.4
+lack,lack,entity,0.98199995358785,14.2; 14.4; 14.3
+lacked,lack,event,0.98199995358785,14.2; 14.4; 14.3
+Lando,lando,entity,0.7507882714271545,14.3
+Landsbergis,landsbergis,entity,0.9446056485176086,14.2
+Lating,lating,event,0.591758482158184,14.1; 14.4; 14.3
+Lavner,lavner,entity,0.8414642214775085,14.5
+law,law,entity,0.994534969329834,14.2; 14.4
+Layard,layard,entity,0.8706649541854858,14.5
+layoff,layoff,entity,0.7685249447822571,14.5
+Layton,layton,entity,0.9034608602523804,14.4
+Lazarus,lazarus,entity,0.7406441122293472,14.1; 14.2; 14.4
+LCUs,lcu,entity,0.9540042714639143,-1.-1; 14.2
+LCU scores,lcu score,entity,0.9030413329601288,14.2
+Le Blanc,le blanc,entity,0.9048792123794556,14.2
+learned helplessness,learn helplessness,event,0.7081253677606583,14.4
+Leary,leary,entity,0.9610477089881897,14.4
+leg,leg,entity,0.9952377080917358,14.2
+legal recourse,legal recourse,entity,0.6154775023460388,14.4
+legislation,legislation,event,0.6930543780326843,14.4
+Lehrer,lehrer,entity,0.8753247261047363,14.3
+Lepore,lepore,entity,0.9635907411575317,14.4
+lethal disease,lethal disease,entity,0.9767153859138489,14.3
+levels,level,entity,0.5611207187175751,14.1; 14.5; 14.2; 14.4; 14.3
+level,level,entity,0.5611207187175751,14.1; 14.5; 14.2; 14.4; 14.3
+Li,li,entity,0.6957440376281738,14.1
+Liccardi,liccardi,entity,0.9461049437522888,14.3
+life changes,life change,event,0.760047048330307,-1.-1; 14.2
+life change,life change,entity,0.760047048330307,-1.-1; 14.2
+life change units,life change unit,entity,0.9300175905227661,-1.-1; 14.2
+life expectancy,life expectancy,entity,0.6660313606262207,14.5
+life partnership,life partnership,entity,0.8024785220623016,14.3
+life-satisfaction,life satisfaction,entity,0.6503042976061504,14.5; 14.4
+Life satisfaction,life satisfaction,entity,0.6503042976061504,14.5; 14.4
+life satisfaction,life satisfaction,entity,0.6503042976061504,14.5; 14.4
+life stressors,life stressor,entity,0.7482046782970428,14.2; 14.4
+lifestyle factors,lifestyle factor,entity,0.7812954485416412,14.1
+light,light,entity,0.9969082872072855,14.5; 14.3
+Lim,lim,entity,0.9470604062080383,14.4
+limbic structures,limbic structure,entity,0.996821939945221,14.1
+link,link,entity,0.7199289798736572,14.1; 14.5; 14.2; 14.4; 14.3
+linking,link,event,0.7199289798736572,14.1; 14.5; 14.2; 14.4; 14.3
+linked,link,event,0.7199289798736572,14.1; 14.5; 14.2; 14.4; 14.3
+Lipson,lipson,entity,0.9366090893745422,14.4
+Lipton,lipton,entity,0.9784978628158569,14.3
+living conditions,live condition,event,0.8170863389968872,14.5
+Loerbroks,loerbroks,entity,0.9048939943313599,14.3
+loneliness,loneliness,entity,0.7424856424331665,14.4
+long-term state,long term state,entity,0.8512969762086868,14.5
+longevity,longevity,entity,0.9423567354679108,14.5
+longitudinal data,longitudinal datum,entity,0.7059806287288666,14.5
+longitudinal investigations,longitudinal investigation,entity,0.7767031639814377,14.2; 14.3
+longitudinal investigation,longitudinal investigation,event,0.7767031639814377,14.2; 14.3
+longitudinal study,longitudinal study,entity,0.86118333786726,14.2; 14.4; 14.3
+longitudinal studies,longitudinal study,entity,0.86118333786726,14.2; 14.4; 14.3
+loss,loss,entity,0.7734925746917725,-1.-1; 14.1; 14.2; 14.3
+loud noise,loud noise,entity,0.6863993108272552,14.2
+lower socioeconomic status,low socioeconomic status,entity,0.9270992279052734,14.2
+Lubaroff,lubaroff,entity,0.9374754428863525,14.4
+Lucas,lucas,entity,0.5805772244930267,14.5
+lump,lump,entity,0.8458512425422668,14.1
+lungs,lung,entity,0.9989295601844788,14.3
+Lutter,lutter,entity,0.9572193622589111,14.5
+lymph nodes,lymph node,entity,0.994989812374115,14.3
+lymph node shrinkage,lymph node shrinkage,entity,0.8484111030896505,14.1
+lymphocytes,lymphocyte,entity,0.9894360899925232,14.3
+Lyon,lyon,entity,0.9228426814079285,14.1
+Lyubomirsky,lyubomirsky,entity,0.8455757051706314,14.5
+Madhuri,madhuri,entity,0.8974157691001892,14.1
+Maekawa,maekawa,entity,0.872955322265625,14.3
+magnitude,magnitude,entity,0.9875444322824478,14.1; 14.2; 14.4
+Maier,maier,entity,0.8936803142229716,14.4; 14.3
+major components,major component,entity,0.5669310986995697,14.3
+major depressive disorder,major depressive disorder,entity,0.8451469540596008,14.1; 14.2; 14.4
+major pathways,major pathway,entity,0.8168266713619232,14.3
+Malarkey,malarkey,entity,0.7903909087181091,14.3
+Malzberg,malzberg,entity,0.9790883660316467,14.3
+manic-depressive disorder,manic depressive disorder,entity,0.8700336068868637,14.3
+manual labor,manual labor,entity,0.9676502048969269,14.2
+Manuck,manuck,entity,0.824474573135376,14.3
+marginalized groups,marginalize group,entity,0.9699705541133881,14.4
+marginalized groups,marginalized group,entity,0.9755533039569855,14.4
+marital conflict,marital conflict,entity,0.9620727002620697,14.3
+marital discord,marital discord,entity,0.9691561758518219,14.3
+marital satisfaction,marital satisfaction,entity,0.7906502038240433,14.5
+Marmot,marmot,entity,0.8342199325561523,14.5; 14.2; 14.4; 14.3
+Martin,martin,entity,0.9539541602134705,14.5
+Marx,marx,entity,0.9697324633598328,14.4
+Maslach,maslach,entity,0.8008602857589722,14.2
+Masse,masse,entity,0.8407206535339355,14.4
+Masuda,masuda,entity,0.9013450741767883,14.2
+maternal domestic violence,maternal domestic violence,entity,0.9270687103271484,14.3
+matter,matter,entity,0.9967460334300995,14.5; 14.3
+McCarthy,mccarthy,entity,0.927577793598175,14.5
+McGuire,mcguire,entity,0.6921409368515015,14.4; 14.3
+McIntosh,mcintosh,entity,0.7174786329269409,14.3
+mean value scores,mean value score,event,0.9683041572570801,14.2
+mechanisms,mechanism,entity,0.5076180100440979,-1.-1; 14.1; 14.3
+MedicineNet,medicinenet,entity,0.543760359287262,14.3
+melancholia,melancholia,entity,0.9882911443710327,14.3
+memories,memory,entity,0.990476131439209,14.1; 14.2; 14.4
+memory,memory,entity,0.990476131439209,14.1; 14.2; 14.4
+Mendoza-Denton,mendoza denton,entity,0.6685638626416525,14.4
+mental arithmetic,mental arithmetic,entity,0.8679154217243195,14.4
+mental health,mental health,entity,0.9533197581768036,14.2; 14.4
+mental health problems,mental health problem,entity,0.7979416847229004,14.2
+mental health status,mental health status,entity,0.8485384980837504,14.3
+Meoni,meoni,entity,0.8335171341896057,14.3
+Michalek,michalek,entity,0.6088430285453796,14.3
+microorganisms,microorganism,entity,0.9866154193878174,14.3
+midterm exam,midterm exam,entity,0.9874299764633179,14.4
+Miedema,miedema,entity,0.9023873209953308,14.3
+Migraines,migraine,entity,0.9906451106071472,14.3
+Migraine headaches,migraine headache,entity,0.9676559269428253,14.3
+Mikolajczak,mikolajczak,entity,0.8729395270347595,14.5
+Miller,miller,entity,0.9060018360614777,14.2; 14.3
+Miller-Archie,miller archie,entity,0.6347785393397013,14.1
+Milot,milot,entity,0.9470468759536743,14.3
+Minds,mind,entity,0.7969283819198608,-1.-1; 14.1; 14.5; 14.4
+mind,mind,entity,0.7969283819198608,-1.-1; 14.1; 14.5; 14.4
+mindedness,mindedness,entity,0.42338332533836365,14.5
+mindfulness,mindfulness,entity,0.8726926445960999,14.5
+minor hassles,minor hassle,entity,0.5226846933364868,-1.-1; 14.2
+mirror tracing,mirror tracing,event,0.9075786769390106,14.3
+misery,misery,entity,0.6293174028396606,14.5
+model,model,entity,0.9155949013573783,14.1; 14.4; 14.3
+mold,mold,entity,0.9885160326957703,14.3
+Monat,monat,entity,0.793464183807373,14.2
+mood,mood,entity,0.8993877470493317,14.5; 14.3
+moods,mood,entity,0.8993877470493317,14.5; 14.3
+mood states,mood state,entity,0.9071893393993378,14.2
+Morabia,morabia,entity,0.871652364730835,14.1
+morbidity,morbidity,entity,0.9819698333740234,14.1
+mortality,mortality,entity,0.9920147061347961,14.4; 14.3
+Mostofsky,mostofsky,entity,0.8199856281280518,14.5
+motivated,motivate,entity,0.7044866681098938,14.1
+motivate,motivate,entity,0.7044866681098938,14.1
+motivating force,motivate force,event,0.9862299263477325,14.1
+muscles,muscle,entity,0.8877328634262085,14.1; 14.3
+muscle aches,muscle ache,entity,0.839433491230011,14.3
+Myers,myers,entity,0.9105184674263,14.5; 14.3
+Myrtek,myrtek,entity,0.9875742197036743,14.3
+Nabi,nabi,entity,0.7613045573234558,14.3
+nasal drops,nasal drop,event,0.9876038432121277,14.3
+natural disasters,natural disaster,entity,0.7206298559904099,14.2; 14.3
+nature,nature,entity,0.9653016030788422,-1.-1; 14.1
+natures,nature,entity,0.9653016030788422,-1.-1; 14.1
+nausea,nausea,entity,0.9194591641426086,14.3
+Naveed,naveed,entity,0.8620128035545349,14.3
+Nealey-Moore,nealey moore,entity,0.7680788636207581,14.3
+neck muscles,neck muscle,entity,0.9698214530944824,14.3
+negative affect,negative affect,entity,0.9239508211612701,14.5
+Negative affectivity,negative affectivity,entity,0.9196122544152396,-1.-1; 14.3
+negative affectivity,negative affectivity,entity,0.9196122544152396,-1.-1; 14.3
+Negative aspects,negative aspect,entity,0.6321620643138885,14.2
+negative aspects,negative aspect,entity,0.6321620643138885,14.2
+negative emotions,negative emotion,entity,0.6956536769866943,14.1; 14.5; -1.-1; 14.4; 14.3
+negative emotion,negative emotion,entity,0.6956536769866943,14.1; 14.5; -1.-1; 14.4; 14.3
+negative feelings,negative feeling,entity,0.7886522114276886,14.5
+nervous system,nervous system,entity,0.9959187507629395,14.1
+nervousness,nervousness,entity,0.9329188466072083,14.3
+network,network,entity,0.8033662438392639,14.4
+Neupert,neupert,entity,0.9057855010032654,14.4
+neural correlates,neural correlate,entity,0.9831718802452087,14.5
+Neurology,neurology,entity,0.9467538595199585,14.3
+neuroticism,neuroticism,entity,0.980699360370636,14.3
+NIAMS,niams,entity,0.9046140313148499,14.3
+noise levels,noise level,entity,0.8171987533569336,14.3
+noradrenaline,noradrenaline,entity,0.9789674282073975,14.1
+norepinephrine,norepinephrine,entity,0.9897383451461792,14.1
+noted,note,event,0.9981992642084757,14.1; 14.3
+numerical scores,numerical score,entity,0.900580495595932,14.2
+Nusair,nusair,entity,0.9024112224578857,14.3
+Nygård,nygård,entity,0.8777399063110352,14.1
+obesity,obesity,entity,0.8980914354324341,14.3
+objective level,objective level,entity,0.6441902816295624,14.4
+objective threats,objective threat,entity,0.7832368314266205,14.1
+occupation,occupation,event,0.6301296353340149,14.2; 14.5
+occupations,occupation,entity,0.6301296353340149,14.2; 14.5
+Oishi,oishi,entity,0.6300439834594727,14.5
+Olson-Cerny,olson cerny,entity,0.9088857769966125,14.3
+Ong,ong,entity,0.6459112167358398,14.4
+onset,onset,entity,0.6052301526069641,14.1; 14.4; 14.3
+OpenStax,openstax,entity,0.5348233580589294,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+OpenStax logo,openstax logo,entity,0.7489143311977386,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+OpenStax name,openstax name,entity,0.5817170590162277,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+operator,operator,entity,0.9578070044517517,14.2
+opportunistic infections,opportunistic infection,entity,0.9395853281021118,14.3
+oppression,oppression,event,0.7178637981414795,14.5
+optimal health,optimal health,entity,0.632768303155899,14.1
+optimism,optimism,entity,0.9483068138360977,-1.-1; 14.5
+organ,organ,entity,0.7581106821695963,14.1; 14.3
+organs,organ,entity,0.7581106821695963,14.1; 14.3
+organism,organism,entity,0.9797977209091187,14.1
+originality,originality,entity,0.9149491786956787,14.5
+overexertion,overexertion,entity,0.9556773900985718,14.3
+pains,pain,entity,0.8969198900919694,14.5; 14.4; 14.3
+pain,pain,entity,0.8969198900919694,14.5; 14.4; 14.3
+pain pathways,pain pathway,entity,0.7075438499450684,14.3
+pain sensitivity,pain sensitivity,entity,0.6046805530786514,14.1; 14.3
+pan,pan,entity,0.5639649629592896,14.3
+parent divorce,parent divorce,entity,0.6697833836078644,14.3
+parental divorce,parental divorce,entity,0.5225935280323029,14.3
+parenthood,parenthood,entity,0.9189053475856781,14.5
+Park,park,entity,0.6197217106819153,14.5
+participants,participant,entity,0.7766504883766174,14.1; 14.5; 14.2; 14.4; 14.3
+Pascoe,pascoe,entity,0.8681171834468842,14.4
+passivity,passivity,entity,0.9746719598770142,14.4
+pathology,pathology,entity,0.9568206071853638,14.5
+peak,peak,entity,0.9915136694908142,14.1
+Pellegrino,pellegrino,entity,0.8253390192985535,14.3
+per capita gross domestic product,per capita gross domestic product,entity,0.9142731070518494,14.5
+Perceived control,perceive control,event,0.8401668556034565,-1.-1; 14.4
+perceived control,perceive control,event,0.8401668556034565,-1.-1; 14.4
+perceived discrimination,perceive discrimination,event,0.8070213496685028,14.4; 14.3
+Perceived discrimination,perceive discrimination,event,0.8070213496685028,14.4; 14.3
+perceptions,perception,entity,0.8593059778213501,14.1; 14.4
+perception,perception,event,0.8593059778213501,14.1; 14.4
+periods,period,entity,0.9767557003281333,14.1; 14.5; 14.2; 14.4; 14.3
+period,period,entity,0.9767557003281333,14.1; 14.5; 14.2; 14.4; 14.3
+permanent damage,permanent damage,entity,0.6393312215805054,14.1
+perpetual frustration,perpetual frustration,event,0.9098339378833771,14.2
+perseverance,perseverance,entity,0.8689149022102356,14.5
+personal control,personal control,entity,0.8071180284023285,14.4
+personal injury,personal injury,entity,0.5548382997512817,14.2
+personality,personality,entity,0.9542876482009888,14.3
+personality characteristics,personality characteristic,entity,0.7831927537918091,14.3
+personality trait,personality trait,event,0.9918435513973236,14.3
+Peterson,peterson,entity,0.5922149270772934,14.5; 14.4
+Petkov,petkov,entity,0.7708065509796143,14.3
+Phillips,phillips,entity,0.9619368314743042,14.4; 14.3
+phobias,phobia,entity,0.9853793978691101,14.4
+physical abuse,physical abuse,entity,0.6971567571163177,14.3
+physical assaults,physical assault,entity,0.7658877670764923,14.2
+physical attacks,physical attack,entity,0.8801990449428558,14.2
+physical attractiveness,physical attractiveness,entity,0.7434629127383232,14.5
+physical contact,physical contact,entity,0.9191142320632935,14.4
+physical damage,physical damage,entity,0.9383218884468079,14.1
+physical diseases,physical disease,entity,0.969244509935379,-1.-1
+physical fitness,physical fitness,entity,0.8359853327274323,14.4
+physical functioning,physical functioning,event,0.8499831557273865,14.5; 14.4
+physical health,physical health,entity,0.7837217350800832,14.4
+physical health problems,physical health problem,entity,0.6154543856779734,14.2; 14.4
+physical illnesses,physical illness,entity,0.8343549370765686,14.2
+physical illness,physical illness,entity,0.8343549370765686,14.2
+physical illness and disease,physical illness and disease,entity,0.777256652712822,14.1
+physical illnesses and diseases,physical illness and disease,entity,0.777256652712822,14.1
+physical inactivity,physical inactivity,entity,0.8591530124346415,14.2; 14.4; 14.3
+physical maltreatment,physical maltreatment,event,0.9334344863891602,14.3
+physical reactivity,physical reactivity,entity,0.8855657875537872,14.4
+physical responses,physical response,entity,0.9910222291946411,14.1
+physical violence,physical violence,entity,0.8430751264095306,14.2
+physical wear,physical wear,entity,0.7320552170276642,14.1
+physiological connection,physiological connection,entity,0.6076198518276215,14.3
+physiological effects,physiological effect,entity,0.6989866644144058,-1.-1; 14.4
+physiological functioning,physiological functioning,event,0.7891223132610321,14.5
+physiological mechanisms,physiological mechanism,entity,0.7474259734153748,14.1; 14.4; 14.3
+physiological reactions,physiological reaction,entity,0.9891561170419058,-1.-1; 14.1; 14.3
+physiological reaction,physiological reaction,entity,0.9891561170419058,-1.-1; 14.1; 14.3
+physiological responses,physiological response,entity,0.9336309134960175,14.1
+physiological response,physiological response,entity,0.9336309134960175,14.1
+physiological stress response,physiological stress response,entity,0.8692929744720459,14.2
+physiological system,physiological system,entity,0.9873376190662384,14.3
+physiological variables,physiological variable,entity,0.9130870699882507,14.1
+Piff,piff,entity,0.8534101247787476,14.4
+Pinquart,pinquart,entity,0.7992545366287231,14.5
+pioneers,pioneer,entity,0.9979792833328247,14.1
+pituitary gland,pituitary gland,entity,0.9823267161846161,14.1
+point,point,entity,0.6376383602619171,14.1; 14.5; 14.2; 14.4; 14.3
+pointed,point,event,0.6376383602619171,14.1; 14.5; 14.2; 14.4; 14.3
+pollen,pollen,entity,0.567436695098877,14.3
+populations,population,entity,0.9905403852462769,-1.-1; 14.1; 14.4; 14.3
+population,population,event,0.9905403852462769,-1.-1; 14.1; 14.4; 14.3
+position,position,event,0.8259068330128988,14.1; 14.5; 14.3
+positions,position,entity,0.8259068330128988,14.1; 14.5; 14.3
+positive affect,positive affect,entity,0.9599996540281508,-1.-1; 14.5
+Positive affect,positive affect,entity,0.9599996540281508,-1.-1; 14.5
+positive emotions,positive emotion,entity,0.7202375382184982,14.5
+positive feelings,positive feeling,entity,0.8104241490364075,14.1; 14.5
+positive force,positive force,entity,0.9916535913944244,14.1
+positive psychology,positive psychology,entity,0.7587186098098755,-1.-1; 14.5
+post-traumatic stress disorder,post traumatic stress disorder,entity,0.9334092795848847,14.1; 14.2; 14.5
+potential harm,potential harm,entity,0.9360477924346924,14.1
+Potential stressors,potential stressor,entity,0.8459558725357056,-1.-1; 14.2; 14.4
+potential stressors,potential stressor,entity,0.8459558725357056,-1.-1; 14.2; 14.4
+potential stressor,potential stressor,entity,0.8459558725357056,-1.-1; 14.2; 14.4
+potential threat,potential threat,entity,0.679131031036377,14.1
+potential triggers,potential trigger,entity,0.761594295501709,14.3
+Powell,powell,entity,0.8244620561599731,14.3
+Power,power,entity,0.5701170563697815,14.1
+precipitated,precipitate,event,0.9730169773101807,14.2
+precision,precision,event,0.8970693349838257,14.1
+predictability,predictability,entity,0.5858046412467957,14.3
+predictive power,predictive power,entity,0.99498251080513,14.3
+predominate,predominate,entity,0.8114814162254333,14.4
+pregame stress,pregame stress,entity,0.895719975233078,14.1
+pregnancies,pregnancy,entity,0.9552311599254608,14.3
+pregnancy,pregnancy,entity,0.9552311599254608,14.3
+prejudice,prejudice,entity,0.9576615691184998,14.4
+preoccupied,preoccupy,event,0.9498295783996582,14.3
+Pressman,pressman,entity,0.4205946773290634,14.5
+primary appraisal,primary appraisal,entity,0.9672193378210068,14.1
+primary physiological response,primary physiological response,entity,0.9283503492673238,-1.-1
+primates,primate,entity,0.8277236223220825,14.3
+prime seats,prime seat,entity,0.5362903028726578,14.5
+prior and express,prior and express,entity,0.6164771517117819,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+prison,prison,entity,0.8340528607368469,14.4
+prison guard,prison guard,entity,0.5295644551515579,14.2
+Pritchard,pritchard,entity,0.8608363270759583,14.3
+problem-focused coping,problem focus cope,event,-1.0,14.4
+problem-focused coping strategies,problem focus cope strategy,event,-1.0,-1.-1
+problem-solving,problem solve,event,0.9161767959594727,14.4
+Proctor,proctor,entity,0.7979325652122498,14.4
+progression,progression,event,0.9546890556812286,14.1
+proliferation,proliferation,event,0.9355449080467224,14.3
+promotions,promotion,entity,0.7722044140100479,14.1; 14.3
+promotion,promotion,entity,0.7722044140100479,14.1; 14.3
+prosecutable offense,prosecutable offense,entity,0.6414321660995483,14.4
+prosocial behavior,prosocial behavior,entity,0.5834048539400101,14.5
+prostate cancer,prostate cancer,entity,0.9764380156993866,14.5
+protective factor,protective factor,entity,0.9805992245674133,14.5
+protective strategies,protective strategy,entity,0.8983960747718811,14.4
+psychiatric conditions,psychiatric condition,entity,0.5944458097219467,14.1
+psycho,psycho,entity,0.9376806616783142,14.3
+psychological attributes,psychological attribute,entity,0.7742540538311005,14.5; 14.3
+psychological effects,psychological effect,entity,0.671155720949173,14.5
+Psychological factors,psychological factor,entity,0.9283689796924591,-1.-1; 14.1; 14.3
+psychological factors,psychological factor,entity,0.9283689796924591,-1.-1; 14.1; 14.3
+psychological health,psychological health,entity,0.5583949387073517,14.2
+psychological influences,psychological influence,entity,0.5450838804244995,14.1
+psychological level,psychological level,entity,0.6526240110397339,14.2
+psychological risk factor,psychological risk factor,entity,0.9819019436836243,14.3
+psychological risk factors,psychological risk factor,entity,0.9819019436836243,14.3
+psychological traits,psychological trait,entity,0.5350030809640884,14.3
+Psychology,psychology,entity,0.7635394036769867,-1.-1; 14.1; 14.5; 14.4
+psychology,psychology,entity,0.7635394036769867,-1.-1; 14.1; 14.5; 14.4
+psychoneuroimmunology,psychoneuroimmunology,entity,0.9665606915950775,14.3
+Psychoneuroimmunology,psychoneuroimmunology,entity,0.9665606915950775,14.3
+psychophysiological disorders,psychophysiological disorder,entity,0.8448651134967804,-1.-1; 14.3
+Psychophysiological disorders,psychophysiological disorder,entity,0.8448651134967804,-1.-1; 14.3
+psychosocial factors,psychosocial factor,entity,0.9534406363964081,14.4
+PTSD,ptsd,entity,0.9922718405723572,14.2
+public speaking,public speak,event,0.554858386516571,14.3
+public speaking,public speaking,event,0.7730472385883331,14.3
+pupils,pupil,entity,0.9978308081626892,14.1
+purchasing power,purchase power,event,0.971466064453125,14.5
+Pühse,pühse,entity,0.8324734568595886,14.4
+quality,quality,entity,0.9882718920707703,-1.-1; 14.1; 14.5; 14.3
+Qualities,quality,entity,0.9882718920707703,-1.-1; 14.1; 14.5; 14.3
+qualities,quality,entity,0.9882718920707703,-1.-1; 14.1; 14.5; 14.3
+quick adaptation,quick adaptation,event,0.7218073606491089,14.5
+Quoidbach,quoidbach,entity,0.8490479588508606,14.5
+racing,race,event,0.6607869267463684,14.1
+race disparities,race disparity,entity,0.871538907289505,14.3
+radar,radar,entity,0.9978479743003845,14.4
+Rademaker,rademaker,entity,0.9145710468292236,14.4
+Rahe,rahe,entity,0.9512973598071507,-1.-1; 14.2
+Ram,ram,entity,0.8776745796203613,14.4
+Raney,raney,entity,0.9050381779670715,14.4
+ranging,range,event,0.9547007547484504,14.5; 14.2; 14.4; 14.3
+ranges,range,entity,0.9547007547484504,14.5; 14.2; 14.4; 14.3
+ranged,range,event,0.9547007547484504,14.5; 14.2; 14.4; 14.3
+range,range,entity,0.9547007547484504,14.5; 14.2; 14.4; 14.3
+rashes,rash,entity,0.768789529800415,14.3
+Rasmussen,rasmussen,entity,0.7272067070007324,14.5
+rats,rat,entity,0.791530966758728,14.1; 14.4; 14.3
+Raymond,raymond,entity,0.46652984619140625,14.4
+reactions,reaction,entity,0.7215529084205627,-1.-1; 14.1; 14.4; 14.3
+reaction,reaction,entity,0.7215529084205627,-1.-1; 14.1; 14.4; 14.3
+reactivity,reactivity,entity,0.5188753753900528,14.4
+readjustment,readjustment,event,0.7730487585067749,14.1; 14.2
+readjustment participants,readjustment participant,event,0.8226072788238525,14.2
+real key,real key,entity,0.9769789278507233,14.5
+reappraisal,reappraisal,entity,0.9522046744823456,14.4
+recall,recall,entity,0.9351842105388641,14.1; 14.2; 14.3
+reciprocity,reciprocity,entity,0.9627091288566589,14.2
+recognition,recognition,event,0.9847288131713867,14.3
+recurrence,recurrence,entity,0.9571793079376221,14.2
+reductions,reduction,entity,0.9269658327102661,14.4
+reformulation,reformulation,event,0.9044595658779144,14.4
+rehospitalized,rehospitalize,entity,0.6641085147857666,14.5
+Reisine,reisine,entity,0.9586440920829773,14.4
+relationships,relationship,entity,0.5385201573371887,14.5; 14.2; 14.4; 14.3
+relationship,relationship,entity,0.5385201573371887,14.5; 14.2; 14.4; 14.3
+relaxation,relaxation,event,0.9480413794517517,14.4
+relaxation response approach,relaxation response approach,event,0.8659246762593588,14.4
+relaxation response technique,relaxation response technique,event,0.9638158281644185,14.4
+religiosity,religiosity,entity,0.9816191494464874,14.5
+religiosity correlate,religiosity correlate,entity,0.6532502770423889,14.5
+resistance,resistance,entity,0.9681733051935831,-1.-1; 14.1
+Resolutions,resolution,entity,0.9827854037284851,14.5
+resource inequalities,resource inequality,entity,0.8144927769899368,14.3
+resource inequality,resource inequality,entity,0.8144927769899368,14.3
+respiration,respiration,event,0.9887264370918274,14.1
+respiratory functions,respiratory function,entity,0.9101101458072662,14.3
+respiratory system,respiratory system,entity,0.9963911771774292,14.3
+response-based,response base,event,0.5778440038363138,14.1
+reupholstered,reupholstere,event,-1.0,14.3
+reverence,reverence,entity,0.8647707104682922,14.5
+reward,reward,event,0.7179929614067078,14.5
+Rheinschmidt,rheinschmidt,entity,0.8995783925056458,14.4
+rheumatoid arthritis,rheumatoid arthritis,entity,0.9653045535087585,14.3
+rigors,rigor,entity,0.944180965423584,14.5
+risk,risk,entity,0.9987327541623797,14.1; -1.-1; 14.2; 14.4; 14.3
+risk factors,risk factor,entity,0.940411450771185,14.2; 14.4; 14.3
+risk factor,risk factor,entity,0.940411450771185,14.2; 14.4; 14.3
+risk profile,risk profile,entity,0.772138923406601,14.3
+Ritz,ritz,entity,0.8631681203842163,14.3
+Robin,robin,entity,0.6979181170463562,14.1
+Robles,robles,entity,0.7424686253070831,14.4; 14.3
+Rodriguez,rodriguez,entity,0.9576042890548706,14.3
+Rosenman,rosenman,entity,0.9382984723363604,14.3
+Rotheram-Borus,rotheram borus,entity,0.845680812994639,14.4
+routines,routine,entity,0.7349893450737,14.2
+ruminating,ruminate,event,0.9166902303695679,14.2
+run,run,event,0.9943705995877584,14.1; 14.5; 14.3
+running,run,event,0.9943705995877584,14.1; 14.5; 14.3
+Russell,russell,entity,0.95367830991745,14.4
+Sachs,sachs,entity,0.94767165184021,14.5
+Saito,saito,entity,0.8421550989151001,14.3
+Salmon,salmon,entity,0.9094767570495605,14.4
+Salonen,salonen,entity,0.8913429379463196,14.1
+sample,sample,entity,0.9995173811912537,14.5; 14.3
+Sapolsky,sapolsky,entity,0.8816147208213806,14.3
+Schaefer,schaefer,entity,0.9403138756752014,14.2
+Schaufeli,schaufeli,entity,0.9619267582893372,14.2
+Scheier,scheier,entity,0.6880437731742859,14.5
+Schmitz,schmitz,entity,0.9592820405960083,14.4
+Schnall,schnall,entity,0.7755716443061829,14.2
+school systems,school system,entity,0.9804318249225616,14.5
+Schroll,schroll,entity,0.6944714188575745,14.3
+Schupp,schupp,entity,0.7971991300582886,14.4
+Schwartz,schwartz,entity,0.8894446641206741,14.4; 14.3
+science,science,entity,0.9981575906276703,14.5
+Scollon,scollon,entity,0.9647573828697205,14.5
+secondary appraisals,secondary appraisal,entity,0.9527537624041239,14.1
+secondary appraisal,secondary appraisal,entity,0.9527537624041239,14.1
+section,section,entity,0.9993650913238525,14.4; 14.3
+Segerstrom,segerstrom,entity,0.5707054138183594,14.3
+selective inhospitality,selective inhospitality,entity,0.8884642124176025,14.4
+self-efficacy,self efficacy,entity,0.939224898815155,14.1
+self-esteem,self esteem,entity,0.9761939644813538,14.5
+Seligman,seligman,entity,0.9062479403283861,14.5; 14.4
+Selye,selye,entity,0.8819442859717778,-1.-1; 14.1
+sensations,sensation,entity,0.9916602373123169,14.3
+senses,sense,entity,0.7950673818588256,14.5; -1.-1; 14.2; 14.4; 14.3
+sense,sense,entity,0.7950673818588256,14.5; -1.-1; 14.2; 14.4; 14.3
+sensory adaptation,sensory adaptation,event,0.8269124627113342,14.5
+series,series,entity,0.9941330949465433,14.1; 14.5; 14.4
+Series,series,entity,0.9941330949465433,14.1; 14.5; 14.4
+serious disease,serious disease,entity,0.9096601009368896,14.3
+SES groups,ses group,entity,0.898411214351654,14.2
+severe disabilities,severe disability,entity,0.6051061749458313,14.5
+sexual assault,sexual assault,entity,0.8734136819839478,14.2
+Shapiro,shapiro,entity,0.8794651627540588,14.3
+Shepard,shepard,entity,0.9515753388404846,14.4
+Sheridan,sheridan,entity,0.912955641746521,14.3
+shield,shield,entity,0.581102728843689,14.3
+Shipley,shipley,entity,0.8717676997184753,14.2
+Shively,shively,entity,0.9694278240203857,14.3
+shocks,shock,entity,0.9665194948514303,14.1; 14.4
+shock,shock,entity,0.9665194948514303,14.1; 14.4
+short bursts,short burst,entity,0.9745190441608429,14.1
+short telomeres,short telomere,entity,0.887267142534256,14.3
+shorter telomeres,short telomere,entity,0.887267142534256,14.3
+short term,short term,entity,0.9253542423248291,-1.-1
+shortness,shortness,entity,0.5426191091537476,14.3
+sickness,sickness,entity,0.9427409172058105,14.3
+sign,sign,entity,0.9964212576548258,14.1; 14.4; 14.3
+signs,sign,entity,0.9964212576548258,14.1; 14.4; 14.3
+silent killer,silent killer,entity,0.9871851205825806,14.3
+Singh,singh,entity,0.6544491052627563,14.4
+Singh-Manoux,singh manoux,entity,0.8460404872894287,14.3
+sinuses,sinus,entity,0.994931161403656,14.3
+sinus headaches,sinus headache,entity,0.9476195275783539,14.3
+skin,skin,entity,0.9990034401416779,14.3
+skin blisters,skin blister,entity,0.8498693108558655,14.3
+Skin Diseases,skin disease,entity,-1.0,14.3
+Skoner,skoner,entity,0.8269547820091248,14.4
+slept,sleep,event,0.9636959830919901,14.2; 14.4
+sleep,sleep,entity,0.9636959830919901,14.2; 14.4
+sleep deprivation,sleep deprivation,event,0.9207777082920074,14.3
+sleep quality,sleep quality,entity,0.8580881059169769,14.5
+Smart Richman,smart richman,entity,0.7203210294246674,14.4
+Smith,smith,entity,0.634202390909195,14.5; 14.2; 14.4; 14.3
+Smyth,smyth,entity,0.9570775032043457,14.3
+sociability,sociability,entity,0.9622711539268494,14.4
+social class,social class,entity,0.9193634241819382,14.4
+social connectedness,social connectedness,entity,0.8476663529872894,14.5; 14.4
+social contacts,social contact,entity,0.8580722510814667,14.4
+social determinants,social determinant,entity,0.8689126372337341,14.3
+social hierarchy,social hierarchy,entity,0.8721142709255219,14.3
+social identities,social identity,entity,0.7352562248706818,14.4
+social media,social medium,entity,0.95366320759058,14.2; 14.4; 14.3
+Social media,social medium,entity,0.95366320759058,14.2; 14.4; 14.3
+social networks,social network,entity,0.9755852371454239,14.4
+social readjustment,social readjustment,event,0.7352117002010345,14.2
+Social Readjustment Rating Scale,social readjustment rating scale,event,0.9902144571145376,-1.-1; 14.2
+social relationships,social relationship,entity,0.8164732307195663,14.5; 14.4
+social standing,social standing,event,0.8045977652072906,14.4
+social status,social status,entity,0.9049855371316274,14.3
+social support,social support,entity,0.8716799780726433,-1.-1; 14.5; 14.4
+social supported,social support,event,0.8716799780726433,-1.-1; 14.5; 14.4
+Social support,social support,entity,0.8716799780726433,-1.-1; 14.5; 14.4
+social support networks,social support network,entity,0.9113444089889526,14.5; 14.4
+socially integrated,socially integrate,event,0.640152782201767,14.4
+societal levels,societal level,entity,0.7383267283439636,14.5
+societal level,societal level,entity,0.7383267283439636,14.5
+societies,society,entity,0.7089472413063049,14.5
+society,society,entity,0.7089472413063049,14.5
+Sodergren,sodergren,entity,0.7394008040428162,14.3
+Soefer,soefer,entity,0.9369544982910156,14.3
+Sohn,sohn,entity,0.8536765575408936,14.4
+solutions,solution,entity,0.9991515874862671,14.4
+sorrow,sorrow,entity,0.8964673280715942,14.4
+species mates,specie mate,entity,0.849370539188385,14.4
+Specific characteristics,specific characteristic,entity,0.9493463039398193,14.3
+specific stressors,specific stressor,entity,0.7847708761692047,14.2
+Speck,speck,entity,0.9096077680587769,14.4
+spirituality,spirituality,entity,0.6266243159770966,14.5
+spleen,spleen,entity,0.9851951599121094,14.3
+spousal caregivers,spousal caregiver,entity,0.7995885014533997,14.4
+SRRS,srrs,entity,0.9938439548015594,-1.-1; 14.2
+SRRS scale,srrs scale,entity,0.9564634263515472,14.2
+stage,stage,entity,0.9205586952822549,-1.-1; 14.1; 14.4; 14.3
+stages,stage,entity,0.9205586952822549,-1.-1; 14.1; 14.4; 14.3
+Stansfeld,stansfeld,entity,0.8319418430328369,14.2; 14.4
+status quo,status quo,entity,0.9933153092861176,14.5
+Steen,steen,entity,0.7635734677314758,14.5
+Stein,stein,entity,0.8936381936073303,14.4
+Stellman,stellman,entity,0.9399072527885437,14.1
+Steptoe,steptoe,entity,0.7150261700153351,14.5; 14.3
+Stewart,stewart,entity,0.6869206428527832,14.3
+stiffness,stiffness,entity,0.9382392764091492,14.3
+stigma,stigma,entity,0.9713258743286133,14.3
+stigmatized groups,stigmatized group,entity,0.9788398941357931,14.4
+stimulus,stimulus,entity,0.8438958923021952,14.1; 14.3
+Stimulus-based definitions,stimulus base definition,event,0.7903402298688889,14.1
+stimulus-based definitions,stimulus base definition,event,0.7903402298688889,14.1
+stomach,stomach,entity,0.9302375912666321,14.1; 14.3
+Stone,stone,entity,0.9530025720596313,14.3
+strain,strain,entity,0.7406732704904344,-1.-1; 14.3
+strains,strain,event,0.7406732704904344,-1.-1; 14.3
+Straub,straub,entity,0.9617424011230469,14.1
+stress,stress,entity,0.9667270977026338,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+stressed,stress,event,0.9667270977026338,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+stresses,stress,entity,0.9667270977026338,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+Stress,stress,entity,0.9667270977026338,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+stress and disease,stress and disease,entity,0.953602155049642,14.3
+stress field,stress field,entity,0.9986914694309235,14.1
+stress hormones,stress hormone,event,0.8314596116542816,14.1; 14.3
+stress hormone,stress hormone,entity,0.8314596116542816,14.1; 14.3
+stress level,stress level,entity,0.9699807614088058,14.1; 14.4; 14.3
+stress levels,stress level,entity,0.9699807614088058,14.1; 14.4; 14.3
+stress questionnaire,stress questionnaire,entity,0.7770814001560211,14.1
+stress reactions,stress reaction,entity,0.9926470518112183,14.1
+stress reduction,stress reduction,entity,0.9569135904312134,14.4
+stress reduction method,stress reduction method,entity,0.9591957132021586,14.4
+stress-related disease,stress relate disease,event,0.9971181154251099,14.3
+stress responses,stress response,entity,0.997705265879631,14.4; 14.3
+stress response,stress response,entity,0.997705265879631,14.4; 14.3
+stress tasks,stress task,entity,0.6366767138242722,14.3
+stressor,stressor,entity,0.9593611884117127,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+stressors,stressor,entity,0.9593611884117127,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+Stressors,stressor,entity,0.9593611884117127,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+Stroebe,stroebe,entity,0.7729187905788422,14.4
+stroke,stroke,entity,0.7511112689971924,14.3
+studied,study,event,0.5015910118818283,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+studies,study,entity,0.5015910118818283,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+studying,study,event,0.5015910118818283,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+Studies,study,entity,0.5015910118818283,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+study,study,entity,0.5015910118818283,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+Stürmer,stürmer,entity,0.8135536313056946,14.4; 14.3
+Suarez,suarez,entity,0.9110506176948547,14.3
+subjected,subject,event,0.8469259142875671,14.4; 14.3
+Subjects,subject,entity,0.8469259142875671,14.4; 14.3
+subjective level,subjective level,entity,0.9501074254512787,14.5
+subjective well-being,subjective well be,event,-1.0,14.5
+Suls,suls,entity,0.5934653878211975,14.3
+Sulsky,sulsky,entity,0.6961983442306519,14.2
+Sumter,sumter,entity,0.9606199860572815,14.2
+sun,sun,entity,0.9922665953636169,14.5
+surgical injury,surgical injury,entity,0.6618013083934784,14.1
+surrounding,surround,event,-1.0,14.1
+surveillance system,surveillance system,entity,0.9935754537582397,14.3
+survey,survey,entity,0.9451249923024859,14.1; 14.5
+surveys,survey,entity,0.9451249923024859,14.1; 14.5
+surveyed,survey,event,0.9451249923024859,14.1; 14.5
+survival rates,survival rate,entity,0.9191271364688873,14.4
+Syme,syme,entity,0.913791835308075,14.4
+sympathetic nervous system,sympathetic nervous system,entity,0.9980569283167521,-1.-1; 14.1; 14.3
+symptoms,symptom,entity,0.82870454373567,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+Systemic lupus erythematosus,systemic lupu erythematosus,entity,0.9787173469861349,14.3
+Sörensen,sörensen,entity,0.946266233921051,14.5
+Tai Chi training,tai chi training,event,0.7565823197364807,14.5
+target,target,entity,0.5468900203704834,14.5; 14.4; 14.3
+targeted,target,event,0.5468900203704834,14.5; 14.4; 14.3
+Tatris,tatris,entity,0.900507390499115,14.2
+taxation,taxation,event,0.8265199065208435,14.5
+Teasdale,teasdale,entity,0.9633631110191345,14.4
+Tellegen,tellegen,entity,0.7370331287384033,14.5; 14.3
+telomeres,telomere,entity,0.9577628523111343,14.3
+telomere erosion,telomere erosion,event,0.7604799866676331,14.3
+telomere length,telomere length,entity,0.6991143226623535,14.3
+telomere lengths,telomere length,entity,0.6991143226623535,14.3
+tempered,temper,event,0.6753312945365906,14.3
+tension,tension,event,0.8400426506996155,14.3
+Tension headaches,tension headache,event,0.7931735132421766,-1.-1; 14.4; 14.3
+tension headaches,tension headache,event,0.7931735132421766,-1.-1; 14.4; 14.3
+tension headache sufferers,tension headache sufferer,event,0.613685150941213,14.3
+Terho,terho,entity,0.9080930948257446,14.3
+term papers,term paper,entity,0.6383334100246429,-1.-1
+terrorist attacks,terrorist attack,entity,0.7939606308937073,14.2
+test scores,test score,entity,0.806993156671524,14.1
+Thayer,thayer,entity,0.9510368704795837,14.3
+Theorell,theorell,entity,0.9619827270507812,14.2
+theory,theory,entity,0.922775665918986,14.4; 14.3
+theories,theory,entity,0.922775665918986,14.4; 14.3
+Thoits,thoit,entity,0.9683388471603394,14.2
+three-phase process,three phase process,event,0.9508368521928787,14.1
+threshold,threshold,entity,0.9949852824211121,14.3
+thymus,thymus,entity,0.9925440549850464,14.1; 14.3
+thyroid gland,thyroid gland,entity,0.9668355882167816,14.3
+time pressure,time pressure,entity,0.9692947566509247,14.3
+tissues,tissue,entity,0.7110340297222137,14.1; 14.3
+tracked,track,event,0.6673027276992798,14.5; 14.3
+track,track,entity,0.6673027276992798,14.5; 14.3
+traffic,traffic,entity,0.6523388624191284,14.2; 14.4; 14.3
+traffic jams,traffic jam,entity,0.7798994183540344,-1.-1
+Training,training,event,0.5951181650161743,14.4
+trait anger,trait anger,entity,0.7572532892227173,14.3
+transcendental meditation,transcendental meditation,event,0.788142055273056,14.4
+triggering factor,trigger factor,event,0.9899515807628632,14.3
+Trudel,trudel,entity,0.9076225161552429,14.3
+Trueba,trueba,entity,0.6461259126663208,14.3
+trunk touch,trunk touch,entity,0.6404223740100861,14.4
+Turner,turner,entity,0.6057242751121521,14.4
+type,type,entity,0.6843572854995728,14.1; 14.3
+types,type,entity,0.6843572854995728,14.1; 14.3
+Type A,type a,event,0.9541017860174179,14.3
+Type As,type a,entity,0.9541017860174179,14.3
+Type A pattern,type a pattern,event,0.9884218474229176,14.3
+Type B,type b,entity,0.987734466791153,14.3
+Type Bs,type bs,entity,0.9911027401685715,14.3
+Tyre,tyre,entity,0.9787619276480242,14.2
+Uchino,uchino,entity,0.919093444943428,14.4; 14.3
+Ukestad,ukestad,entity,0.8193086981773376,14.3
+ulceration,ulceration,event,0.589655876159668,14.1
+uncertainty,uncertainty,entity,0.9874891638755798,14.2; 14.3
+unconditioned response,unconditioned response,entity,0.9795690178871155,14.3
+unemployment,unemployment,event,0.5784481167793274,14.2; 14.5; 14.3
+upset stomach,upset stomach,entity,0.8132818341255188,14.2; 14.3
+vaccination,vaccination,event,0.9374057948589325,14.3
+van der Schuur,van der schuur,entity,0.9826581080754598,14.2
+VanIterson,vaniterson,entity,0.7884211540222168,14.4
+Vaughn,vaughn,entity,0.8235559463500977,14.4
+Vella,vella,entity,0.9191768765449524,14.3
+vernacular,vernacular,entity,0.5548337697982788,14.1
+Vigilant antidiscrimination efforts,vigilant antidiscrimination effort,event,0.8694027264912924,14.4
+Villeneuve,villeneuve,entity,0.8652845025062561,14.4
+virtuosity,virtuosity,entity,0.9435531497001648,14.5
+virus,virus,entity,0.8768402338027954,14.4; 14.3
+viruses,virus,entity,0.8768402338027954,14.4; 14.3
+vision,vision,event,0.9848767518997192,14.3
+vocation,vocation,event,0.9225671887397766,14.5
+voluntary control,voluntary control,entity,0.8879133760929108,14.4
+volunteers,volunteer,entity,0.6967944502830505,14.3
+von Leupoldt,von leupoldt,entity,0.8584484755992889,14.3
+vowing,vow,event,0.6511523723602295,14.2
+vulnerable groups,vulnerable group,entity,0.8813541531562805,14.4
+Wagner,wagner,entity,0.9190511107444763,14.4
+Waisman Center,waisman center,entity,0.9727708101272583,14.5
+wake,wake,entity,0.7199766635894775,14.1
+wakes,wake,entity,0.7199766635894775,14.1
+Wallio,wallio,entity,0.9310421347618103,14.5
+Ward,ward,entity,0.9275196194648743,14.4
+Wardle,wardle,entity,0.9800696969032288,14.5
+Watson,watson,entity,0.9896881580352783,14.5; 14.3
+weather,weather,entity,0.5652522444725037,14.2
+Weaver,weaver,entity,0.8416017293930054,14.4
+Weeke,weeke,entity,0.9442503452301025,14.3
+weight gain,weight gain,entity,0.8042513430118561,14.3
+weight loss,weight loss,entity,0.7694871127605438,14.2
+well-being,well be,event,0.6636317372322083,14.1; 14.5; -1.-1; 14.4; 14.3
+Whang,whang,entity,0.6162407398223877,14.5
+white blood cells,white blood cell,entity,0.9988817671934764,14.3
+Wilson,wilson,entity,0.9313027858734131,14.5
+Wittrock,wittrock,entity,0.878162294626236,14.3
+Wolsic,wolsic,entity,0.7135682702064514,14.5
+work,work,entity,0.9978437379002572,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+working,work,event,0.9978437379002572,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+works,work,entity,0.9978437379002572,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+worked,work,event,0.9978437379002572,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+work conditions,work condition,entity,0.7098600566387177,14.2
+work situation,work situation,event,0.5698240101337433,14.2
+workaholics,workaholic,entity,0.9826387166976929,14.3
+workloads,workload,entity,0.9014590978622437,14.2
+workload,workload,entity,0.9014590978622437,14.2
+World Health Organization,world health organization,event,0.9897761344909668,14.3
+World Series championship,world series championship,entity,0.8828757405281067,14.5
+World Trade Center,world trade center,entity,0.9539181192715963,14.4
+World Trade Center disaster,world trade center disaster,entity,0.9655996859073639,14.1
+wound healing,wound healing,event,0.8073132038116455,14.3
+wound repair,wound repair,entity,0.875574141740799,14.3
+Wright,wright,entity,0.8682563304901123,14.3
+writing,write,event,0.5152146220207214,14.5
+year,year,entity,0.9227146410172985,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+years,year,entity,0.9227146410172985,14.1; 14.5; -1.-1; 14.2; 14.4; 14.3
+Yokoyama,yokoyama,entity,0.8207071423530579,14.3
+Young,young,entity,0.7279981970787048,14.4
+Zacharie,zacharie,entity,0.48989102244377136,14.3
+Zeshan,zeshan,entity,0.674182653427124,14.3

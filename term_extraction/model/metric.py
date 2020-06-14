@@ -111,8 +111,8 @@ def extract_terms_from_sentence(model_probs, doc, tags, correct_phrases=False):
         elif tags[tag] == 'B':
             tmp_term.append(doc[i].lemma_.lower())
             tmp_prob.append(model_probs[i].max().item())
+            i += 1
             while i < num_tokens:
-                i += 1
                 tag = model_probs[i].argmax()
                 # erase if invalid stop of phrase
                 if tags[tag] in ['O', 'S', 'B']:
@@ -123,10 +123,12 @@ def extract_terms_from_sentence(model_probs, doc, tags, correct_phrases=False):
                 elif tags[tag] == 'I':
                     tmp_term.append(doc[i].lemma_.lower())
                     tmp_prob.append(model_probs[i].max().item())
+                    i += 1
                 # break if we successfully hit end of phrase
                 elif tags[tag] == 'E':
                     tmp_term.append(doc[i].lemma_.lower())
                     tmp_prob.append(model_probs[i].max().item())
+                    i += 1
                     break
         
         if len(tmp_term):
