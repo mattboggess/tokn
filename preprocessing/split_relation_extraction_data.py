@@ -18,6 +18,7 @@ import pandas as pd
 
 life_bio_file = "../data/preprocessed/term_pair_sentences/Life_Biology_term_pairs.pkl"
 openstax_bio_file = "../data/preprocessed/term_pair_sentences/Biology_2e_term_pairs.pkl"
+label_dir = "../data/hand_labelled"
 output_dir = "../data/relation_extraction"
 
 # Dev and test texbtooks and chapters
@@ -77,6 +78,14 @@ if __name__ == '__main__':
     test['term_pair'] = list(zip(test['term1'], test['term2']))
     train = train[~train.term_pair.isin(dev.term_pair)]
     train = train[~train.term_pair.isin(test.term_pair)]
+    
+    # add gold labels to dev and test
+    dev_labels = pd.read_csv(f"{label_dir}/relation_extraction_dev_hand_labelled.csv")[['term1', 'term2', 'sentence', 'gold_label']]
+    dev = pd.merge(dev, dev_labels, how='left', on=['term1', 'term2', 'sentence'])
+    dev['gold_label'] = dev.gold_label.fillna('OTHER')
+    test_labels = pd.read_csv(f"{label_dir}/relation_extraction_test_hand_labelled.csv")[['term1', 'term2', 'sentence', 'gold_label']]
+    test  = pd.merge(test, test_labels, how='left', on=['term1', 'term2', 'sentence'])
+    test['gold_label'] = test.gold_label.fillna('OTHER')
     
     # write splits to file  
     train.drop(['filter_col'], axis=1).to_pickle(f"{output_dir}/train.pkl")

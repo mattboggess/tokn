@@ -21,8 +21,8 @@ have both been preprocessed with Spacy:
   - preprocess_textbooks.py: Extracts key terms from the textbooks parse into separate text files
     and filters textbooks sentences to relevant sentences and saves them out with spacy preprocessing
   - preprocess_kb_bio101_terms.py: Pulls out terms from the Bio101 knowledge base into a separate text file
-  - Manually curated hand labelled term lists should be manually copied to the data/preprocessed/terms folder at this point 
-    before running the next script. 
+  - Manually curated hand labelled term lists should be manually copied to the data/preprocessed/terms folder 
+    from the data/hand_labelled folder at this point before running the next script. 
   - collect_terms.py: Assembles all terms from all the different sources into a single dataframe and
     Spacy preprocesses the terms. Previous two scripts must be run first and any hand-labelled term lists
     need to be manually copied in to the data/preprocessed/terms folder.
@@ -50,7 +50,8 @@ These scripts result in a train/dev/test split for relation extraction modelling
   - generate_term_pairs: This script takes the tagged sentences and enumerates all term pairs
     in the sentences to create a new dataframe with one row for every sentence/term pair pairing.
   - split_relation_extraction_data.py: This takes the sentence/term pairs and assembles them into 
-    train, dev, and test sets ensuring there is no overlap between the train and dev/test sets.
+    train, dev, and test sets ensuring there is no overlap between the train and dev/test sets. Also
+    adds hand labelled gold standard labels for the dev and test set.
 
 ## Helper Scripts
 
