@@ -1,0 +1,52 @@
+predicted_relation,term_pair,prediction_confidence
+SYNONYM,"('g1 phase', 'first gap')",0.7958081364631653
+SYNONYM,"('golgi complex', 'golgi apparatus')",0.7898008823394775
+SYNONYM,"('mitosis', 'karyokinesis')",0.6938809156417847
+SYNONYM,"('microtubule', 'spindle apparatus')",0.6419399976730347
+SYNONYM,"('nucleus', 'multinucleate cell')",0.6355634927749634
+SYNONYM,"('cytokinesis', '"" cell motion')",0.6336781978607178
+SYNONYM,"('karyokinesis', 'mitosis')",0.45534397661685944
+SUPERCLASS,"('phase', 'mitotic phase')",0.9849721789360046
+SUPERCLASS,"('plane', 'equatorial plane')",0.9768353700637817
+SUPERCLASS,"('stage', 'prophase')",0.9688721895217896
+SUPERCLASS,"('phase', 'interphase')",0.9558759927749634
+SUPERCLASS,"('cell wall', 'plant cell')",0.9384067058563232
+SUPERCLASS,"('membranous organelle', 'golgi complex')",0.9340657591819763
+SUPERCLASS,"('cell', 'nerve cell')",0.9161234498023987
+SUPERCLASS,"('membranous organelle', 'golgi apparatus')",0.8956848382949829
+SUPERCLASS,"('stage', 'prometaphase')",0.8953831195831299
+SUPERCLASS,"('membranous organelle', 'endoplasmic reticulum')",0.8872135877609253
+SUPERCLASS,"('protein structure', 'kinetochore')",0.8717004656791687
+SUPERCLASS,"('cell', 'daughter cell')",0.8575767278671265
+SUPERCLASS,"('cell', 'multinucleate cell')",0.8366280794143677
+SUPERCLASS,"('plane', 'metaphase plate')",0.8299469351768494
+SUPERCLASS,"('stage', 'metaphase')",0.8256188035011292
+SUPERCLASS,"('stage', 'telophase')",0.8060067296028137
+SUPERCLASS,"('stage', 'anaphase')",0.7968183755874634
+SUPERCLASS,"('eukaryotic organism', 'fungus')",0.735144317150116
+SUPERCLASS,"('karyokinesis', 'prophase')",0.6766842603683472
+SUPERCLASS,"('mitotic spindle', 'depolymerize')",0.651476263999939
+SUPERCLASS,"('spindle microtubule', 'polar microtubule')",0.6486964225769043
+SUPERCLASS,"('prophase', 'prometaphase')",0.6430658102035522
+SUPERCLASS,"('phase', 'prophase')",0.6430239677429199
+SUPERCLASS,"('karyokinesis', 'prometaphase')",0.5280324220657349
+SUPERCLASS,"('stage', 'g1 phase')",0.5271086692810059
+SUPERCLASS,"('karyokinesis', 'metaphase')",0.44913268089294434
+SUPERCLASS,"('stage', 'first gap')",0.4385928213596344
+SUPERCLASS,"('chromatid', 'single chromosome')",0.4383763372898102
+SUPERCLASS,"('karyokinesis', 'telophase')",0.4161914587020874
+SUPERCLASS,"('mitosis', 'prophase')",0.40825146436691284
+SUBCLASS,"('mitotic phase', 'phase')",0.9609397649765015
+SUBCLASS,"('spindle microtubule', 'microtubule')",0.953296959400177
+SUBCLASS,"('mitotic phase', 'multistep process')",0.9210972785949707
+SUBCLASS,"('prophase', 'phase')",0.7856075763702393
+SUBCLASS,"('cell cycle', 'series')",0.736538827419281
+SUBCLASS,"('metaphase', '"" change phase')",0.6830255389213562
+SUBCLASS,"('phragmoplast', 'vesicular structure')",0.6554864645004272
+SUBCLASS,"('telophase', 'phase')",0.6451705694198608
+SUBCLASS,"('golgi vesicle', 'vesicular structure')",0.6220237612724304
+SUBCLASS,"('prometaphase', 'phase')",0.5805575847625732
+SUBCLASS,"('homologous chromosome', 'chromosome')",0.4903998374938965
+PART/REGION-OF,"('glucose molecule', 'cell')",0.8891449570655823
+PART/REGION-OF,"('plane', 'cell')",0.3356473743915558
+HAS-PART/REGION,"('cell cycle', 'phase')",0.8549174070358276

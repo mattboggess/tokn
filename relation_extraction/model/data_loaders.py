@@ -34,9 +34,12 @@ class RelationDataset(Dataset):
             self.data = pickle.load(fid)
                                   
         # handle labels 
-        self.relation_classes = ['OTHER', 'HYPONYM', 'HYPERNYM'] # TODO: figure out more robust way to get this info
-        self.relations = [0, 1, 2] # TODO: figure out more robust way to get this info
         self.label_column = label_type 
+        
+        # get ordered list of unique label types
+        tmp = sorted(list(set([(x, y) for (x, y) in zip(self.data.hard_label, self.data.hard_label_class)])), key=lambda x: x[0])
+        self.relation_classes = [x[1] for x in tmp]
+        self.relations = [x[0] for x in tmp]
         self.num_classes = len(self.relations)
         
         # compute class weights to balance loss
@@ -49,7 +52,7 @@ class RelationDataset(Dataset):
                 
         self.max_sent_length = max_sent_length
         
-        # set up BERT representations
+        # set up BERT representations (add entity markers)
         self.term1_start_token = '[E1start]'
         self.term1_end_token = '[E1end]'
         self.term2_start_token = '[E2start]'
@@ -83,9 +86,9 @@ class RelationDataset(Dataset):
         else:
             label = [sample['hard_label']]
      
-        input_text = sample.text
+        input_text = sample.sentence
         term_pair = sample.term_pair
-        relation = self.relation_classes[label[0]]
+        relation = self.relation_classes[self.relations.index(label[0])]
         
         # add term start and end tokens 
         tokens = [tok for tok in sample.tokens]

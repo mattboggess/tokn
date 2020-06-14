@@ -1,19 +1,22 @@
-# Applies snorkel label functions to a train, dev, and test tagged term pair sentences split.
+# Applies snorkel labelling pipeline to a train, dev, and test set for relation extraction.
 #
 # Author: Matthew Boggess
-# Version: 4/27/20
+# Version: 6/12/20
 
 # Data Source: 
-#   - Output train, dev, and test splits from preprocessing/split_data.py
+#   - Output train, dev, and test splits from ../preprocessing/split_relation_extraction_data.py
 
 # Description: 
 #   - Runs each split through the following labelling pipeline:
-#     - Spacy preprocesses each split to be used by the label functions
 #     - Applies each labelling function to each row of the dataframe using the snorkel applier.
-#       Saves out the accompanying analysis
+#       Saves out the accompanying label fn analysis
 #     - Computes majority vote labels for each split using the labelling function
 #     - Computes probabilistic labels for each split using the Snorkel LabelModel fit to the train
 #     - Writes out modified pandas dataframes for each split with these labels added
+#     - Additionally creates modified versions of the split ready for modelling that:
+#       - standardizes names for hard and soft labels when predicting
+#       - removes training examples that don't have a label
+#       - takes a small sample from train to be used for debugging
 
 #===================================================================================
 # Libraries
@@ -41,13 +44,11 @@ input_data_dir = "../../data/relation_extraction"
 label_output_data_dir = "../../data/relation_extraction/label"
 model_output_data_dir = "../../data/relation_extraction/model"
 
-# assemble label functions
-#relation_class = "meronym" # meronym, taxonomy, or all
+# list of all label functions we will apply to the data 
 label_fns = [kb_bio101_ds_negative, term_part_of_speech] + meronym_label_fns + meronym_kb_fns + \
             taxonomy_kb_fns + taxonomy_label_fns
 # fix to extract name only in str form for each label function
 label_fn_names = [re.match('.*Function (.+), .*', str(lf)).group(1) for lf in  label_fns]
-
 class_card = len(label_classes)
 
 splits = ['test', 'dev', 'train']
@@ -73,7 +74,7 @@ if __name__ == '__main__':
     for split in splits:
         
         data = pd.read_pickle(f"{input_data_dir}/{split}.pkl").reset_index()
-        data = data.drop_duplicates(['sentence', 'term1', 'term2'])
+        data = data.drop_duplicates(['sentence', 'term1', 'term2']).reset_index()
         
         print(f"Applying label functions to {split} data")
         labels[split] = applier.apply(df=data)
@@ -88,7 +89,13 @@ if __name__ == '__main__':
         data['majority_vote'] = majority_labels
         data['majority_vote_relation'] = data.majority_vote.apply(lambda x: human_label(x, label_classes))
         
-        # add label fn and kb specific aggregate labels
+        # add label fn and kb specific aggregate label columns
+        label_fn_cols = [col for col in data.columns if col.endswith('lf')]
+        kb_label_cols = [col for col in data.columns if col.startswith('kb')]
+        data['label_fn_label'] = data.apply(lambda row: max([row[c] for c in label_fn_cols]), axis=1)
+        data['kb_label'] = data.apply(lambda row: max([row[c] for c in kb_label_cols]), axis=1)
+        data.label_fn_label = data.label_fn_label.apply(lambda x: human_label(x, label_classes))
+        data.kb_label = data.kb_label.apply(lambda x: human_label(x, label_classes))
         
         labelled_data[split] = data
     
@@ -100,19 +107,11 @@ if __name__ == '__main__':
         lm_preds = label_model.predict_proba(labels[split])
         labelled_data[split]['label_model_labels'] = [x.tolist() for x in lm_preds]
         
-        # write out fully labelled version of data
+        # write out fully labelled versions of data
         with open(f"{label_output_data_dir}/{split}_labelled.pkl", 'wb') as fid:
             pickle.dump(labelled_data[split].drop('doc', axis=1), fid)
             
         print(f"Prepping {split} data for modelling")
-        # add in gold standard labels
-        if split in ['dev', 'test']:
-            gold_df = pd.read_csv(f"{input_data_dir}/{split}-manual_eval.csv")
-            gold_df = gold_df[['sentence', 'term_pair', 'gold_label']]
-            gold_df.term_pair = gold_df.term_pair.apply(literal_eval)
-            labelled_data[split] = labelled_data[split].merge(
-                gold_df, how='left', on=['sentence', 'term_pair'])
-            labelled_data[split]['gold_label'] = labelled_data[split].gold_label.fillna('OTHER')
         
         # standardize hard label columns for model
         if split in ['dev', 'test']:
@@ -120,30 +119,27 @@ if __name__ == '__main__':
                 lambda x: label_classes.index(x))
         else: 
             labelled_data[split]['hard_label'] = labelled_data[split]['majority_vote']
-        labelled_data[split]['label_class'] = labelled_data[split].hard_label.apply(
+        labelled_data[split]['hard_label_class'] = labelled_data[split].hard_label.apply(
             lambda x: add_label(x))
         
         # stanardize soft label columns for model
         labelled_data[split]['soft_label'] = labelled_data[split].label_model_labels
         
         # filter out abstained training data
-        labelled_data[split] = labelled_data[split][labelled_data[split].hard_label >= 0]
+        if split == 'train':
+            train_size = labelled_data[split].shape[0]
+            labelled_data[split] = labelled_data[split][labelled_data[split].hard_label >= 0]
+            reduced_train_size = labelled_data[split].shape[0]
+            print(f"Labels cover {reduced_train_size / train_size} of training data")
         
-        # write out model version of data
-        labelled_data[split].drop('doc', axis=1).to_pickle(f"{model_output_dir}/{split}.pkl")
+        # write out model ready versions of data
+        labelled_data[split].drop('doc', axis=1).to_pickle(f"{model_output_data_dir}/{split}.pkl")
         
         # create a debug set for model
         if split == 'train':
             train = labelled_data[split]
-            sent_check = train.groupby('sentence').agg(
-                {'hard_label': lambda x: sum(x) > 0}).reset_index()
-            pos_exs = sent_check[sent_check.hard_label].sample(10)
-            neg_exs = sent_check[~sent_check.hard_label].sample(10)
-            debug = pd.concat(
-                [train[train.sentence.isin(pos_exs.sentence)], 
-                 train[train.sentence.isin(neg_exs.sentence)]], 
-                axis=0)
-            debug.drop('doc', axis=1).to_pickle(f"{model_output_dir}/debug.pkl")
+            debug = train.groupby('hard_label').apply(lambda x: x.sample(10)).reset_index(drop=True)
+            debug.drop('doc', axis=1).to_pickle(f"{model_output_data_dir}/debug.pkl")
             
 
 

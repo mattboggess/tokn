@@ -284,48 +284,6 @@ def symbolconj_pattern_lf(cand):
         
     return ABSTAIN
 
-
-@labeling_function()
-def knownas_pattern_lf(cand):
-    """
-    TODO: FIX/ADD (Not many matches)
-    Matches sentence structure pattern using Spacy dependency parse:
-      - Pattern: X [!also] known as Y 
-      - X -> SUBCLASS -> Y
-      - Y -> SUPERCLASS -> X
-    If also precedes the known as this is classified as OTHER since this implies an
-    alternate name for the same entity.
-      
-    Custom added pattern from scanning textbook sentences for patterns 
-    """
-    start = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
-    end = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
-    
-    also_flag = False
-    known_flag = False
-    while start != end:
-        if start.dep_ == 'pobj' and start.head.text == 'as':
-            start = start.head
-        elif start.dep_ == 'prep' and start.head.text == 'known':
-            start = start.head
-        elif start.text == 'known':
-            also_flag == start.nbor(-1).text == 'also'
-            known_flag = True
-            start = start.head
-            break
-        else:
-            break
-            
-    if start.text == end.text and known_flag:
-        if also_flag:
-            return ABSTAIN
-        elif cand.term1_location[0] < cand.term2_location[0]:
-            return label_classes.index('SUPERCLASS')
-        else:
-            return label_classes.index('SUBCLASS')
-    
-    return ABSTAIN
-
 #===================================================================================
 # Sentence Dependency Pattern-Based Synonym Labelers
 
@@ -479,31 +437,6 @@ def term_subset_lf(cand):
     else:
         return ABSTAIN
     
-@labeling_function()
-def acronym_lf(cand):
-    """
-    Checks if one term is likely an acronym (and thus synonym) of the other term 
-    """
-    term1_acronym = cand.term1.upper()
-    term2_acronym = cand.term2.upper()
-    
-    # abstain if there is not an all caps acronym in the text
-    if term1_acronym != cand.doc[cand.term1_location[0]:cand.term1_location[1]].text and \
-       term2_acronym != cand.doc[cand.term2_location[0]:cand.term2_location[1]].text: 
-        return ABSTAIN
-    
-    # abstain if either is length 1 since this is too error prone
-    if len(term1_acronym) == 1 or len(term2_acronym) == 1:
-        return ABSTAIN
-    
-    term1_word_starts = ''.join([x[0] for x in cand.term1.split(' ')]).upper()
-    term2_word_starts = ''.join([x[0] for x in cand.term2.split(' ')]).upper()
-    
-    if term2_word_starts == term1_acronym or term1_word_starts == term2_acronym:
-        return label_classes.index('SYNONYM')
-    else:
-        return ABSTAIN
-    
 taxonomy_label_fns = [
     isa_pattern_lf,
     suchas_pattern_lf,
@@ -516,7 +449,6 @@ taxonomy_label_fns = [
     symbolconj_pattern_lf,
     term_modifier_lf,
     term_subset_lf,
-    #acronym_lf,
     also_knownas_pattern_lf,
     parens_pattern_lf,
     also_called_pattern_lf,

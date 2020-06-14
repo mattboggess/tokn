@@ -7,13 +7,13 @@ import pickle
 @labeling_function()
 def has_pattern_lf(cand):
     """
-    X [!not] has/have [!no] Y
+    X [!not] has/have [!no] Y -> X HAS-PART/REGION Y
     """
     second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     
-    if first[-1].text in ['structure', 'function', 'structures', 'functions'] or 
-       second[-1].text in ['structure', 'function', 'structures', 'functions']:
+    if first.text in ['structure', 'function', 'structures', 'functions'] or \
+       second.text in ['structure', 'function', 'structures', 'functions']:
         return ABSTAIN
     
     while second.dep_ == 'conj':
@@ -29,6 +29,9 @@ def has_pattern_lf(cand):
 
 @labeling_function()
 def consist_pattern_lf(cand):
+    """
+    X consists/consisting of Y -> X HAS-PART/REGION Y
+    """
     second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     
@@ -45,6 +48,9 @@ def consist_pattern_lf(cand):
 
 @labeling_function()
 def contain_pattern_lf(cand):
+    """
+    X contains/containing Y -> X HAS-PART/REGION Y
+    """
     second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     
@@ -62,7 +68,7 @@ def contain_pattern_lf(cand):
 @labeling_function()
 def in_pattern_lf(cand):
     """
-    X in the Y
+    X in the Y -> X PART/REGION OF Y
     """
     second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
@@ -75,7 +81,7 @@ def in_pattern_lf(cand):
 @labeling_function()
 def partof_pattern_lf(cand):
     """
-    X in the Y
+    X [is/are] part of Y -> X PART/REGION-OF Y
     """
     second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
@@ -88,22 +94,10 @@ def partof_pattern_lf(cand):
     return ABSTAIN
 
 @labeling_function()
-def of_pattern_lf(cand):
-    second = cand.doc[max(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
-    first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
-    
-    if first[-1].text in ['structure', 'function', 'structures', 'functions'] or 
-       second[-1].text in ['structure', 'function', 'structures', 'functions']:
-        return ABSTAIN
-    
-    if first.nbor(1).text == 'of' and first.nbor(2).text in ['a', 'an', 'the'] and \
-       second.head == first.nbor(1) and not first.text.endswith('ion'):
-        return label_classes.index('PART/REGION-OF')
-    
-    return ABSTAIN
-
-@labeling_function()
 def poss_pattern_lf(cand):
+    """
+    X's Y -> X HAS-PART/REGION Y
+    """
     second_start = cand.doc[max(cand.term1_location[0], cand.term2_location[0])]
     first = cand.doc[min(cand.term1_location[1] - 1, cand.term2_location[1] - 1)]
     
@@ -113,37 +107,10 @@ def poss_pattern_lf(cand):
     return ABSTAIN
     
     
-@labeling_function()
-def term_postmod_lf(cand):
-    """
-    Checks for modifier word added in front of shared base term: 
-      i.e. daughter cell - hyponym - cell
-    """
-    term1_lemma = ' '.join([tok.lemma_ 
-                            for tok in cand.doc[cand.term1_location[0]:cand.term1_location[1]]])
-    term1_lemma = term1_lemma.replace(' - ', ' ')
-    term2_lemma = ' '.join([tok.lemma_ 
-                            for tok in cand.doc[cand.term2_location[0]:cand.term2_location[1]]])
-    term2_lemma = term2_lemma.replace(' - ', ' ')
-    term_pair = (term1_lemma, term2_lemma)
-    
-    term1 = term_pair[0].split(' ')
-    term2 = term_pair[1].split(' ')
-    
-    # cell membrane PART/REGION-OF cell 
-    if term1[0] == term2[0] and len(term2) < len(term1):
-        return label_classes.index('PART/REGION-OF')
-    elif term1[0] == term2[0] and len(term1) < len(term2):
-        return label_classes.index('HAS-PART/REGION')
-    else:
-        return ABSTAIN
-
 meronym_label_fns = [
     has_pattern_lf,
     in_pattern_lf,
-    #term_postmod_lf,
     poss_pattern_lf,
-    #of_pattern_lf,
     contain_pattern_lf,
     consist_pattern_lf,
     partof_pattern_lf

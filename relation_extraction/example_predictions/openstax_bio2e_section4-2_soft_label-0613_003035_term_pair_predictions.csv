@@ -1,0 +1,17 @@
+predicted_relation,term_pair,prediction_confidence
+SYNONYM,"('microbe', 'microorganism')",0.8405117392539978
+SUPERCLASS,"('cell', 'eukaryotic cell')",0.9393543601036072
+SUPERCLASS,"('prokaryotic cell', 'eukaryotic cell')",0.3388948142528534
+SUBCLASS,"('microbiologist', 'scientist')",0.8065869212150574
+SUBCLASS,"('dna', 'genetic material')",0.6852820515632629
+SUBCLASS,"('animal cell', 'eukaryote')",0.6841135621070862
+SUBCLASS,"('protist', 'eukaryote')",0.6537227034568787
+SUBCLASS,"('prokaryote', 'organism')",0.4433757960796356
+PART/REGION-OF,"('organic molecule', 'cell')",0.43301302194595337
+PART/REGION-OF,"('prokaryotic dna', 'cell')",0.43167844414711
+HAS-PART/REGION,"('prokaryote', 'peptidoglycan cell wall')",0.8896803259849548
+HAS-PART/REGION,"('prokaryote', 'flagella')",0.8785336017608643
+HAS-PART/REGION,"('cell', 'genetic material')",0.8332293629646301
+HAS-PART/REGION,"('prokaryote', 'fimbriae')",0.7622299790382385
+HAS-PART/REGION,"('prokaryote', 'pili')",0.7499188780784607
+HAS-PART/REGION,"('organism', 'nucleus')",0.43435484170913696

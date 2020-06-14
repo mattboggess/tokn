@@ -1,5 +1,5 @@
 {
-    "name": "BertEM",
+    "name": "hard_label",
     "n_gpu": 1,
 
     "arch": {
@@ -9,9 +9,9 @@
     "data_loader": {
         "type": "RelationDataLoader",
         "args":{
-            "data_dir": "../data/model_data",
+            "data_dir": "../data/relation_extraction/model",
             "batch_size": 16,
-            "label_type": "soft_label",
+            "label_type": "hard_label",
             "shuffle": true,
             "num_workers": 0,
             "balance_loss": false,
@@ -21,13 +21,12 @@
     "optimizer": {
         "type": "AdamW",
         "args":{
-            "lr": 1e-5,
-            "eps": 1e-8,
+            "lr": 5e-6,
             "correct_bias": false,
             "weight_decay": 0.00
         }
     },
-    "loss": "soft_label_cross_entropy",
+    "loss": "hard_label_cross_entropy",
     "metrics": [
         "accuracy", "micro_f1", "macro_f1", "micro_recall", "macro_recall", "micro_precision", "macro_precision" 
     ],

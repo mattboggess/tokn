@@ -2,9 +2,9 @@ from label_constants import *
 from snorkel.labeling import labeling_function
 import pickle
 
-with open("../data/kb_bio101_relations_db.pkl", 'rb') as fid:
+with open("../../data/relation_extraction/kb_bio101_relations_db.pkl", 'rb') as fid:
     kb_bio101 = pickle.load(fid)
-with open("../data/kb_bio101_terms.pkl", 'rb') as fid:
+with open("../../data/relation_extraction/kb_bio101_terms.pkl", 'rb') as fid:
     kb_terms = pickle.load(fid)
 
 # ==============================================================
@@ -129,6 +129,4 @@ taxonomy_kb_fns = [
 meronym_kb_fns = [
     kb_bio101_ds_has_part,
     kb_bio101_ds_has_region
-    #kb_bio101_ds_possesses,
-    #kb_bio101_ds_element
 ]
