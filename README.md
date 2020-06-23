@@ -6,3 +6,5 @@ Organization: See the READMEs within each folder for details
   - preprocessing: Scripts that preprocess and prepare the raw data for term and relation extraction
   - term_extraction: Models for the term extraction task 
   - relation_extraction: Models for the relation extraction task 
+  - environment.yml: Conda environment file with Python packages
+  - notebook.ipynb: Notebook to generate figures and tables for the report
