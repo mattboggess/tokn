@@ -36,7 +36,7 @@ import json
 # Parameters
 
 # whether to do the version of tagging used for relation_extraction or term_extraction
-tag_type = 'relation_extraction'
+tag_type = 'term_extraction'
 
 ## Filepaths
 

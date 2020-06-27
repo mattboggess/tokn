@@ -2,9 +2,9 @@ from label_constants import *
 from snorkel.labeling import labeling_function
 import pickle
 
-with open("../../data/relation_extraction/kb_bio101_relations_db.pkl", 'rb') as fid:
+with open("../../data/preprocessed/kb_bio101_relations_db.pkl", 'rb') as fid:
     kb_bio101 = pickle.load(fid)
-with open("../../data/relation_extraction/kb_bio101_terms.pkl", 'rb') as fid:
+with open("../../data/preprocessed/kb_bio101_terms.pkl", 'rb') as fid:
     kb_terms = pickle.load(fid)
 
 # ==============================================================
