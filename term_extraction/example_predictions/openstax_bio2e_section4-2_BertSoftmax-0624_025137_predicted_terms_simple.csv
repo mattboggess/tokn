@@ -1,0 +1,71 @@
+term,base_term,type,confidence,location
+adaptations,adaptation,entity,0.675036758184433,n/a
+Animal cells,animal cell,entity,0.996895968914032,n/a
+Archaea,archaea,entity,0.9796547293663025,n/a
+Bacteria,bacteria,entity,0.98362597823143,n/a
+bacterial infections,bacterial infection,entity,0.8282819390296936,n/a
+bioinformatics field,bioinformatic field,entity,0.6469042301177979,n/a
+capsule,capsule,entity,0.9415620565414429,n/a
+cells,cell,entity,0.9844563136930051,n/a
+Cells,cell,entity,0.9844563136930051,n/a
+cell,cell,entity,0.9844563136930051,n/a
+cell membrane,cell membrane,entity,0.9925603866577148,n/a
+conjugation,conjugation,event,0.9676557779312134,n/a
+contagious illnesses,contagious illness,entity,0.730503261089325,n/a
+cytoplasm,cytoplasm,entity,0.9908009767532349,n/a
+cytosol,cytosol,entity,0.984505295753479,n/a
+dehydration,dehydration,event,0.9585485458374023,n/a
+development,development,event,0.9929832220077515,n/a
+diffusion,diffusion,event,0.7877000570297241,n/a
+direct contact,direct contact,entity,0.8956528902053833,n/a
+disease,disease,entity,0.6331335306167603,n/a
+DNA,dna,entity,0.9383292198181152,n/a
+elements,element,entity,0.9955072999000549,n/a
+environment,environment,event,0.6357098817825317,n/a
+eukaryotes,eukaryote,entity,0.8782190978527069,n/a
+eukaryotic cells,eukaryotic cell,entity,0.993378609418869,n/a
+fimbriae,fimbriae,event,0.9094790816307068,n/a
+Flagella,flagella,entity,0.982583075761795,n/a
+flagella,flagella,entity,0.982583075761795,n/a
+fungi,fungus,entity,0.9797738790512085,n/a
+gut,gut,entity,0.9842884540557861,n/a
+host cell,host cell,entity,0.9956615269184113,n/a
+intracellular transport,intracellular transport,entity,0.9783123731613159,n/a
+ions,ion,entity,0.9441890716552734,n/a
+lacks,lack,entity,0.9600813984870911,n/a
+locomotion,locomotion,entity,0.9608957767486572,n/a
+microbes,microbe,entity,0.976432570389339,n/a
+Microbiologists,microbiologist,entity,0.7147905230522156,n/a
+microbiologists,microbiologist,entity,0.7147905230522156,n/a
+microorganisms,microorganism,entity,0.9839234054088593,n/a
+microscopes,microscope,entity,0.9757121801376343,n/a
+mm2,mm2,entity,0.5809580087661743,n/a
+mm3,mm3,entity,0.8266588449478149,n/a
+models,model,entity,0.9822549819946289,n/a
+molecules,molecule,entity,0.6323294639587402,n/a
+mucus,mucus,entity,0.8732964992523193,n/a
+nose,nose,entity,0.8299697041511536,n/a
+nucleus,nucleus,entity,0.7778365314006805,n/a
+organelles,organelle,entity,0.8581036627292633,n/a
+organelle,organelle,entity,0.8581036627292633,n/a
+organisms,organism,entity,0.5387799739837646,n/a
+organism,organism,entity,0.5387799739837646,n/a
+pili,pili,entity,0.8692101836204529,n/a
+plasma membrane,plasma membrane,entity,0.9943750947713852,n/a
+polysaccharide capsule,polysaccharide capsule,entity,0.9782816171646118,n/a
+prokaryotes,prokaryote,entity,0.97118412454923,n/a
+prokaryote,prokaryote,entity,0.97118412454923,n/a
+prokaryotic cell,prokaryotic cell,entity,0.9958609491586685,n/a
+prokaryotic cells,prokaryotic cell,entity,0.9958609491586685,n/a
+Prokaryotic DNA,prokaryotic dna,entity,0.9442556500434875,n/a
+proteins,protein,entity,0.47998178005218506,n/a
+protists,protist,entity,0.9890661835670471,n/a
+ranging,range,event,0.9973428249359131,n/a
+ribosomes,ribosome,entity,0.9808817505836487,n/a
+sneezes,sneeze,entity,0.5797090530395508,n/a
+soil,soil,entity,0.9379780888557434,n/a
+specificity,specificity,entity,0.98405522108078,n/a
+synthesize,synthesize,entity,0.5476709604263306,n/a
+-volume ratio,volume ratio,entity,-1.0,n/a
+work,work,entity,0.9991277654965719,n/a
+μm,μm,entity,0.6924397051334381,n/a

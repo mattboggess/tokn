@@ -1,0 +1,39 @@
+predicted_relation,term_pair,prediction_confidence
+SYNONYM,"('dna', 'chromosome')",0.9740208983421326
+SYNONYM,"('g1 phase', 'first gap')",0.9673672318458557
+SYNONYM,"('microtubule', 'spindle apparatus')",0.9661689400672913
+SYNONYM,"('mitosis', 'karyokinesis')",0.9576378464698792
+SYNONYM,"('nucleus', 'multinucleate cell')",0.9381404519081116
+SYNONYM,"('golgi complex', 'golgi apparatus')",0.9012571573257446
+SYNONYM,"('karyokinesis', 'mitosis')",0.8746485412120819
+SYNONYM,"('cytokinesis', '"" cell motion')",0.5781043171882629
+SYNONYM,"('anaphase', 'phase')",0.369101881980896
+SUPERCLASS,"('plane', 'equatorial plane')",0.9830588102340698
+SUPERCLASS,"('cell', 'multinucleate cell')",0.9781731963157654
+SUPERCLASS,"('spindle microtubule', 'polar microtubule')",0.9741393327713013
+SUPERCLASS,"('phase', 'mitotic phase')",0.9702892899513245
+SUPERCLASS,"('cell', 'nerve cell')",0.9659052491188049
+SUPERCLASS,"('cell wall', 'plant cell')",0.96062171459198
+SUPERCLASS,"('membranous organelle', 'golgi complex')",0.9439653158187866
+SUPERCLASS,"('membranous organelle', 'golgi apparatus')",0.9188075065612793
+SUPERCLASS,"('cell', 'daughter cell')",0.8996453285217285
+SUPERCLASS,"('eukaryotic organism', 'fungus')",0.8962165117263794
+SUPERCLASS,"('protein structure', 'kinetochore')",0.8746071457862854
+SUPERCLASS,"('membranous organelle', 'endoplasmic reticulum')",0.7392421364784241
+SUPERCLASS,"('plane', 'metaphase plate')",0.6451026797294617
+SUPERCLASS,"('phase', 'interphase')",0.5826351642608643
+SUPERCLASS,"('chromatid', 'single chromosome')",0.5803577303886414
+SUPERCLASS,"('stage', 'g1 phase')",0.47025468945503235
+SUBCLASS,"('phragmoplast', 'vesicular structure')",0.8965200185775757
+SUBCLASS,"('mitotic phase', 'multistep process')",0.8933315277099609
+SUBCLASS,"('homologous chromosome', 'chromosome')",0.8883727192878723
+SUBCLASS,"('mitotic phase', 'phase')",0.861611545085907
+SUBCLASS,"('spindle microtubule', 'microtubule')",0.7780576944351196
+SUBCLASS,"('metaphase', '"" change phase')",0.7773874402046204
+SUBCLASS,"('cell cycle', 'series')",0.757221519947052
+SUBCLASS,"('telophase', 'phase')",0.7110840082168579
+SUBCLASS,"('prophase', 'phase')",0.7027915120124817
+SUBCLASS,"('prometaphase', 'phase')",0.657791793346405
+SUBCLASS,"('prometaphase', 'anaphase')",0.5063976794481277
+HAS-PART/REGION,"('cell cycle', 'phase')",0.7519264221191406
+HAS-PART/REGION,"('cell', 'nucleus')",0.7092102766036987

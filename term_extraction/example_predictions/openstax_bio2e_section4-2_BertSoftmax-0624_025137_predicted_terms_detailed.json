@@ -1,36 +1,4 @@
 {
-    "\" nucleus \"": {
-        "text": [
-            "\u201cnucleus\u201d"
-        ],
-        "tokens": [
-            [
-                "\u201c",
-                "nucleus",
-                "\u201d"
-            ]
-        ],
-        "indices": [
-            [
-                36,
-                39
-            ]
-        ],
-        "pos": [
-            [
-                "``",
-                "NNP",
-                "''"
-            ]
-        ],
-        "dep": [
-            [
-                "punct",
-                "dobj",
-                "punct"
-            ]
-        ]
-    },
     "animal cell": {
         "text": [
             "Animal cells"
@@ -91,6 +59,9 @@
         "dep": [
             [
                 "attr"
+            ],
+            [
+                "pobj"
             ]
         ]
     },
@@ -143,6 +114,43 @@
         "dep": [
             [
                 "conj"
+            ]
+        ]
+    },
+    "nucleus": {
+        "text": [
+            "nucleus",
+            "nucleus"
+        ],
+        "tokens": [
+            [
+                "nucleus"
+            ]
+        ],
+        "indices": [
+            [
+                37,
+                38
+            ],
+            [
+                159,
+                160
+            ]
+        ],
+        "pos": [
+            [
+                "NNP"
+            ],
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "dobj"
+            ],
+            [
+                "dobj"
             ]
         ]
     },
@@ -209,6 +217,21 @@
         "dep": [
             [
                 "pobj"
+            ],
+            [
+                "nsubj"
+            ],
+            [
+                "nsubj"
+            ],
+            [
+                "nsubj"
+            ],
+            [
+                "nsubj"
+            ],
+            [
+                "poss"
             ]
         ]
     },
@@ -269,6 +292,9 @@
         "dep": [
             [
                 "dobj"
+            ],
+            [
+                "nsubj"
             ]
         ]
     },
@@ -288,6 +314,7 @@
             "cell",
             "cell",
             "cell",
+            "cells",
             "cell",
             "cell",
             "cell"
@@ -355,6 +382,10 @@
                 876
             ],
             [
+                929,
+                930
+            ],
+            [
                 972,
                 973
             ],
@@ -411,6 +442,9 @@
                 "NN"
             ],
             [
+                "NNS"
+            ],
+            [
                 "NN"
             ],
             [
@@ -421,6 +455,57 @@
             ]
         ],
         "dep": [
+            [
+                "nsubj"
+            ],
+            [
+                "nsubj"
+            ],
+            [
+                "pobj"
+            ],
+            [
+                "poss"
+            ],
+            [
+                "poss"
+            ],
+            [
+                "nsubj"
+            ],
+            [
+                "nsubj"
+            ],
+            [
+                "pobj"
+            ],
+            [
+                "pobj"
+            ],
+            [
+                "pobj"
+            ],
+            [
+                "nsubj"
+            ],
+            [
+                "nsubj"
+            ],
+            [
+                "nsubj"
+            ],
+            [
+                "nsubj"
+            ],
+            [
+                "dobj"
+            ],
+            [
+                "nsubj"
+            ],
+            [
+                "nsubj"
+            ],
             [
                 "nsubj"
             ]
@@ -479,82 +564,18 @@
             [
                 "amod",
                 "pobj"
-            ]
-        ]
-    },
-    "genetic material": {
-        "text": [
-            "genetic material",
-            "genetic material",
-            "genetic material"
-        ],
-        "tokens": [
-            [
-                "genetic",
-                "material"
-            ]
-        ],
-        "indices": [
-            [
-                56,
-                58
             ],
-            [
-                272,
-                274
-            ],
-            [
-                284,
-                286
-            ]
-        ],
-        "pos": [
-            [
-                "JJ",
-                "NN"
-            ],
-            [
-                "JJ",
-                "NN"
-            ],
-            [
-                "JJ",
-                "NN"
-            ]
-        ],
-        "dep": [
             [
                 "amod",
-                "appos"
-            ]
-        ]
-    },
-    "cellular component": {
-        "text": [
-            "cellular components"
-        ],
-        "tokens": [
-            [
-                "cellular",
-                "components"
-            ]
-        ],
-        "indices": [
-            [
-                46,
-                48
-            ]
-        ],
-        "pos": [
-            [
-                "JJ",
-                "NNS"
-            ]
-        ],
-        "dep": [
+                "pobj"
+            ],
             [
                 "amod",
-                "attr"
+                "pobj"
+            ],
+            [
+                "amod",
+                "dobj"
             ]
         ]
     },
@@ -593,35 +614,10 @@
             [
                 "compound",
                 "appos"
-            ]
-        ]
-    },
-    "common component": {
-        "text": [
-            "common components"
-        ],
-        "tokens": [
+            ],
             [
-                "common",
-                "components"
-            ]
-        ],
-        "indices": [
-            [
-                4,
-                6
-            ]
-        ],
-        "pos": [
-            [
-                "JJ",
-                "NNS"
-            ]
-        ],
-        "dep": [
-            [
-                "amod",
-                "dobj"
+                "compound",
+                "nsubj"
             ]
         ]
     },
@@ -656,6 +652,35 @@
         "dep": [
             [
                 "pobj"
+            ],
+            [
+                "pobj"
+            ]
+        ]
+    },
+    "protein": {
+        "text": [
+            "proteins"
+        ],
+        "tokens": [
+            [
+                "proteins"
+            ]
+        ],
+        "indices": [
+            [
+                66,
+                67
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "dobj"
             ]
         ]
     },
@@ -849,30 +874,7 @@
         "dep": [
             [
                 "conj"
-            ]
-        ]
-    },
-    "nucleus": {
-        "text": [
-            "nucleus"
-        ],
-        "tokens": [
-            [
-                "nucleus"
-            ]
-        ],
-        "indices": [
-            [
-                17,
-                18
-            ]
-        ],
-        "pos": [
-            [
-                "NN"
-            ]
-        ],
-        "dep": [
+            ],
             [
                 "dobj"
             ]
@@ -935,38 +937,9 @@
         "dep": [
             [
                 "attr"
-            ]
-        ]
-    },
-    "peptidoglycan cell wall": {
-        "text": [
-            "peptidoglycan cell wall"
-        ],
-        "tokens": [
+            ],
             [
-                "peptidoglycan",
-                "cell",
-                "wall"
-            ]
-        ],
-        "indices": [
-            [
-                4,
-                7
-            ]
-        ],
-        "pos": [
-            [
-                "JJ",
-                "NN",
-                "NN"
-            ]
-        ],
-        "dep": [
-            [
-                "compound",
-                "compound",
-                "dobj"
+                "appos"
             ]
         ]
     },
@@ -1025,35 +998,6 @@
             [
                 "amod",
                 "pobj"
-            ]
-        ]
-    },
-    "cell wall": {
-        "text": [
-            "cell wall"
-        ],
-        "tokens": [
-            [
-                "cell",
-                "wall"
-            ]
-        ],
-        "indices": [
-            [
-                19,
-                21
-            ]
-        ],
-        "pos": [
-            [
-                "NN",
-                "NN"
-            ]
-        ],
-        "dep": [
-            [
-                "compound",
-                "nsubj"
             ]
         ]
     },
@@ -1325,32 +1269,6 @@
             ]
         ]
     },
-    "body": {
-        "text": [
-            "body"
-        ],
-        "tokens": [
-            [
-                "body"
-            ]
-        ],
-        "indices": [
-            [
-                108,
-                109
-            ]
-        ],
-        "pos": [
-            [
-                "NN"
-            ]
-        ],
-        "dep": [
-            [
-                "dobj"
-            ]
-        ]
-    },
     "nose": {
         "text": [
             "nose"
@@ -1400,60 +1318,6 @@
         "dep": [
             [
                 "pobj"
-            ]
-        ]
-    },
-    "doorknob": {
-        "text": [
-            "doorknobs",
-            "doorknob",
-            "doorknob"
-        ],
-        "tokens": [
-            [
-                "doorknobs"
-            ],
-            [
-                "doorknob"
-            ],
-            [
-                "doorknob"
-            ]
-        ],
-        "indices": [
-            [
-                45,
-                46
-            ],
-            [
-                66,
-                67
-            ],
-            [
-                74,
-                75
-            ]
-        ],
-        "pos": [
-            [
-                "NNS"
-            ],
-            [
-                "NN"
-            ],
-            [
-                "NN"
-            ]
-        ],
-        "dep": [
-            [
-                "pobj"
-            ],
-            [
-                "dobj"
-            ],
-            [
-                "dobj"
             ]
         ]
     },
@@ -1592,34 +1456,17 @@
             ],
             [
                 "nsubj"
-            ]
-        ]
-    },
-    "cause disease": {
-        "text": [
-            "cause disease"
-        ],
-        "tokens": [
+            ],
             [
-                "cause",
-                "disease"
-            ]
-        ],
-        "indices": [
+                "nsubj"
+            ],
             [
-                10,
-                12
-            ]
-        ],
-        "pos": [
+                "dobj"
+            ],
             [
-                "VBP",
-                "NN"
-            ]
-        ],
-        "dep": [
+                "dobj"
+            ],
             [
-                "ccomp",
                 "dobj"
             ]
         ]
@@ -1647,6 +1494,32 @@
         "dep": [
             [
                 "pobj"
+            ]
+        ]
+    },
+    "disease": {
+        "text": [
+            "disease"
+        ],
+        "tokens": [
+            [
+                "disease"
+            ]
+        ],
+        "indices": [
+            [
+                11,
+                12
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ]
+        ],
+        "dep": [
+            [
+                "dobj"
             ]
         ]
     },
@@ -1790,6 +1663,9 @@
             ],
             [
                 "ROOT"
+            ],
+            [
+                "ROOT"
             ]
         ]
     },
@@ -1846,35 +1722,12 @@
             ],
             [
                 "nsubj"
-            ]
-        ]
-    },
-    "bacterial epidemic": {
-        "text": [
-            "bacterial epidemics"
-        ],
-        "tokens": [
+            ],
             [
-                "bacterial",
-                "epidemics"
-            ]
-        ],
-        "indices": [
+                "nsubj"
+            ],
             [
-                69,
-                71
-            ]
-        ],
-        "pos": [
-            [
-                "JJ",
-                "NNS"
-            ]
-        ],
-        "dep": [
-            [
-                "amod",
-                "appos"
+                "nsubj"
             ]
         ]
     },
@@ -1904,35 +1757,6 @@
             [
                 "compound",
                 "pobj"
-            ]
-        ]
-    },
-    "bioremediation technology": {
-        "text": [
-            "bioremediation technologies"
-        ],
-        "tokens": [
-            [
-                "bioremediation",
-                "technologies"
-            ]
-        ],
-        "indices": [
-            [
-                37,
-                39
-            ]
-        ],
-        "pos": [
-            [
-                "NN",
-                "NNS"
-            ]
-        ],
-        "dep": [
-            [
-                "compound",
-                "dobj"
             ]
         ]
     },
@@ -2040,32 +1864,6 @@
             ]
         ]
     },
-    "pollutant": {
-        "text": [
-            "pollutants"
-        ],
-        "tokens": [
-            [
-                "pollutants"
-            ]
-        ],
-        "indices": [
-            [
-                17,
-                18
-            ]
-        ],
-        "pos": [
-            [
-                "NNS"
-            ]
-        ],
-        "dep": [
-            [
-                "dobj"
-            ]
-        ]
-    },
     "intracellular transport": {
         "text": [
             "intracellular transport"
@@ -2092,64 +1890,6 @@
             [
                 "amod",
                 "dobj"
-            ]
-        ]
-    },
-    "structural adaptation": {
-        "text": [
-            "structural adaptations"
-        ],
-        "tokens": [
-            [
-                "structural",
-                "adaptations"
-            ]
-        ],
-        "indices": [
-            [
-                80,
-                82
-            ]
-        ],
-        "pos": [
-            [
-                "JJ",
-                "NNS"
-            ]
-        ],
-        "dep": [
-            [
-                "amod",
-                "dobj"
-            ]
-        ]
-    },
-    "organic molecule": {
-        "text": [
-            "organic molecules"
-        ],
-        "tokens": [
-            [
-                "organic",
-                "molecules"
-            ]
-        ],
-        "indices": [
-            [
-                39,
-                41
-            ]
-        ],
-        "pos": [
-            [
-                "JJ",
-                "NNS"
-            ]
-        ],
-        "dep": [
-            [
-                "amod",
-                "conj"
             ]
         ]
     },
@@ -2199,43 +1939,92 @@
             ]
         ]
     },
-    "diffuse": {
+    "adaptation": {
         "text": [
-            "diffuse",
-            "diffuse"
+            "adaptations",
+            "adaptations"
         ],
         "tokens": [
             [
-                "diffuse"
-            ],
-            [
-                "diffuse"
+                "adaptations"
             ]
         ],
         "indices": [
             [
-                46,
-                47
+                81,
+                82
             ],
             [
-                65,
-                66
+                923,
+                924
             ]
         ],
         "pos": [
             [
-                "VB"
+                "NNS"
             ],
             [
-                "VB"
+                "NNS"
             ]
         ],
         "dep": [
             [
-                "xcomp"
+                "dobj"
             ],
             [
-                "ROOT"
+                "nsubj"
+            ]
+        ]
+    },
+    "molecule": {
+        "text": [
+            "molecules"
+        ],
+        "tokens": [
+            [
+                "molecules"
+            ]
+        ],
+        "indices": [
+            [
+                40,
+                41
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "conj"
+            ]
+        ]
+    },
+    "ion": {
+        "text": [
+            "ions"
+        ],
+        "tokens": [
+            [
+                "ions"
+            ]
+        ],
+        "indices": [
+            [
+                37,
+                38
+            ]
+        ],
+        "pos": [
+            [
+                "NNS"
+            ]
+        ],
+        "dep": [
+            [
+                "dobj"
             ]
         ]
     },
@@ -2305,19 +2094,15 @@
             ]
         ]
     },
-    "surface area to volume ratio": {
+    "volume ratio": {
         "text": [
-            "surface area-to-volume ratio",
-            "surface area-to-volume ratio",
-            "surface area-to-volume ratio",
-            "surface area-to-volume ratio"
+            "-volume ratio",
+            "-volume ratio",
+            "-volume ratio",
+            "-volume ratio"
         ],
         "tokens": [
             [
-                "surface",
-                "area",
-                "-",
-                "to",
                 "-",
                 "volume",
                 "ratio"
@@ -2325,55 +2110,39 @@
         ],
         "indices": [
             [
-                133,
+                137,
                 140
             ],
             [
-                948,
+                952,
                 955
             ],
             [
-                1000,
+                1004,
                 1007
             ],
             [
-                1035,
+                1039,
                 1042
             ]
         ],
         "pos": [
             [
-                "NN",
-                "NN",
-                "HYPH",
-                "IN",
                 "HYPH",
                 "NN",
                 "NN"
             ],
             [
-                "NN",
-                "NN",
-                "HYPH",
-                "IN",
                 "HYPH",
                 "NN",
                 "NN"
             ],
             [
-                "NN",
-                "NN",
-                "HYPH",
-                "IN",
                 "HYPH",
                 "NN",
                 "NN"
             ],
             [
-                "NN",
-                "NN",
-                "HYPH",
-                "IN",
                 "HYPH",
                 "NN",
                 "NN"
@@ -2381,181 +2150,24 @@
         ],
         "dep": [
             [
-                "compound",
-                "nmod",
-                "punct",
-                "prep",
                 "punct",
                 "pobj",
                 "nsubj"
-            ]
-        ]
-    },
-    "rate of diffusion": {
-        "text": [
-            "rate of diffusion"
-        ],
-        "tokens": [
-            [
-                "rate",
-                "of",
-                "diffusion"
-            ]
-        ],
-        "indices": [
-            [
-                178,
-                181
-            ]
-        ],
-        "pos": [
-            [
-                "NN",
-                "IN",
-                "NN"
-            ]
-        ],
-        "dep": [
-            [
-                "dobj",
-                "prep",
-                "pobj"
-            ]
-        ]
-    },
-    "surface area": {
-        "text": [
-            "surface area",
-            "surface area",
-            "surface area",
-            "surface area",
-            "surface area",
-            "surface area",
-            "surface area"
-        ],
-        "tokens": [
-            [
-                "surface",
-                "area"
             ],
             [
-                "surface",
-                "area"
-            ],
-            [
-                "surface",
-                "area"
-            ],
-            [
-                "surface",
-                "area"
-            ]
-        ],
-        "indices": [
-            [
-                69,
-                71
-            ],
-            [
-                97,
-                99
-            ],
-            [
-                173,
-                175
-            ],
-            [
-                216,
-                218
-            ],
-            [
-                961,
-                963
-            ],
-            [
-                992,
-                994
-            ],
-            [
-                1027,
-                1029
-            ]
-        ],
-        "pos": [
-            [
-                "NN",
-                "NN"
-            ],
-            [
-                "NN",
-                "NN"
-            ],
-            [
-                "NN",
-                "NN"
-            ],
-            [
-                "NN",
-                "NN"
-            ],
-            [
-                "NN",
-                "NN"
-            ],
-            [
-                "NN",
-                "NN"
-            ],
-            [
-                "NN",
-                "NN"
-            ]
-        ],
-        "dep": [
-            [
-                "compound",
-                "pobj"
-            ],
-            [
-                "compound",
+                "punct",
+                "pobj",
                 "nsubj"
             ],
             [
-                "compound",
-                "dobj"
+                "punct",
+                "pobj",
+                "pobj"
             ],
             [
-                "compound",
-                "dobj"
-            ]
-        ]
-    },
-    "sophisticated cell": {
-        "text": [
-            "sophisticated cells"
-        ],
-        "tokens": [
-            [
-                "sophisticated",
-                "cells"
-            ]
-        ],
-        "indices": [
-            [
-                246,
-                248
-            ]
-        ],
-        "pos": [
-            [
-                "JJ",
-                "NNS"
-            ]
-        ],
-        "dep": [
-            [
-                "amod",
-                "dobj"
+                "punct",
+                "pobj",
+                "pobj"
             ]
         ]
     },
@@ -2588,29 +2200,69 @@
             ]
         ]
     },
-    "adaptation": {
+    "diffusion": {
         "text": [
-            "adaptations"
+            "diffusion"
         ],
         "tokens": [
             [
-                "adaptations"
+                "diffusion"
             ]
         ],
         "indices": [
             [
-                241,
-                242
+                180,
+                181
             ]
         ],
         "pos": [
             [
-                "NNS"
+                "NN"
             ]
         ],
         "dep": [
             [
-                "nsubj"
+                "pobj"
+            ]
+        ]
+    },
+    "mm2": {
+        "text": [
+            "mm2",
+            "mm2"
+        ],
+        "tokens": [
+            [
+                "mm2"
+            ],
+            [
+                "mm2"
+            ]
+        ],
+        "indices": [
+            [
+                58,
+                59
+            ],
+            [
+                93,
+                94
+            ]
+        ],
+        "pos": [
+            [
+                "NN"
+            ],
+            [
+                "NNP"
+            ]
+        ],
+        "dep": [
+            [
+                "pobj"
+            ],
+            [
+                "pobj"
             ]
         ]
     },

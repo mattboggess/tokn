@@ -1,0 +1,24 @@
+predicted_relation,term_pair,prediction_confidence
+SYNONYM,"('microbe', 'microorganism')",0.8827489614486694
+SYNONYM,"('microbe', 'organism')",0.2991344928741455
+SUPERCLASS,"('cell', 'eukaryotic cell')",0.9781597256660461
+SUBCLASS,"('microbiologist', 'scientist')",0.9314948916435242
+SUBCLASS,"('animal cell', 'eukaryote')",0.9214615225791931
+SUBCLASS,"('prokaryote', 'organism')",0.8776859641075134
+SUBCLASS,"('plant', 'eukaryote')",0.7591358423233032
+SUBCLASS,"('protist', 'eukaryote')",0.7270634770393372
+SUBCLASS,"('dna', 'genetic material')",0.7048419117927551
+SUBCLASS,"('fungus', 'eukaryote')",0.6227789521217346
+PART/REGION-OF,"('microbe', 'body')",0.5558004379272461
+PART/REGION-OF,"('eye', 'body')",0.4871408939361572
+PART/REGION-OF,"('nose', 'body')",0.41102445125579834
+PART/REGION-OF,"('surface area', 'cell membrane')",0.40543025732040405
+HAS-PART/REGION,"('cell', 'genetic material')",0.9642198085784912
+HAS-PART/REGION,"('prokaryote', 'peptidoglycan cell wall')",0.9280493855476379
+HAS-PART/REGION,"('prokaryote', 'flagella')",0.8824571967124939
+HAS-PART/REGION,"('plasma membrane', 'surface area')",0.8810853958129883
+HAS-PART/REGION,"('prokaryote', 'pili')",0.7589062452316284
+HAS-PART/REGION,"('organism', 'nucleus')",0.7421733140945435
+HAS-PART/REGION,"('prokaryote', 'fimbriae')",0.6884411573410034
+HAS-PART/REGION,"('cell', 'protein')",0.43088504672050476
+HAS-PART/REGION,"('cell', 'surface area')",0.41286948323249817
