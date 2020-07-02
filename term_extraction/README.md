@@ -99,21 +99,6 @@ This script outputs three files:
 
 This script first preprocesses the input text to be compatible with the model, gets predictions from the model, and then postprocesses those predictions by tagging the original text. As with the test script, model predictions are modified to merge singleton predictions into phrases where appropriate. Additionally, the tagging has filters to exclude false positives that aren't nouns at the root of a noun phrase or verbs.
 
-## Active Learning
-
-WARNING: May no longer be functional
-
-The create_term_finetune.py takes in a text file of false positive terms and a pretrained model to output new training data. Here is the outline for call to the script.
-
-`python crate_term_finetune.py 
-     -r saved/models/BertSoftmax/1129_025337/model_best.pth 
-     -i example_predictions/openstax_bio_ch3.txt
-     -o example_predictions
-     -t example_predictions/false_terms.txt`
-
-This script outputs one file
-  - {input_filename}_{config_name}-{run_timestamp}_new_data.json: This new json file is in the same format of the training data. It includes sentences in which the false positive terms appear. It uses the pretrained model to make predictions on these sentences but removes the false positive terms in the predictions (inspired from the Learning Without Forgetting paper: https://arxiv.org/abs/1606.09282)
-
 ## Config file format
 
 Config files are in `.json` format:
